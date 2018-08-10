@@ -1,0 +1,4 @@
+QWidget#WeatherBackground {
+    qproperty-backPixmap:"default";
+    qproperty-color:"#FFFAFA";
+}

@@ -1,0 +1,27 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/close_button.png</file>
+        <file>res/indicator.png</file>
+        <file>res/ip.png</file>
+        <file>res/menu_button.png</file>
+        <file>res/min_button.png</file>
+        <file>res/skin_button.png</file>
+        <file>res/xiaoming-weather.png</file>
+        <file>res/background/weather-clear-night.jpg</file>
+        <file>res/background/weather-clear.jpg</file>
+        <file>res/background/weather-few-clouds-night.jpg</file>
+        <file>res/background/weather-few-clouds.jpg</file>
+        <file>res/background/weather-fog.jpg</file>
+        <file>res/background/weather-overcast.jpg</file>
+        <file>res/background/weather-showers.jpg</file>
+        <file>res/background/weather-snow.jpg</file>
+        <file>res/background/weather-storm.jpg</file>
+        <file>res/background/weather-default-background.jpg</file>
+    </qresource>
+    <qresource prefix="/qss">
+        <file>res/weather.qss</file>
+    </qresource>
+    <qresource prefix="/qm">
+        <file>translation/xiaoming-weather_zh_CN.qm</file>
+    </qresource>
+</RCC>

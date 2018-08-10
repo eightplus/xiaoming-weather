@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=xiaoming-weather
+Name[zh_CN]=小明天气
+Comment=Weather Forecatst
+Comment[zh_CN]=天气预报
+Keywords=weather
+Exec=/usr/bin/xiaoming-weather %u
+Icon=xiaoming-weather.png
+Terminal=false
+Type=Application
+Categories=System;Viewer;

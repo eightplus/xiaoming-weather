@@ -1,0 +1,22 @@
+Source: xiaoming-weather
+Section: x11
+Priority: optional
+Maintainer: lixiang <kobe24_lixiang@126.com>
+Uploaders: lixiang <kobe24_lixiang@126.com>
+Build-Depends: debhelper (>=9),
+               pkg-config,
+               qtbase5-dev (>= 5.1),
+               qt5-qmake,
+               qt5-default,
+               qtscript5-dev,
+               qttools5-dev-tools
+Standards-Version: 3.9.6
+Homepage: https://github.com/eightplus/xiaoming-weather
+Vcs-Git: git://github.com/eightplus/xiaoming-weather.git
+Vcs-Browser: https://github.com/eightplus/xiaoming-weather.git
+
+Package: xiaoming-weather
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Access weather forecast information
+ Weather App with Qt5.
