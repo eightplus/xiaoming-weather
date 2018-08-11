@@ -1,5 +1,6 @@
 xiaoming-weather (0.0.1) unstable; urgency=medium
 
   * Build a framework for the main interface.
+  * The main interface display area is divided into 4 modules.
 
- -- lixiang <lixiang_lixiang@126.com>  Fri, 10 Aug 2018 23:46:03 +0800
+ -- lixiang <lixiang_lixiang@126.com>  Sun, 12 Aug 2018 01:21:59 +0800

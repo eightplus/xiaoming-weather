@@ -31,7 +31,7 @@ class TitleBar : public QFrame
 {
     Q_OBJECT
 public:
-    TitleBar(QWidget *parent);
+    explicit TitleBar(QWidget *parent);
     ~TitleBar();
 
     void initLeftContent();

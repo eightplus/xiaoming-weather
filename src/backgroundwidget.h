@@ -37,7 +37,7 @@ public:
     void setColor(const QColor &color);
     const QColor &color() { return m_color; }
 
-    const QString &backPixmap() { return m_backPixmap; }
+    const QString &backPixmap() const { return m_backPixmap; }
     void setBackPixmap(const QString &pix);
 
 protected:

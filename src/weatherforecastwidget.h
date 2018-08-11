@@ -17,33 +17,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WEATHERWIDGET_H
-#define WEATHERWIDGET_H
+#ifndef WEATHER_FORECAST_WIDGET_H
+#define WEATHER_FORECAST_WIDGET_H
 
 #include <QFrame>
 #include <QVBoxLayout>
 #include <QLabel>
 
-class WeatherNowWidget;
-class WeatherForecastWidget;
-class WeatherNowCategoryWidget;
-class NavigationWidget;
-
-class WeatherWidget : public QFrame
+class WeatherForecastWidget : public QFrame
 {
     Q_OBJECT
 public:
-    explicit WeatherWidget(QWidget *parent = 0);
-    ~ WeatherWidget();
+    explicit WeatherForecastWidget(QWidget *parent = 0);
+    ~ WeatherForecastWidget();
 
 private:
     QVBoxLayout *m_layout = nullptr;
-//    QLabel *m_label = nullptr;
-
-    WeatherNowWidget *m_nowWidget = nullptr;
-    WeatherForecastWidget *m_forecastWidget = nullptr;
-    WeatherNowCategoryWidget *m_nowCategoryWidget = nullptr;
-    NavigationWidget *m_navigationWidget = nullptr;
+    QLabel *m_label = nullptr;
 };
 
-#endif // WEATHERWIDGET_H
+#endif // WEATHER_FORECAST_WIDGET_H

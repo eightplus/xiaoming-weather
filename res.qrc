@@ -17,6 +17,10 @@
         <file>res/background/weather-snow.jpg</file>
         <file>res/background/weather-storm.jpg</file>
         <file>res/background/weather-default-background.jpg</file>
+        <file>res/next_button_hover_press.png</file>
+        <file>res/next_button_normal.png</file>
+        <file>res/prev_button_hover_press.png</file>
+        <file>res/prev_button_normal.png</file>
     </qresource>
     <qresource prefix="/qss">
         <file>res/weather.qss</file>

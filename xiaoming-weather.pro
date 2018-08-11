@@ -44,7 +44,13 @@ SOURCES += src/main.cpp \
     src/toolbutton.cpp \
     src/weatherwidget.cpp \
     src/backgroundwidget.cpp \
-    src/parseinterface.cpp
+    src/parseinterface.cpp \
+    src/weathernowwidget.cpp \
+    src/weatherforecastwidget.cpp \
+    src/weathernowcategorywidget.cpp \
+    src/navigationwidget.cpp \
+    src/citynavigation.cpp \
+    src/imagebutton.cpp
 
 HEADERS  += src/mainwindow.h \
     src/titlebar.h \
@@ -52,6 +58,12 @@ HEADERS  += src/mainwindow.h \
     src/weatherwidget.h \
     src/backgroundwidget.h \
     src/parseinterface.h \
+    src/weathernowwidget.h \
+    src/weatherforecastwidget.h \
+    src/weathernowcategorywidget.h \
+    src/navigationwidget.h \
+    src/citynavigation.h \
+    src/imagebutton.h \
     src/utils.h
 
 TRANSLATIONS += \

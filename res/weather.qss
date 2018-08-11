@@ -2,3 +2,22 @@ QWidget#WeatherBackground {
     qproperty-backPixmap:"default";
     qproperty-color:"#FFFAFA";
 }
+
+CityNavigation#MainNavigation {
+    qproperty-activePointColor: rgba(255,255,255,230);
+    qproperty-unactivePointColor: rgba(255,255,255,100);
+}
+
+ImageButton#PrevCityBtn
+{
+    qproperty-normalPic: url(:/res/prev_button_normal.png);
+    qproperty-hoverPic: url(:/res/prev_button_hover_press.png);
+    qproperty-pressPic: url(:/res/prev_button_hover_press.png);
+}
+
+ImageButton#NextCityBtn
+{
+    qproperty-normalPic: url(:/res/next_button_normal.png);
+    qproperty-hoverPic: url(:/res/next_button_hover_press.png);
+    qproperty-pressPic: url(:/res/next_button_hover_press.png);
+}

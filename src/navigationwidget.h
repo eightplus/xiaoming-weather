@@ -17,33 +17,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WEATHERWIDGET_H
-#define WEATHERWIDGET_H
+#ifndef NAVIGATION_WIDGET_H
+#define NAVIGATION_WIDGET_H
 
-#include <QFrame>
+#include <QWidget>
 #include <QVBoxLayout>
 #include <QLabel>
 
-class WeatherNowWidget;
-class WeatherForecastWidget;
-class WeatherNowCategoryWidget;
-class NavigationWidget;
+class CityNavigation;
+class ImageButton;
 
-class WeatherWidget : public QFrame
+class NavigationWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit WeatherWidget(QWidget *parent = 0);
-    ~ WeatherWidget();
+    explicit NavigationWidget(QWidget *parent = 0, int cityCount = 0);
+    ~ NavigationWidget();
+
+signals:
+    void requestPrevCity();
+    void requestNextCity();
 
 private:
-    QVBoxLayout *m_layout = nullptr;
-//    QLabel *m_label = nullptr;
+    void enterEvent(QEvent *event) Q_DECL_OVERRIDE;
+    void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
 
-    WeatherNowWidget *m_nowWidget = nullptr;
-    WeatherForecastWidget *m_forecastWidget = nullptr;
-    WeatherNowCategoryWidget *m_nowCategoryWidget = nullptr;
-    NavigationWidget *m_navigationWidget = nullptr;
+private:
+    CityNavigation *m_cityNavigation = nullptr;
+    ImageButton *m_prevCityBtn = nullptr;
+    ImageButton *m_nextCityBtn = nullptr;
 };
 
-#endif // WEATHERWIDGET_H
+#endif // NAVIGATION_WIDGET_H
