@@ -17,38 +17,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WEATHER_NOW_WIDGET_H
-#define WEATHER_NOW_WIDGET_H
+#ifndef INDEXITEMWIDGET_H
+#define INDEXITEMWIDGET_H
 
-#include <QFrame>
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QTimer>
-#include <QTime>
+#include <QWidget>
 
-class ImageButton;
-
-class WeatherNowWidget : public QFrame
+class IndexItemWidget : public QWidget
 {
     Q_OBJECT
-public:
-    explicit WeatherNowWidget(QWidget *parent = 0);
-    ~ WeatherNowWidget();
 
-    void refreshNowWeatherData();
+public:
+    explicit IndexItemWidget(const QString &name, const QString &iconPath, QWidget *parent = 0);
+
+    void refreshLifeStyle(const QString &brf, const QString &txt);
+
+    void setDayStyleSheets();
+    void setNightStyleSheets();
 
 signals:
-    void locationBtnClicked();
+    void requestShowMsg(const QString &name) const;
 
 protected:
+    void enterEvent(QEvent *event) Q_DECL_OVERRIDE;
+    void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
-    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
 private:
-    ImageButton *m_locationBtn = nullptr;
-    QTimer *m_refreshTimer = nullptr;
-    QTime m_time;
-    int m_timeInterval;
+    bool m_mouseHover;
+    QString m_indexName;
+    QString m_iconPath;
+    QString m_brf;
+    QString m_txt;
+    QColor m_txtColor;
+    QColor m_titleColor;
 };
 
-#endif // WEATHER_NOW_WIDGET_H
+#endif // INDEXITEMWIDGET_H

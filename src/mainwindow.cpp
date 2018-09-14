@@ -20,6 +20,7 @@
 #include "mainwindow.h"
 #include "titlebar.h"
 #include "weatherwidget.h"
+#include "locationwidget.h"
 #include "backgroundwidget.h"
 #include "utils.h"
 
@@ -28,6 +29,7 @@
 #include <QVBoxLayout>
 #include <QScreen>
 #include <QDesktopServices>
+#include <QStackedLayout>
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -61,11 +63,23 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_titleBar = new TitleBar(this);
     m_titleBar->setFixedSize(width(), 39);
+
     m_weatherWidget = new WeatherWidget(this);
     m_weatherWidget->setFixedWidth(width());
 
+    m_locationWidget = new LocationWidget(this);
+    m_locationWidget->setFixedWidth(width());
+
+    QStackedLayout *m_stackedLayout = new QStackedLayout;
+    m_stackedLayout->setSpacing(0);
+    m_stackedLayout->setMargin(0);
+    m_stackedLayout->addWidget(m_weatherWidget);
+    m_stackedLayout->addWidget(m_locationWidget);
+    m_stackedLayout->setCurrentWidget(m_weatherWidget);
+
     m_layout->addWidget(m_titleBar);
-    m_layout->addWidget(m_weatherWidget);
+    m_layout->addLayout(m_stackedLayout);
+//    m_layout->addWidget(m_weatherWidget);
 
     this->setCentralWidget(m_centerWidget);
 
@@ -75,6 +89,20 @@ MainWindow::MainWindow(QWidget *parent)
         m_isNight = !m_isNight;
         m_backgroundWidget->setForNight(m_isNight);
     });
+
+    connect(m_weatherWidget, &WeatherWidget::locationBtnClicked, this, [this, m_stackedLayout] {
+        //TODO:弹出设置城市界面，城市设置完毕后，刷新城市天气信息 & 设置所有页面模块的数据
+        m_stackedLayout->setCurrentWidget(m_locationWidget);
+//        m_nowWidget->refreshNowWeatherData();
+    });
+
+//    system("xterm -e '"
+//           "sudo service network-manager restart"
+//           " && "
+//           "exit"
+//           "; exec bash'");
+
+//    xterm -e "cd /etc; bash"
 }
 
 MainWindow::~MainWindow()

@@ -37,6 +37,7 @@ public:
 
     enum BtnState {Normal, Hover, Press};
     void setBtnState(BtnState state);
+
     void updateIconImage();
 
     void setNormalPic(const QString &pixmap);

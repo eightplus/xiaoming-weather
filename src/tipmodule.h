@@ -17,38 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WEATHER_NOW_WIDGET_H
-#define WEATHER_NOW_WIDGET_H
+#ifndef TIPMODULE_H
+#define TIPMODULE_H
 
-#include <QFrame>
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QTimer>
-#include <QTime>
+#include <QObject>
 
-class ImageButton;
+class QTimer;
 
-class WeatherNowWidget : public QFrame
+class TipModule: public QObject
 {
     Q_OBJECT
 public:
-    explicit WeatherNowWidget(QWidget *parent = 0);
-    ~ WeatherNowWidget();
+    TipModule(QObject *parent = 0);
+    ~TipModule();
 
-    void refreshNowWeatherData();
-
-signals:
-    void locationBtnClicked();
-
-protected:
-    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
-    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+public slots:
+    void onDisplayTimeOut();
 
 private:
-    ImageButton *m_locationBtn = nullptr;
-    QTimer *m_refreshTimer = nullptr;
-    QTime m_time;
-    int m_timeInterval;
+    bool eventFilter(QObject *obj, QEvent *event) Q_DECL_OVERRIDE;
+
+private:
+    QWidget *m_parentWidget = nullptr;
+    QWidget *m_tipWidget = nullptr;
+    QTimer  *m_displayTimer = nullptr;
 };
 
-#endif // WEATHER_NOW_WIDGET_H
+#endif // TIPMODULE_H

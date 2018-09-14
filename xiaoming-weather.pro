@@ -24,8 +24,6 @@ INSTALLS += inst1 \
 CONFIG += c++14
 CONFIG += qt warn_on
 CONFIG += release
-#CONFIG += link_pkgconfig
-#PKGCONFIG += geoip#libgeoip-dev
 
 QMAKE_CPPFLAGS *= $(shell dpkg-buildflags --get CPPFLAGS)
 QMAKE_CFLAGS   *= $(shell dpkg-buildflags --get CFLAGS)
@@ -50,7 +48,15 @@ SOURCES += src/main.cpp \
     src/weathernowcategorywidget.cpp \
     src/navigationwidget.cpp \
     src/citynavigation.cpp \
-    src/imagebutton.cpp
+    src/imagebutton.cpp \
+    src/locationwidget.cpp \
+    src/forecastitemwidget.cpp \
+    src/translucentlabel.cpp \
+    src/tooltip.cpp \
+    src/categorybutton.cpp \
+    src/indexitemwidget.cpp \
+    src/texttip.cpp \
+    src/tipmodule.cpp
 
 HEADERS  += src/mainwindow.h \
     src/titlebar.h \
@@ -64,7 +70,16 @@ HEADERS  += src/mainwindow.h \
     src/navigationwidget.h \
     src/citynavigation.h \
     src/imagebutton.h \
-    src/utils.h
+    src/locationwidget.h \
+    src/forecastitemwidget.h \
+    src/utils.h \
+    src/translucentlabel.h \
+    src/data.h \
+    src/tooltip.h \
+    src/categorybutton.h \
+    src/indexitemwidget.h \
+    src/texttip.h \
+    src/tipmodule.h
 
 TRANSLATIONS += \
     translation/xiaoming-weather_zh_CN.ts

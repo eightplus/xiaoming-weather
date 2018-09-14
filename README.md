@@ -18,3 +18,8 @@ debhelper (>= 9),qtbase5-dev,qt5-qmake,qtscript5-dev,qttools5-dev-tools,pkg-conf
 GitHub
 =======
 https://github.com/eightplus/xiaoming-weather
+
+
+### Json API
+
+https://www.sojson.com/open/api/weather/json.shtml?city=长沙

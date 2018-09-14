@@ -17,38 +17,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WEATHER_NOW_WIDGET_H
-#define WEATHER_NOW_WIDGET_H
+#ifndef TRANLUCENTLABEL_H
+#define TRANLUCENTLABEL_H
 
-#include <QFrame>
-#include <QVBoxLayout>
 #include <QLabel>
-#include <QTimer>
-#include <QTime>
 
-class ImageButton;
-
-class WeatherNowWidget : public QFrame
-{
+class TranslucentLabel : public QLabel {
     Q_OBJECT
 public:
-    explicit WeatherNowWidget(QWidget *parent = 0);
-    ~ WeatherNowWidget();
+    explicit TranslucentLabel(bool showTip = false, QWidget *parent = 0);
 
-    void refreshNowWeatherData();
+    void setLabelIcon(const QString &iconPath);
+    void setLabelText(const QString &text);
 
 signals:
-    void locationBtnClicked();
+    void clicked();
 
 protected:
-    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
-    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+//    virtual void focusInEvent(QFocusEvent *event) Q_DECL_OVERRIDE;
+//    virtual void focusOutEvent(QFocusEvent *event) Q_DECL_OVERRIDE;
+    virtual void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
 private:
-    ImageButton *m_locationBtn = nullptr;
-    QTimer *m_refreshTimer = nullptr;
-    QTime m_time;
-    int m_timeInterval;
-};
+    bool eventFilter(QObject *obj, QEvent *event) Q_DECL_OVERRIDE;
+    //bool event(QEvent *event) Q_DECL_OVERRIDE;
 
-#endif // WEATHER_NOW_WIDGET_H
+private:
+    QLabel *m_icon = nullptr;
+    QLabel *m_text = nullptr;
+    bool m_showTip;
+};
+#endif // TRANLUCENTLABEL_H

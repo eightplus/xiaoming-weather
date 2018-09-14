@@ -21,3 +21,10 @@ ImageButton#NextCityBtn
     qproperty-hoverPic: url(:/res/next_button_hover_press.png);
     qproperty-pressPic: url(:/res/next_button_hover_press.png);
 }
+
+ImageButton#LocationBtn
+{
+    qproperty-normalPic: url(:/res/location_normal.png);
+    qproperty-hoverPic: url(:/res/location_hover_press.png);
+    qproperty-pressPic: url(:/res/location_hover_press.png);
+}

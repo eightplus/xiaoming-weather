@@ -24,6 +24,13 @@
 #include <QVBoxLayout>
 #include <QLabel>
 
+#include "data.h"
+
+class ForecastItemWidget;
+class TranslucentLabel;
+
+class QSplitter;
+
 class WeatherForecastWidget : public QFrame
 {
     Q_OBJECT
@@ -31,9 +38,22 @@ public:
     explicit WeatherForecastWidget(QWidget *parent = 0);
     ~ WeatherForecastWidget();
 
+    void initTopWidget();
+    void initBottomWidget();
+    void paintTemperatureCurve();
+    void onDataChanged();
+
+protected:
+    bool eventFilter(QObject *watched, QEvent *event);
+//    void paintEvent(QPaintEvent *event);
+
 private:
-    QVBoxLayout *m_layout = nullptr;
-    QLabel *m_label = nullptr;
+    QSplitter *main_splitter = nullptr;
+    QWidget *m_topWidget;
+    QWidget *m_bottomWidget;
+    QList<ForecastItemWidget *> button_list;
+    QLabel *m_temperatureCurveLabel;
+    Forecast forecast[6];
 };
 
 #endif // WEATHER_FORECAST_WIDGET_H

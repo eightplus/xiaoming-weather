@@ -17,38 +17,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WEATHER_NOW_WIDGET_H
-#define WEATHER_NOW_WIDGET_H
+#ifndef LOCATION_WIDGET_H
+#define LOCATION_WIDGET_H
 
-#include <QFrame>
+#include <QWidget>
 #include <QVBoxLayout>
 #include <QLabel>
-#include <QTimer>
-#include <QTime>
 
-class ImageButton;
-
-class WeatherNowWidget : public QFrame
+class LocationWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit WeatherNowWidget(QWidget *parent = 0);
-    ~ WeatherNowWidget();
-
-    void refreshNowWeatherData();
-
-signals:
-    void locationBtnClicked();
-
-protected:
-    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
-    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    explicit LocationWidget(QWidget *parent = 0);
+    ~ LocationWidget();
 
 private:
-    ImageButton *m_locationBtn = nullptr;
-    QTimer *m_refreshTimer = nullptr;
-    QTime m_time;
-    int m_timeInterval;
+    QVBoxLayout *m_layout = nullptr;
+    QLabel *m_label = nullptr;
 };
 
-#endif // WEATHER_NOW_WIDGET_H
+#endif // LOCATION_WIDGET_H

@@ -17,38 +17,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WEATHER_NOW_WIDGET_H
-#define WEATHER_NOW_WIDGET_H
+#ifndef CATEGORYBUTTON_H
+#define CATEGORYBUTTON_H
 
-#include <QFrame>
-#include <QVBoxLayout>
+#include <QWidget>
 #include <QLabel>
-#include <QTimer>
-#include <QTime>
+#include <QHBoxLayout>
+#include <QMouseEvent>
 
-class ImageButton;
-
-class WeatherNowWidget : public QFrame
+class CategoryButton : public QWidget
 {
     Q_OBJECT
+
 public:
-    explicit WeatherNowWidget(QWidget *parent = 0);
-    ~ WeatherNowWidget();
+    explicit CategoryButton(QWidget *parent = 0);
+    ~CategoryButton();
 
-    void refreshNowWeatherData();
+    void setIconAndText(const QPixmap &pixmap, const QString &txt);
 
-signals:
-    void locationBtnClicked();
+    void setMouseEnterPress(bool);
+    bool getMouseEnterPress() { return m_mouseEnterPress; }
 
 protected:
+    void enterEvent(QEvent *event) Q_DECL_OVERRIDE;
+    void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
+    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
-    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+
+signals:
+    void requestChangeButtonStatus(CategoryButton *btn);
 
 private:
-    ImageButton *m_locationBtn = nullptr;
-    QTimer *m_refreshTimer = nullptr;
-    QTime m_time;
-    int m_timeInterval;
+    bool m_mouseEnterPress;
+    QHBoxLayout *m_hLayout = nullptr;
+    QLabel *m_icon = nullptr;
+    QLabel *m_text = nullptr;
 };
 
-#endif // WEATHER_NOW_WIDGET_H
+#endif //CATEGORYBUTTON_H

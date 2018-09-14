@@ -21,10 +21,17 @@
 #define WEATHER_NOW_CATEGORY_WIDGET_H
 
 #include <QFrame>
-#include <QVBoxLayout>
-#include <QLabel>
+
+#include "data.h"
 
 class QStackedLayout;
+class CategoryButton;
+class QLabel;
+class QGridLayout;
+class IndexItemWidget;
+class TextTip;
+class TipModule;
+class QPropertyAnimation;
 
 class WeatherNowCategoryWidget : public QFrame
 {
@@ -33,13 +40,45 @@ public:
     explicit WeatherNowCategoryWidget(QWidget *parent = 0);
     ~ WeatherNowCategoryWidget();
 
-    void addCategory(QWidget * const w);
+    void paintTemperatureCurve();
+    void initIndexWidget();
+    void refershLifeIndexGridLayout();
+
+    void setDayStyleSheets();
+    void setNightStyleSheets();
+
+    void refreshLifestyleData(const LifeStyle &data);
+    TextTip *setTipWidget(QWidget *w, const QString &txt);
+
+public slots:
+    void changeCurrentPage(CategoryButton *btn);
+    void showLifeStyleIndex(const QString &name);
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) Q_DECL_OVERRIDE;
+    void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+//    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
 
 private:
-    QVBoxLayout *m_layout = nullptr;
-    QLabel *m_label = nullptr;
+    QStackedLayout *m_stackedLayout = nullptr;
+    QStringList m_btnTextLists;
+    QLabel *m_temperatureCurveLabel = nullptr;
+    QWidget *m_lifestyleWidget = nullptr;
+    QGridLayout *m_indexGridLayout = nullptr;
 
-    QStackedLayout *m_categoryLayout = nullptr;
+    QLabel *m_label2 = nullptr;
+    QLabel *m_label3 = nullptr;
+    QWidget *m_btnsWidget = nullptr;
+    CategoryButton *m_btnArray[4];
+    QList<IndexItemWidget *> m_lifeItems;
+    QStringList m_lifeIndexList;
+    QStringList m_lifeIndexIconList;
+
+    //QPropertyAnimation *m_tempAnimation = nullptr;
+    Forecast forecast[8];
+
+    QList<TextTip *> m_tips;
+    TipModule *m_tipModule = nullptr;
 };
 
 #endif // WEATHER_NOW_CATEGORY_WIDGET_H

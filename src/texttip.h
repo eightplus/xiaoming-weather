@@ -17,38 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WEATHER_NOW_WIDGET_H
-#define WEATHER_NOW_WIDGET_H
+#ifndef TEXTTIP_H
+#define TEXTTIP_H
 
 #include <QFrame>
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QTimer>
-#include <QTime>
 
-class ImageButton;
+class QLabel;
 
-class WeatherNowWidget : public QFrame
+class TextTip : public QFrame
 {
     Q_OBJECT
 public:
-    explicit WeatherNowWidget(QWidget *parent = 0);
-    ~ WeatherNowWidget();
+    explicit TextTip(const QString &txt, QWidget *parent = 0);
+    ~TextTip();
 
-    void refreshNowWeatherData();
-
-signals:
-    void locationBtnClicked();
+    void resetTipText(const QString &txt);
 
 protected:
-    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
-    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    virtual void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
 private:
-    ImageButton *m_locationBtn = nullptr;
-    QTimer *m_refreshTimer = nullptr;
-    QTime m_time;
-    int m_timeInterval;
+    int m_radius;
+    QBrush m_background;
+    QColor m_borderColor;
+    QLabel *m_textLabel = nullptr;
+    QFrame *m_frame = nullptr;
 };
 
-#endif // WEATHER_NOW_WIDGET_H
+#endif // TEXTTIP_H

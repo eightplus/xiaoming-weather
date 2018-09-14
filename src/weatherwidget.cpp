@@ -36,14 +36,6 @@ WeatherWidget::WeatherWidget(QWidget *parent)
     m_layout->setContentsMargins(0, 0, 0, 0);
     m_layout->setSpacing(1);
 
-//    m_label = new QLabel;
-//    m_label->setFixedWidth(300);
-//    m_label->setText(tr("Weather Page"));
-//    m_label->setAlignment(Qt::AlignCenter/* | Qt::AlignTop*/);
-//    m_label->setStyleSheet("QLabel{border-radius: 0px; color:rgb(250, 250, 250); background-color:argb(60, 60, 60, 130);}");
-
-//    m_layout->addWidget(m_label, 0, Qt::AlignHCenter);
-
     m_nowWidget = new WeatherNowWidget(this);
     m_nowWidget->setFixedSize(300, 340);
     m_forecastWidget = new WeatherForecastWidget(this);
@@ -64,13 +56,39 @@ WeatherWidget::WeatherWidget(QWidget *parent)
     m_layout->addWidget(m_nowCategoryWidget);
     m_layout->addWidget(m_navigationWidget/*, 0, Qt::AlignBottom*/);
 
-
     connect(m_navigationWidget, &NavigationWidget::requestNextCity, this, [=] {
         //TODO:刷新城市天气信息 & 设置所有页面模块的数据
+        m_nowWidget->refreshNowWeatherData();
     });
     connect(m_navigationWidget, &NavigationWidget::requestPrevCity, this, [=] {
         //TODO:刷新城市天气信息 & 设置所有页面模块的数据
+        m_nowWidget->refreshNowWeatherData();
     });
+
+    connect(m_nowWidget, &WeatherNowWidget::locationBtnClicked, this, &WeatherWidget::locationBtnClicked);
+
+    m_nowWidget->refreshNowWeatherData();
+
+
+    //TODO: test data
+    LifeStyle lifeData;
+    lifeData.air_brf = "111";
+    lifeData.air_txt = "ABDCFET#EGEWHEGEAG";
+    lifeData.comf_brf = "111";
+    lifeData.comf_txt = "ABDCFET#EGEWHEGEAG";
+    lifeData.cw_brf = "111";
+    lifeData.cw_txt = "ABDCFET#EGEWHEGEAG";
+    lifeData.drsg_brf = "111";
+    lifeData.drsg_txt = "ABDCFET#EGEWHEGEAG";
+    lifeData.flu_brf = "111";
+    lifeData.flu_txt = "ABDCFET#EGEWHEGEAG";
+    lifeData.sport_brf = "111";
+    lifeData.sport_txt = "ABDCFET#EGEWHEGEAG";
+    lifeData.trav_brf = "111";
+    lifeData.trav_txt = "ABDCFET#EGEWHEGEAG";
+    lifeData.uv_brf = "111";
+    lifeData.uv_txt = "ABDCFET#EGEWHEGEAG";
+    m_nowCategoryWidget->refreshLifestyleData(lifeData);
 }
 
 WeatherWidget::~WeatherWidget()

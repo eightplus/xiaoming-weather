@@ -24,6 +24,7 @@
 
 class TitleBar;
 class WeatherWidget;
+class LocationWidget;
 class QVBoxLayout;
 
 class BackgroundWidget;
@@ -49,6 +50,7 @@ private:
     QWidget *m_centerWidget = nullptr;
     TitleBar *m_titleBar = nullptr;
     WeatherWidget *m_weatherWidget = nullptr;
+    LocationWidget *m_locationWidget = nullptr;
     QVBoxLayout *m_layout = nullptr;
     BackgroundWidget *m_backgroundWidget = nullptr;
     bool m_isNight;

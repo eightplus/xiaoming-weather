@@ -36,6 +36,9 @@ public:
     explicit WeatherWidget(QWidget *parent = 0);
     ~ WeatherWidget();
 
+signals:
+    void locationBtnClicked();
+
 private:
     QVBoxLayout *m_layout = nullptr;
 //    QLabel *m_label = nullptr;

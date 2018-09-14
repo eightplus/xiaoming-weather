@@ -21,6 +21,20 @@
         <file>res/next_button_normal.png</file>
         <file>res/prev_button_hover_press.png</file>
         <file>res/prev_button_normal.png</file>
+        <file>res/location_normal.png</file>
+        <file>res/location_hover_press.png</file>
+        <file>res/aqi.png</file>
+        <file>res/101.png</file>
+        <file>res/delete_normal.png</file>
+        <file>res/delete_hover_press.png</file>
+        <file>res/lifestyle/air_index.png</file>
+        <file>res/lifestyle/cash_wash_index.png</file>
+        <file>res/lifestyle/clothe_index.png</file>
+        <file>res/lifestyle/comf_index.png</file>
+        <file>res/lifestyle/flu_index.png</file>
+        <file>res/lifestyle/sport_index.png</file>
+        <file>res/lifestyle/trav_index.png</file>
+        <file>res/lifestyle/ultraviolet_rays_index.png</file>
     </qresource>
     <qresource prefix="/qss">
         <file>res/weather.qss</file>
