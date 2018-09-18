@@ -23,3 +23,9 @@ https://github.com/eightplus/xiaoming-weather
 ### Json API
 
 https://www.sojson.com/open/api/weather/json.shtml?city=长沙
+
+https://free-api.heweather.com/s6/weather/hourly?location=CN101250101&key=40cc3ec6bbbf4de6a04029e207c986fd
+
+### 
+
+https://www.easyicon.net/

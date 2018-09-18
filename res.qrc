@@ -35,6 +35,7 @@
         <file>res/lifestyle/sport_index.png</file>
         <file>res/lifestyle/trav_index.png</file>
         <file>res/lifestyle/ultraviolet_rays_index.png</file>
+        <file>res/wind.png</file>
     </qresource>
     <qresource prefix="/qss">
         <file>res/weather.qss</file>

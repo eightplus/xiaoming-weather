@@ -29,12 +29,8 @@
 #include <QSplitter>
 #include <QGridLayout>
 
-static const int CurrentItemWidth = 100;
-static const int ForecastItemWidth = 100;
-static const int ItemSpacing = 1;
 static const int CycleDotSize = 3;
 static const int TemperatureStartXPos = 40;
-
 
 WeatherForecastWidget::WeatherForecastWidget(QWidget *parent)
     : QFrame(parent)
@@ -154,13 +150,9 @@ void WeatherForecastWidget::paintTemperatureCurve()
     for (int i = 0; i < 3; i++) {
         highTemp[i] = forecast[i].high.toInt();
         tempTotal += highTemp[i];
-//        qDebug() << "highTemp[i]=" << highTemp[i];
-
         lowTemp[i] = forecast[i].low.toInt();
-//        qDebug() << "lowTemp[i]=" << lowTemp[i];
     }
     int tempAverage = (int)(tempTotal / 3);//最高温的平均值
-//    qDebug() << "tempAverage=" << tempAverage;
 
     int pointX[3] = {51, 151, 251};//X
     int pointHY[3] = {0};
