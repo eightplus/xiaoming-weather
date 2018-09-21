@@ -17,28 +17,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WEATHER_FORECAST_WIDGET_H
-#define WEATHER_FORECAST_WIDGET_H
+#ifndef ACTIVEBUTTON_H
+#define ACTIVEBUTTON_H
 
 #include <QFrame>
+#include <QPushButton>
+#include <QLabel>
+#include <QVBoxLayout>
 
-#include "data.h"
-
-class ForecastItemWidget;
-
-class WeatherForecastWidget : public QFrame
+class ActiveButton : public QFrame
 {
     Q_OBJECT
-public:
-    explicit WeatherForecastWidget(QWidget *parent = 0);
-    ~ WeatherForecastWidget();
 
-    //void onDataChanged();
+public:
+    explicit ActiveButton(const QString &text, QWidget *parent = 0);
+    ~ActiveButton();
+
+    void setActive(bool active);
+
+signals:
+    void btnClicked();
 
 private:
-    QWidget *m_displayWidget = nullptr;
-    QList<ForecastItemWidget *> m_items;
-    Forecast forecast[6];
+    QPushButton *m_btn = nullptr;
+    QLabel *m_label = nullptr;
+    QVBoxLayout *m_layout = nullptr;
+    bool m_isActive = false;
 };
 
-#endif // WEATHER_FORECAST_WIDGET_H
+#endif // ACTIVEBUTTON_H

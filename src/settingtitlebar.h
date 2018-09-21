@@ -17,43 +17,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TITLEBAR_H
-#define TITLEBAR_H
+#ifndef SETTINGTITLEBAR_H
+#define SETTINGTITLEBAR_H
 
-#include <QFrame>
 #include <QWidget>
-#include <QMouseEvent>
+#include <QLabel>
+#include <QPushButton>
+#include <QHBoxLayout>
 
-class QHBoxLayout;
-class QMenu;
+class ToolButton;
 
-class TitleBar : public QFrame
+class SettingTitleBar : public QWidget
 {
     Q_OBJECT
 public:
-    explicit TitleBar(QWidget *parent);
-    ~TitleBar();
+    explicit SettingTitleBar(QWidget *parent = 0);
+    ~SettingTitleBar();
 
     void initLeftContent();
     void initMiddleContent();
     void initRightContent();
+    void initBottomContent();
     void initWidgets();
-    void initMenu();
 
 public slots:
-    void onSwitch();
-    void onAbout();
+    void showWarnInfo(const QString &info);
 
 signals:
-    void switchDayOrNight();
-    void requestDisplayAboutDialog();
+    void requestCloseDialog();
+    void requestSwitchPage(bool is_isFirs);
+
+protected:
+    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
 private:
-    QHBoxLayout *m_layout = nullptr;
+    QVBoxLayout *m_layout = nullptr;
+    QHBoxLayout *m_toplayout = nullptr;
     QHBoxLayout *m_lLayout = nullptr;
     QHBoxLayout *m_mLayout = nullptr;
     QHBoxLayout *m_rLayout = nullptr;
-    QMenu *m_menu = nullptr;
+    QHBoxLayout *m_bLayout = nullptr;
+    ToolButton *m_closeBtn = nullptr;
+    QLabel *m_tipLabel = nullptr;
+    QTimer *m_timer = nullptr;
+    QColor m_borderColor;
+    int m_borderRadius;
+    int m_borderWidth;
+    QBrush m_bgBrush;
 };
 
-#endif // TITLEBAR_H
+#endif // SETTINGTITLEBAR_H

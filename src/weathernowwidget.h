@@ -26,6 +26,7 @@
 #include <QTimer>
 #include <QTime>
 
+class AqiToolTip;
 class ImageButton;
 
 class WeatherNowWidget : public QFrame
@@ -43,8 +44,10 @@ signals:
 protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    bool eventFilter(QObject *obj, QEvent *event) Q_DECL_OVERRIDE;
 
 private:
+    AqiToolTip *m_aqiToolTip = nullptr;
     ImageButton *m_locationBtn = nullptr;
     QTimer *m_refreshTimer = nullptr;
     QTime m_time;

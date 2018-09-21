@@ -17,28 +17,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WEATHER_FORECAST_WIDGET_H
-#define WEATHER_FORECAST_WIDGET_H
+#ifndef CITYWIDGET_H
+#define CITYWIDGET_H
 
 #include <QFrame>
+#include <QLabel>
 
 #include "data.h"
+#include "cityview.h"
+#include "citymodel.h"
+#include "citydelegate.h"
 
-class ForecastItemWidget;
-
-class WeatherForecastWidget : public QFrame
+class CityWidget : public QFrame
 {
     Q_OBJECT
-public:
-    explicit WeatherForecastWidget(QWidget *parent = 0);
-    ~ WeatherForecastWidget();
 
-    //void onDataChanged();
+public:
+    explicit CityWidget(QWidget *parent = 0);
+    ~CityWidget();
+
+public slots:
+    void onCityListStateChanged(bool isEmpty);
+    void onCityLIstDataChanged();
 
 private:
-    QWidget *m_displayWidget = nullptr;
-    QList<ForecastItemWidget *> m_items;
-    Forecast forecast[6];
+    CityView *m_cityView = nullptr;
+    CityModel *m_cityModel = nullptr;
+    CityDelegate *m_cityDelegate = nullptr;
+    QLabel *m_noResultLabel = nullptr;
 };
 
-#endif // WEATHER_FORECAST_WIDGET_H
+#endif // CITYWIDGET_H

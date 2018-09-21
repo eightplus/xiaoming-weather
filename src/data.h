@@ -62,7 +62,26 @@ struct ForecastWeather
     QString tmp_min;//最低温度 	-5
 };
 
+class CitySettingData
+{
+public:
+    bool active;
+
+    QString id;
+    QString name;
+    QString temperature;
+    QString icon;
+
+public:
+    void setActive(bool b) { active = b; }
+};
+
+inline bool operator ==(const CitySettingData &data, const CitySettingData &other) {
+    return data.id == other.id;
+}
+
 Q_DECLARE_METATYPE(LifeStyle)
 Q_DECLARE_METATYPE(ForecastWeather)
+Q_DECLARE_METATYPE(CitySettingData)
 
 #endif // DATA_H

@@ -19,6 +19,7 @@
 
 #include "weathernowwidget.h"
 #include "imagebutton.h"
+#include "aqitooltip.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -41,7 +42,11 @@ WeatherNowWidget::WeatherNowWidget(QWidget *parent)
     , m_refreshTimer(new QTimer(this))
 {
     this->setMouseTracking(true);
+    this->setAttribute(Qt::WA_Hover, true);
     this->setStyleSheet("QFrame{border-radius: 5px; color:rgb(250, 250, 250); background-color:argb(60, 60, 60, 130);}");
+    this->installEventFilter(this);
+
+    m_aqiToolTip = new AqiToolTip();
 
     m_locationBtn = new ImageButton(this);
     m_locationBtn->setFixedSize(locationIconSize, locationIconSize);
@@ -94,6 +99,38 @@ void WeatherNowWidget::mouseMoveEvent(QMouseEvent *event)
     m_locationBtn->setVisible(show);
 
     this->update();
+}
+
+bool WeatherNowWidget::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::Enter) {
+        //m_aqiToolTip->popupTip(QCursor::pos());
+        QPoint mousePos = mapToParent(mapFromGlobal(QCursor::pos()));
+        QRect eignoreDateRect(0 ,0, this->width(), dateLineHeight);
+        if (!eignoreDateRect.contains(mousePos)) {
+            m_aqiToolTip->popupTip(this->mapToGlobal(QPoint(this->rect().width(), this->rect().y())));
+        }
+        //qDebug() << "mousePos=" << mousePos << eignoreDateRect;
+    }
+    else if (event->type() == QEvent::Leave || event->type() == QEvent::HoverLeave) {
+        if (m_aqiToolTip->isVisible())
+            m_aqiToolTip->hide();
+    }
+    /*else if (event->type() == QEvent::HoverEnter) {
+        if (!m_aqiToolTip->isVisible()) {
+            QPoint mousePos = mapToParent(mapFromGlobal(QCursor::pos()));
+            QRect eignoreDateRect(0 ,0, this->width(), dateLineHeight);
+            if (!eignoreDateRect.contains(mousePos)) {
+                m_aqiToolTip->popupTip(this->mapToGlobal(QPoint(this->rect().width(), this->rect().y())));
+            }
+        }
+    }*/
+    else if (event->type() == QEvent::MouseButtonPress) {
+        if (m_aqiToolTip->isVisible())
+            m_aqiToolTip->hide();
+    }
+
+    return QWidget::eventFilter(obj,event);
 }
 
 void WeatherNowWidget::paintEvent(QPaintEvent *event)
@@ -158,7 +195,15 @@ void WeatherNowWidget::paintEvent(QPaintEvent *event)
     QRect windRect(0, tempRect.bottom(), width(), itemHeight);
     painter.drawText(windRect, Qt::AlignCenter, "东北风微风");
 
-    QRect aqiRect(0, windRect.bottom(), width(), itemHeight);
+    QRect aqiRect(width()/2 - 40, windRect.bottom(), 40*2, itemHeight);
+    QMarginsF shadowMargins = QMarginsF(2.0, 2.0, 2.0, 2.0);
+    QRectF bgRect = QRectF(aqiRect).marginsRemoved(shadowMargins);
+    QPainterPath aqiPath;
+    aqiPath.addRoundedRect(bgRect, 5, 5);
+    painter.fillPath(aqiPath, QBrush(QColor(0,0,0,120)));
+    QPixmap pixmap = QPixmap(":/res/aqi.png");
+    QRect aqiIconRect(aqiRect.x() + 5, aqiRect.center().y() -pixmap.height()/2, pixmap.width(), pixmap.height());
+    painter.drawPixmap(aqiIconRect, pixmap);
     painter.drawText(aqiRect, Qt::AlignCenter, "70 良");
 
     if (!m_locationBtn->isVisible()) {

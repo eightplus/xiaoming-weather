@@ -17,39 +17,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TEXTTIP_H
-#define TEXTTIP_H
+#ifndef WIND_TOOLTIP_H
+#define WIND_TOOLTIP_H
 
-#include <QFrame>
+#include <QLabel>
 
-class QLabel;
-
-class TextTip : public QFrame
+class WindTooltip : public QLabel
 {
-    Q_OBJECT
 
-    enum TrianglePostion {TopLeft, TopMiddle, TopRight, BottomLeft, BottomMiddle, BottomRight};
+    Q_OBJECT
+    enum TrianglePostion {TopMiddle, BottomMiddle};
 
 public:
-    explicit TextTip(const QString &txt, QWidget *parent = 0);
-    explicit TextTip(const QString &title, const QString &desc, QWidget *parent = 0);
-    ~TextTip();
+    explicit WindTooltip(QWidget *parent = 0);
+    ~WindTooltip();
 
-    void resetTipText(const QString &txt);
     void resetTipText(const QString &title, const QString &desc);
+    void setTrianglePosition(TrianglePostion position);
+
+public slots:
+    void popupTip(const QPoint &point);
 
 protected:
-    virtual void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
 private:
+    QString m_text;
+    QString m_desc;
     TrianglePostion m_trianglePostion;
-    int m_radius;
-    QBrush m_background;
-    QColor m_borderColor;
-    QLabel *m_textLabel = nullptr;
-    QLabel *m_descLabel = nullptr;
-    QFrame *m_frame = nullptr;
-
+    int m_borderRadius;
 };
 
-#endif // TEXTTIP_H
+#endif // WIND_TOOLTIP_H

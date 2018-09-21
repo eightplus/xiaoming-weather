@@ -1,24 +1,4 @@
-/*
- * Copyright (C) 2018 kobe24_lixiang@126.com
- *
- * Authors:
- *  lixiang    kobe24_lixiang@126.com
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 3.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 #include "forecastitemwidget.h"
-//#include "tooltip.h"
 
 #include <QDebug>
 #include <QEvent>
@@ -70,9 +50,7 @@ inline QString covertDateToWeek(QString dateStr)
 
 ForecastItemWidget::ForecastItemWidget(QWidget *parent) :
     QWidget(parent)
-    , m_mouseHover(false)
-    , m_radius(1)
-    , m_borderColor(QColor(224,224,224,130))
+    , m_isHover(false)
 {
     this->setFixedSize(100, 140);//140:initForecastWidget's height - 2*space = 160- 10*2
     this->setStyleSheet("QWidget{border-radius: 0px;color:rgb(250,250,250);background-color:rgba(0,0,0,0.2)}");
@@ -95,8 +73,7 @@ ForecastItemWidget::ForecastItemWidget(QWidget *parent) :
     m_layout->addWidget(m_iconLabel, 0, Qt::AlignHCenter);
     m_layout->addWidget(m_tempLabel, 0, Qt::AlignBottom | Qt::AlignHCenter);
 
-//    m_toolTip = new ToolTip();
-
+    this->setDayStyleSheets();
     this->setDefaultData();
 }
 
@@ -124,8 +101,6 @@ void ForecastItemWidget::resetForecastData(const ForecastWeather &data, int inde
     pixmap = pixmap.scaled(48, 48, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     m_iconLabel->setPixmap(pixmap);
     m_tempLabel->setText(QString("%1°C~%2°C").arg(data.tmp_min).arg(data.tmp_max));
-
-//    m_toolTip->resetData(data, m_weekLabel->text());
 }
 
 void ForecastItemWidget::setDayStyleSheets()
@@ -155,13 +130,14 @@ void ForecastItemWidget::setTextData()
 
 void ForecastItemWidget::setDefaultData()
 {
-    m_weekLabel->setText("-");
-    m_dateLabel->setText("-");
-    m_weatherLabel->setText("-");
+    m_weekLabel->setText("今天");
+    m_dateLabel->setText("20180919");
+    m_weatherLabel->setText("晴");
     QPixmap pixmap = QPixmap(":/res/101.png");
     pixmap = pixmap.scaled(48, 48, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     m_iconLabel->setPixmap(pixmap);
-    m_tempLabel->setText("-°C");
+//    m_tempLabel->setText("-°C");
+    m_tempLabel->setText("27°C");
 }
 
 void ForecastItemWidget::setLabelText(const QString &name, const QString &desc)
@@ -179,49 +155,37 @@ void ForecastItemWidget::setLabelText(const QString &name, const QString &desc)
 bool ForecastItemWidget::event(QEvent *event)
 {
 //    if (event->type() == QEvent::ToolTip) {
-//        m_toolTip->popupTip(QCursor::pos());
 //    }
 //    else if (event->type() == QEvent::Leave) {
-//        m_toolTip->hide();
 //    }
+    if (event->type() == QEvent::Enter) {
+        m_isHover = true;
+    }
+    else if (event->type() == QEvent::Leave) {
+        m_isHover = false;
+    }
 
     return QWidget::event(event);
 }
 
-void ForecastItemWidget::enterEvent(QEvent *event)
+
+void ForecastItemWidget::paintEvent(QPaintEvent *event)
 {
-    QWidget::enterEvent(event);
-
-    this->m_mouseHover = true;
-
-    update();
-}
-
-void ForecastItemWidget::leaveEvent(QEvent *event)
-{
-    QWidget::leaveEvent(event);
-
-    this->m_mouseHover = false;
-
-    update();
-}
-
-void ForecastItemWidget::paintEvent(QPaintEvent *e)
-{
-    QWidget::paintEvent(e);
-
-    // draw background
     QPainter painter(this);
-    painter.fillRect(rect(), QColor(0, 0, 0, m_mouseHover ? 20 : 0));
 
-    // draw border
-    if (m_mouseHover) {
-        QRect borderRect;
-        borderRect.setRect(this->rect().x(), this->rect().y(), this->rect().width() - 1, this->rect().height() - 1);
-        QPainterPath outBorderPath;
-        outBorderPath.addRoundedRect(borderRect, m_radius, m_radius);
-        QPen pen(m_borderColor, 1);
+    if (m_isHover) {
+        QPen pen(Qt::NoBrush, 1);
         painter.setPen(pen);
-        painter.drawPath(outBorderPath);
+
+        QLinearGradient lineargradient(this->rect().topLeft(), this->rect().bottomLeft());
+        //lineargradient.setColorAt(0, QColor(255, 255, 255, 40));
+        lineargradient.setColorAt(0, QColor(230, 230, 230, 150));
+        lineargradient.setColorAt(0.5, QColor(230, 230, 230, 100));
+        lineargradient.setColorAt(1, QColor(230, 230, 230, 0));
+        QBrush brush(lineargradient);
+        painter.setBrush(brush);//painter.setBrush(lineargradient);
+        painter.drawRect(rect());//painter.drawRoundedRect(this->rect(), 1, 1);
     }
+
+    QWidget::paintEvent(event);
 }

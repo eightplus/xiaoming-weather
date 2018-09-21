@@ -147,5 +147,5 @@ void TitleBar::onSwitch()
 
 void TitleBar::onAbout()
 {
-
+    emit this->requestDisplayAboutDialog();
 }

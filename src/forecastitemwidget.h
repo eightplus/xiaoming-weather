@@ -1,8 +1,8 @@
 /*
- * Copyright (C) 2018 kobe24_lixiang@126.com
+ * Copyright (C) 2013 ~ 2018 National University of Defense Technology(NUDT) & Tianjin Kylin Ltd.
  *
  * Authors:
- *  lixiang    kobe24_lixiang@126.com
+ *  Kobe Lee    lixiang@kylinos.cn/kobe24_lixiang@126.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,8 +28,6 @@
 
 #include "data.h"
 
-class ToolTip;
-
 class ForecastItemWidget : public QWidget
 {
     Q_OBJECT
@@ -45,22 +43,17 @@ public:
     void setNightStyleSheets();
 
 protected:
-    bool event(QEvent *event) Q_DECL_OVERRIDE;
-    void enterEvent(QEvent *event) Q_DECL_OVERRIDE;
-    void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
+    bool event(QEvent *event);
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
 private:
-    bool m_mouseHover;
-    int m_radius;
-    QColor m_borderColor;
+    bool m_isHover;
     QLabel *m_weekLabel = nullptr;
     QLabel *m_dateLabel = nullptr;
     QLabel *m_weatherLabel = nullptr;
     QLabel *m_iconLabel = nullptr;
     QLabel *m_tempLabel = nullptr;
     QVBoxLayout *m_layout = nullptr;
-//    ToolTip *m_toolTip = nullptr;
     bool m_isDayOrNight;
 };
 

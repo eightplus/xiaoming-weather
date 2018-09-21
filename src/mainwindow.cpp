@@ -22,6 +22,7 @@
 #include "weatherwidget.h"
 #include "locationwidget.h"
 #include "backgroundwidget.h"
+#include "settingdialog.h"
 #include "utils.h"
 
 #include <QApplication>
@@ -83,13 +84,17 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->setCentralWidget(m_centerWidget);
 
+    this->createSettingDialog();
+
     this->moveCenter();
 
     connect(m_titleBar, &TitleBar::switchDayOrNight, this, [=] {
         m_isNight = !m_isNight;
         m_backgroundWidget->setForNight(m_isNight);
     });
-
+    connect(m_titleBar, &TitleBar::requestDisplayAboutDialog, this, [=] {
+        this->showSettingDialog();
+    });
     connect(m_weatherWidget, &WeatherWidget::locationBtnClicked, this, [this, m_stackedLayout] {
         //TODO:弹出设置城市界面，城市设置完毕后，刷新城市天气信息 & 设置所有页面模块的数据
         m_stackedLayout->setCurrentWidget(m_locationWidget);
@@ -108,6 +113,52 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
 
+}
+
+
+void MainWindow::showSettingDialog()
+{
+    m_setttingDialog->move((width() - m_setttingDialog->width()) / 2 + mapToGlobal(QPoint(0, 0)).x(),
+                               (window()->height() - m_setttingDialog->height()) / 2 + mapToGlobal(QPoint(0, 0)).y());
+    m_setttingDialog->show();
+}
+
+void MainWindow::createSettingDialog()
+{
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    m_setttingDialog = new SettingDialog;
+    m_setttingDialog->setModal(false);
+//    connect(m_setttingDialog, SIGNAL(applied()), this, SLOT(applySettings()));
+//    connect(m_setttingDialog, &SettingDialog::requestRefreshCityMenu, this, [this] (bool removedDefault) {
+//        this->refreshCityActions();
+
+//        if (removedDefault) {//刪除了默认城市后，重新设置了列表中第一个城市为默认城市后，从服务端获取该城市的天气
+//            this->startGetWeather();
+//        }
+//    });
+//    connect(m_setttingDialog, &SettingDialog::requestRefreshWeatherById, this, [this] (const QString &id) {
+//        m_preferences->resetCurrentCityNameById(id);
+//        this->refreshCityActions();
+//        this->startGetWeather();
+//    });
+//    connect(m_setttingDialog, &SettingDialog::requestChangeOpacity, this, [this] (int opcatity) {
+//        double value = opcatity*0.01;
+//        if (value < 0.6) {
+//            value = 0.60;
+//            m_preferences->m_opacity = 60;
+//        }
+//        this->setOpacity(value);
+//    });
+
+
+
+    /*connect(m_setttingDialog, &SettingDialog::requestSetDefaultCity, this, [=] {
+        m_preferences->setDefaultCity();
+        m_setttingDialog->refreshCityList(m_preferences->m_currentCityId);
+        this->startGetWeather();
+    });*/
+
+    QApplication::restoreOverrideCursor();
 }
 
 void MainWindow::moveCenter()

@@ -22,6 +22,7 @@
 #include "indexitemwidget.h"
 #include "texttip.h"
 #include "tipmodule.h"
+#include "windtooltip.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -38,11 +39,11 @@ QPoint QCursor::pos()[static];//返回相对显示器的全局坐标
 QPoint QMouseEvent::pos();//返回相对这个widget的位置
 QPoint QWidget::pos();//这个属性获得的是当前目前控件在父窗口中的位置
 const QPointF &QMouseEvent::screenPos()const;//和QPoint QMouseEvent::globalPos() 值相同，但是类型更高精度的QPointF
-QPoint QWidget::mapToGlobal(constQPoint& pos)const;//将窗口坐标转换成显示器坐标
-QPoint QWidget::mapFromGlobal(constQPoint& pos)const;//将显示器坐标转换成窗口坐标
-QPoint QWidget::mapToParent(constQPoint& pos)const;//将窗口坐标获得的pos转换成父类widget的坐标
-QPoint QWidget::mapFromParent(constQPoint& pos)const;//将父类窗口坐标转换成当前窗口坐标
-QPoint QWidget::mapTo(constQWidget* parent,constQPoint& pos)const;//将当前窗口坐标转换成指定parent坐标
+QPoint QWidget::mapToGlobal(const QPoint& pos)const;//将窗口坐标转换成显示器坐标
+QPoint QWidget::mapFromGlobal(const QPoint& pos)const;//将显示器坐标转换成窗口坐标
+QPoint QWidget::mapToParent(const QPoint& pos)const;//将窗口坐标获得的pos转换成父类widget的坐标
+QPoint QWidget::mapFromParent(const QPoint& pos)const;//将父类窗口坐标转换成当前窗口坐标
+QPoint QWidget::mapTo(const QWidget* parent,const QPoint& pos)const;//将当前窗口坐标转换成指定parent坐标
 Qpoint pt=cursor().pos();//获取当前鼠标位置
 */
 
@@ -66,6 +67,7 @@ WeatherNowCategoryWidget::WeatherNowCategoryWidget(QWidget *parent)
     , m_tipModule(new TipModule)
     , m_tempMouseEnterPress(false)
     , m_windMouseEnterPress(false)
+    , m_popMouseEnterPress(false)
 {
 //    this->setAutoFillBackground(true);
 //    QPalette palette;
@@ -80,11 +82,15 @@ WeatherNowCategoryWidget::WeatherNowCategoryWidget(QWidget *parent)
     m_firstWindX = 51;
     m_windXSpace = 100;
 
+    m_popHoverIndex = -1;
+    m_firstPopX = 51;
+
 //    this->setMouseTracking(true);
 //    this->setAttribute(Qt::WA_Hover, true);
 
     m_tempX = new QList<int>();//int m_tempX[8] = {51, 151, 251, 351, 451, 551, 651, 751};
-    m_windX = new QList<int>();//int m_tempX[8] = {51, 151, 251, 351, 451, 551, 651, 751};
+    m_windX = new QList<int>();//int m_windX[8] = {51, 151, 251, 351, 451, 551, 651, 751};
+    m_popX = new QList<int>();
 
     m_stackedLayout->setMargin(0);
     m_stackedLayout->setSpacing(0);
@@ -95,7 +101,7 @@ WeatherNowCategoryWidget::WeatherNowCategoryWidget(QWidget *parent)
     m_btnTextLists << tr("Temperature") << tr("Wind") << tr("Pop") << tr("Lifestyle");
 
     m_lifeItems.clear();
-    m_tips.clear();
+    m_lifestyleTips.clear();
 
     this->initTemperatureWidget();
     this->initWindWidget();
@@ -164,6 +170,7 @@ WeatherNowCategoryWidget::~WeatherNowCategoryWidget()
 //    delete m_animationGroup;
     delete m_tempX;
     delete m_windX;
+    delete m_popX;
 
     for(int i=0; i<m_lifeItems.count(); i++) {
         IndexItemWidget *item = m_lifeItems.at(i);
@@ -172,12 +179,12 @@ WeatherNowCategoryWidget::~WeatherNowCategoryWidget()
     }
     m_lifeItems.clear();
 
-    for(int i=0; i<m_tips.count(); i++) {
-        TextTip *tip = m_tips.at(i);
+    for(int i=0; i<m_lifestyleTips.count(); i++) {
+        TextTip *tip = m_lifestyleTips.at(i);
         delete tip;
         tip = NULL;
     }
-    m_tips.clear();
+    m_lifestyleTips.clear();
     delete m_tipModule;
 
     QLayoutItem *child;
@@ -220,9 +227,15 @@ void WeatherNowCategoryWidget::changeCurrentPage(CategoryButton *label)
 //            }
         }
     }
+    m_tempMouseEnterPress = false;
+    m_windMouseEnterPress = false;
+    m_popMouseEnterPress = false;
+    if (m_windTip->isVisible()) {
+        m_windTip->setVisible(false);
+    }
 }
 
-void WeatherNowCategoryWidget::calculateHoverIndex(int hoverX)
+void WeatherNowCategoryWidget::calculateTemperatureHoverIndex(int hoverX)
 {
     if (m_tempX->size() < 8) {
         m_tempHoverIndex = -1;
@@ -258,29 +271,163 @@ void WeatherNowCategoryWidget::calculateHoverIndex(int hoverX)
     }
 }
 
+int WeatherNowCategoryWidget::calculateWindHoverIndex(int hoverX)
+{
+    if (m_windX->size() < 8) {
+        m_windHoverIndex = -1;
+        return 0;
+    }
+
+    if (hoverX < m_firstWindX) {
+        m_windHoverIndex = -1;
+        return 0;
+    }
+    if (hoverX <= m_windX->at(0) + m_windXSpace/2) {
+        if (m_windHoverIndex == 0) {
+            return 0;
+        }
+        else {
+            m_windHoverIndex = 0;
+        }
+        return m_windX->at(0);
+    }
+    else if (hoverX <= m_windX->at(1) + m_windXSpace/2) {
+        if (m_windHoverIndex == 1) {// no changes
+            return 0;
+        }
+        else {// have changes
+            m_windHoverIndex = 1;
+        }
+        return m_windX->at(1);
+    }
+    else if (hoverX <= m_windX->at(2) + m_windXSpace/2) {
+        if (m_windHoverIndex == 2) {
+            return 0;
+        }
+        else {
+            m_windHoverIndex = 2;
+        }
+        return m_windX->at(2);
+    }
+    else if (hoverX <= m_windX->at(3) + m_windXSpace/2) {
+        if (m_windHoverIndex == 3) {
+            return 0;
+        }
+        else {
+            m_windHoverIndex = 3;
+        }
+        return m_windX->at(3);
+    }
+    else if (hoverX <= m_windX->at(4) + m_windXSpace/2) {
+        if (m_windHoverIndex == 4) {
+            return 0;
+        }
+        else {
+            m_windHoverIndex = 4;
+        }
+        return m_windX->at(4);
+    }
+    else if (hoverX <= m_windX->at(5) + m_windXSpace/2) {
+        if (m_windHoverIndex == 5) {
+            return 0;
+        }
+        else {
+            m_windHoverIndex = 5;
+        }
+        return m_windX->at(5);
+    }
+    else if (hoverX <= m_windX->at(6) + m_windXSpace/2) {
+        if (m_windHoverIndex == 6) {
+            return 0;
+        }
+        else {
+            m_windHoverIndex = 6;
+        }
+        return m_windX->at(6);
+    }
+    else if (hoverX <= m_windX->at(7) + m_windXSpace/2) {
+        if (m_windHoverIndex == 7) {
+            return 0;
+        }
+        else {
+            m_windHoverIndex = 7;
+        }
+        return m_windX->at(7);
+    }
+    else {
+        m_windHoverIndex = -1;
+        return 0;
+    }
+}
+
+void WeatherNowCategoryWidget::calculatePopHoverIndex(int hoverX)
+{
+    if (m_popX->size() < 8) {
+        m_popHoverIndex = -1;
+        return;
+    }
+
+    if (hoverX < m_firstPopX) {
+        m_popHoverIndex = -1;
+    }
+    else if (hoverX <= m_popX->at(0) + PopItemWidth) {
+        m_popHoverIndex = 0;
+    }
+    else if (hoverX <= m_popX->at(1) + PopItemWidth) {
+        m_popHoverIndex = 1;
+    }
+    else if (hoverX <= m_popX->at(2) + PopItemWidth) {
+        m_popHoverIndex = 2;
+    }
+    else if (hoverX <= m_popX->at(3) + PopItemWidth) {
+        m_popHoverIndex = 3;
+    }
+    else if (hoverX <= m_popX->at(4) + PopItemWidth) {
+        m_popHoverIndex = 4;
+    }
+    else if (hoverX <= m_popX->at(5) + PopItemWidth) {
+        m_popHoverIndex = 5;
+    }
+    else if (hoverX <= m_popX->at(6) + PopItemWidth) {
+        m_popHoverIndex = 6;
+    }
+    else if (hoverX <= m_popX->at(7) + PopItemWidth) {
+        m_popHoverIndex = 7;
+    }
+    else {
+        m_popHoverIndex = -1;
+    }
+}
+
 bool WeatherNowCategoryWidget::eventFilter(QObject *obj, QEvent *event)
 {
     if (obj == m_temperatureCurveLabel) {
         if (event->type() == QEvent::Paint) {
             paintTemperatureCurve();
         }
-        if (event->type() == QEvent::Enter) {
+        else if (event->type() == QEvent::Enter) {
             QPoint windowPos = mapFromGlobal(QCursor::pos());//将显示器坐标转换成窗口坐标
             int hoverX = windowPos.x();
-            this->calculateHoverIndex(hoverX);
+//            if (hoverX > m_windCurveLabel->height() - m_btnsWidget->rect().height()) {//remove m_btnsWidget zone
+//                return false;
+//            }
+            this->calculateTemperatureHoverIndex(hoverX);
             m_tempMouseEnterPress = true;
             m_temperatureCurveLabel->update();
         }
-        if (event->type() == QEvent::Leave) {//QEvent::FocusOut
+        else if (event->type() == QEvent::Leave) {//QEvent::FocusOut
             m_tempHoverIndex = -1;
             m_tempMouseEnterPress = false;
             m_temperatureCurveLabel->update();
         }
-        if (event->type() == QEvent::HoverMove || event->type() == QEvent::HoverLeave) {
+        else if (event->type() == QEvent::HoverMove/* || event->type() == QEvent::HoverLeave*/) {
             //qDebug()<< "hoverMove" << ((QHoverEvent*)event)->pos();
             QPoint windowPos = mapFromGlobal(QCursor::pos());//将显示器坐标转换成窗口坐标
             int hoverX = windowPos.x();
-            this->calculateHoverIndex(hoverX);
+//            if (hoverX > m_windCurveLabel->height() - m_btnsWidget->rect().height()) {//remove m_btnsWidget zone
+//                return false;
+//            }
+            this->calculateTemperatureHoverIndex(hoverX);
             m_tempMouseEnterPress = true;
             m_temperatureCurveLabel->update();
         }
@@ -289,10 +436,77 @@ bool WeatherNowCategoryWidget::eventFilter(QObject *obj, QEvent *event)
         if (event->type() == QEvent::Paint) {
             paintWindCurve();
         }
+        else if (event->type() == QEvent::Enter) {
+            m_windMouseEnterPress = true;
+            QPoint windowPos = mapFromGlobal(QCursor::pos());
+//            qDebug() << "BBBBBB" << windowPos << m_windCurveLabel->height() - m_btnsWidget->rect().height();
+//            if (windowPos.x() > m_windCurveLabel->height() - m_btnsWidget->rect().height()) {//remove m_btnsWidget zone
+//                return false;
+//            }
+            int middlePosX = calculateWindHoverIndex(windowPos.x());
+            if (middlePosX <= 0) {
+                if (m_windTip->isVisible()) {
+                    m_windTip->setVisible(false);
+                }
+            }
+            else {
+                QPoint parentPos = mapToParent(QPoint(middlePosX, m_windCurveLabel->height()- AlignMent*2/* - TimeTextHeight*/));
+                //qDebug() << "windowPos=" << windowPos << ",parentPos=" << parentPos;
+                m_windTip->resetTipText("aaa112", "bbbbb");
+                m_windTip->adjustSize();
+                m_windTip->popupTip(parentPos);
+            }
+        }
+        else if (event->type() == QEvent::Leave || event->type() == QEvent::HoverLeave) {
+            m_windHoverIndex = -1;
+            m_windMouseEnterPress = false;
+            if (m_windTip->isVisible()) {
+                m_windTip->setVisible(false);
+            }
+        }
+        else if (event->type() == QEvent::HoverMove) {
+            m_windMouseEnterPress = true;
+            QPoint windowPos = mapFromGlobal(QCursor::pos());
+//            if (windowPos.x() > m_windCurveLabel->height() - m_btnsWidget->rect().height()) {//remove m_btnsWidget zone
+//                return false;
+//            }
+            int middlePosX = calculateWindHoverIndex(windowPos.x());
+            if (middlePosX > 0) {
+                QPoint parentPos = mapToParent(QPoint(middlePosX, m_windCurveLabel->height()- AlignMent*2/* - TimeTextHeight*/));
+                m_windTip->resetTipText("aaa555", "bbbbb");
+                m_windTip->adjustSize();
+                m_windTip->popupTip(parentPos);
+            }
+        }
     }
-    else if (obj == m_popCurveLabel) {
+    else if (obj == m_popLabel) {
         if (event->type() == QEvent::Paint) {
             paintPopWidget();
+        }
+        else if (event->type() == QEvent::Enter) {
+            QPoint windowPos = mapFromGlobal(QCursor::pos());//将显示器坐标转换成窗口坐标
+            int hoverX = windowPos.x();
+//            if (hoverX > m_windCurveLabel->height() - m_btnsWidget->rect().height()) {//remove m_btnsWidget zone
+//                return false;
+//            }
+            this->calculatePopHoverIndex(hoverX);
+            m_popMouseEnterPress = true;
+            m_popLabel->update();
+        }
+        else if (event->type() == QEvent::Leave) {
+            m_popHoverIndex = -1;
+            m_popMouseEnterPress = false;
+            m_popLabel->update();
+        }
+        else if (event->type() == QEvent::HoverMove) {
+            QPoint windowPos = mapFromGlobal(QCursor::pos());//将显示器坐标转换成窗口坐标
+            int hoverX = windowPos.x();
+//            if (hoverX > m_windCurveLabel->height() - m_btnsWidget->rect().height()) {//remove m_btnsWidget zone
+//                return false;
+//            }
+            this->calculatePopHoverIndex(hoverX);
+            m_popMouseEnterPress = true;
+            m_popLabel->update();
         }
     }
 
@@ -552,8 +766,8 @@ void WeatherNowCategoryWidget::paintWindCurve()
 
     // 绘制第一个箭头
     QPixmap icon = QPixmap(":/res/wind.png");
-    QRect arrowRect(m_windX->at(0) - icon.width()/ratio/2, pointHY[0] - icon.height()/ratio/2, icon.width()/ratio, icon.height()/ratio);
-    painter.drawPixmap(arrowRect, icon);
+    QRect triangleRect(m_windX->at(0) - icon.width()/ratio/2, pointHY[0] - icon.height()/ratio/2, icon.width()/ratio, icon.height()/ratio);
+    painter.drawPixmap(triangleRect, icon);
 
     //绘制其他箭头和箭头之间的连线
     for (int i = 0; i < m_windCount - 1; i++) {
@@ -580,9 +794,11 @@ void WeatherNowCategoryWidget::paintWindCurve()
 
 void WeatherNowCategoryWidget::paintPopWidget()
 {
+    m_popX->clear();
+
     const qreal ratio = qApp->devicePixelRatio();
 
-    QPainter painter(m_popCurveLabel);
+    QPainter painter(m_popLabel);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
     //test count == 0
@@ -591,14 +807,30 @@ void WeatherNowCategoryWidget::paintPopWidget()
     painter.setPen(pen);
     painter.drawText(rect, Qt::AlignCenter, tr("N/A"));*/
 
-    int popCount = 8;
-    int xPos = 0;
     //test
-    int popHover = 0;
+    m_popCount = 8;
+    int xPos = m_firstPopX;
 
-    for(int i= 0; i<popCount; i++) {
-        QRect rect(xPos, 0, PopItemWidth, height()-2*AlignMent);
-//        QRect rect(xPos, 0, ((i == popHover) ? CurrentPopItemWidth : PopItemWidth), height()-2*AlignMent);
+    for(int i= 0; i<m_popCount; i++) {
+        m_popX->append(xPos);
+
+        QRect rect(xPos, 0, ((i == m_popHoverIndex) ? CurrentPopItemWidth : PopItemWidth), height()-2*AlignMent);
+        if (m_popMouseEnterPress && m_popHoverIndex == i) {
+            //background
+            painter.fillRect(rect, QColor(0, 0, 0, 20));
+
+            //border
+            painter.setOpacity(1);
+            QPainterPath borderPath;
+            borderPath.addRoundedRect(rect, 0, 0);
+            QPen pen(QColor("#0973b4"), 1);//Qt::transparent
+            painter.setPen(pen);
+            painter.drawPath(borderPath);
+        }
+        else {
+            painter.fillRect(rect, QColor(0, 0, 0, 0));
+        }
+
         QPointF center = rect.center();
 //        center.setX(center.x()/2);
 //        center.setY(center.y()/2);
@@ -607,7 +839,7 @@ void WeatherNowCategoryWidget::paintPopWidget()
         QFont curFont = QGuiApplication::font();//painter.font();
         curFont.setPixelSize(14);//font.setPointSize(textSize);
         painter.setFont(curFont);
-//        painter.setPen(QPen(QColor("#000000")));
+        painter.setPen(QPen(QColor("#000000")));
         painter.save();
 
         QString text = "08点";
@@ -659,16 +891,22 @@ void WeatherNowCategoryWidget::initWindWidget()
     m_windCurveLabel->setAttribute(Qt::WA_Hover, true);
 
     m_stackedLayout->addWidget(m_windCurveLabel);
+
+    m_windTip = new WindTooltip(this->parentWidget());
+    m_windTip->setFixedHeight(60);
+    m_windTip->setMinimumWidth(100);
+    m_windTip->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    m_windTip->hide();
 }
 
 void WeatherNowCategoryWidget::initPopWidget()
 {
-    m_popCurveLabel = new QLabel;
-    m_popCurveLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    m_popCurveLabel->installEventFilter(this);
-    m_popCurveLabel->setAttribute(Qt::WA_Hover, true);
+    m_popLabel = new QLabel;
+    m_popLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    m_popLabel->installEventFilter(this);
+    m_popLabel->setAttribute(Qt::WA_Hover, true);
 
-    m_stackedLayout->addWidget(m_popCurveLabel);
+    m_stackedLayout->addWidget(m_popLabel);
 }
 
 void WeatherNowCategoryWidget::initLifeStyleWidget()
@@ -701,12 +939,12 @@ void WeatherNowCategoryWidget::refershLifeIndexGridLayout()
         delete item;
     }
 
-    for(int i=0; i<m_tips.count(); i++) {
-        TextTip *tip = m_tips.at(i);
+    for(int i=0; i<m_lifestyleTips.count(); i++) {
+        TextTip *tip = m_lifestyleTips.at(i);
         delete tip;
         tip = NULL;
     }
-    m_tips.clear();
+    m_lifestyleTips.clear();
 
     int index = 0;
     const int count = m_lifeIndexList.size();
@@ -715,7 +953,7 @@ void WeatherNowCategoryWidget::refershLifeIndexGridLayout()
         connect(item, SIGNAL(requestShowMsg(QString)), this, SLOT(showLifeStyleIndex(QString)));
         m_indexGridLayout->addWidget(item, index / 3, index % 3);
         TextTip *tip = this->setTipWidget(item, "");
-        m_tips.append(tip);
+        m_lifestyleTips.append(tip);
         m_lifeItems.append(item);
     }
 }
@@ -729,38 +967,38 @@ void WeatherNowCategoryWidget::showLifeStyleIndex(const QString &name)
 void WeatherNowCategoryWidget::refreshLifestyleData(const LifeStyle &data)
 {
     int n = 0;
-    if (m_lifeItems.count() == 8 && m_tips.count() == 8) {
+    if (m_lifeItems.count() == 8 && m_lifestyleTips.count() == 8) {
         //舒适度指数
         m_lifeItems[n]->refreshLifeStyle(data.comf_brf, data.comf_txt);
-        m_tips[n++]->resetTipText(data.comf_txt);
+        m_lifestyleTips[n++]->resetTipText(data.comf_txt);
 
         //穿衣指数
         m_lifeItems[n]->refreshLifeStyle(data.drsg_brf, data.drsg_txt);
-        m_tips[n++]->resetTipText(data.drsg_txt);
+        m_lifestyleTips[n++]->resetTipText(data.drsg_txt);
 
         //感冒指数
         m_lifeItems[n]->refreshLifeStyle(data.flu_brf, data.flu_txt);
-        m_tips[n++]->resetTipText(data.flu_txt);
+        m_lifestyleTips[n++]->resetTipText(data.flu_txt);
 
         //运动指数
         m_lifeItems[n]->refreshLifeStyle(data.sport_brf, data.sport_txt);
-        m_tips[n++]->resetTipText(data.sport_txt);
+        m_lifestyleTips[n++]->resetTipText(data.sport_txt);
 
         //旅游指数
         m_lifeItems[n]->refreshLifeStyle(data.trav_brf, data.trav_txt);
-        m_tips[n++]->resetTipText(data.trav_txt);
+        m_lifestyleTips[n++]->resetTipText(data.trav_txt);
 
         //紫外线指数
         m_lifeItems[n]->refreshLifeStyle(data.uv_brf, data.uv_txt);
-        m_tips[n++]->resetTipText(data.uv_txt);
+        m_lifestyleTips[n++]->resetTipText(data.uv_txt);
 
         //洗车指数
         m_lifeItems[n]->refreshLifeStyle(data.cw_brf, data.cw_txt);
-        m_tips[n++]->resetTipText(data.cw_txt);
+        m_lifestyleTips[n++]->resetTipText(data.cw_txt);
 
         //空气污染扩散条件指数
         m_lifeItems[n]->refreshLifeStyle(data.air_brf, data.air_txt);
-        m_tips[n++]->resetTipText(data.air_txt);
+        m_lifestyleTips[n++]->resetTipText(data.air_txt);
     }
 }
 
@@ -808,7 +1046,7 @@ void WeatherNowCategoryWidget::enterEvent(QEvent *event)
 {
     QPoint windowPos = mapFromGlobal(QCursor::pos());//将显示器坐标转换成窗口坐标
     int hoverX = windowPos.x();
-    this->calculateHoverIndex(hoverX);
+    this->calculateTemperatureHoverIndex(hoverX);
     m_tempMouseEnterPress = true;
     m_temperatureCurveLabel->update();
 

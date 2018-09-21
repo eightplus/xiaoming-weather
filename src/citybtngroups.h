@@ -17,28 +17,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WEATHER_FORECAST_WIDGET_H
-#define WEATHER_FORECAST_WIDGET_H
+#ifndef CITYBTNGROUPS_H
+#define CITYBTNGROUPS_H
 
 #include <QFrame>
+#include <QPushButton>
+#include <QVBoxLayout>
 
-#include "data.h"
-
-class ForecastItemWidget;
-
-class WeatherForecastWidget : public QFrame
+class CityBtnGroups : public QFrame
 {
     Q_OBJECT
-public:
-    explicit WeatherForecastWidget(QWidget *parent = 0);
-    ~ WeatherForecastWidget();
 
-    //void onDataChanged();
+public:
+    explicit CityBtnGroups(QWidget *parent = 0);
+    ~CityBtnGroups();
+
+    void setActive(bool active);
+
+signals:
+    void defaultBtnClicked();
+    void removeBtnClicked();
 
 private:
-    QWidget *m_displayWidget = nullptr;
-    QList<ForecastItemWidget *> m_items;
-    Forecast forecast[6];
+    QPushButton *m_defaultBtn = nullptr;
+    QPushButton *m_removeBtn = nullptr;
+    QHBoxLayout *m_layout = nullptr;
+    bool m_isActive = false;
 };
 
-#endif // WEATHER_FORECAST_WIDGET_H
+#endif // CITYBTNGROUPS_H

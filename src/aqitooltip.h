@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TOOLTIP_H
-#define TOOLTIP_H
+#ifndef AQI_TOOLTIP_H
+#define AQI_TOOLTIP_H
 
 #include <QFrame>
 #include <QLabel>
@@ -27,18 +27,18 @@
 
 #include "data.h"
 
-class ToolTip : public QFrame
+class AqiToolTip : public QFrame
 {
     Q_OBJECT
 public:
-    explicit ToolTip(QWidget *parent = 0);
-    ~ToolTip();
+    explicit AqiToolTip(QWidget *parent = 0);
+    ~AqiToolTip();
 
-    void resetData(const ForecastWeather &data, const QString &week);
+    void resetData();
     void popupTip(QPoint point);
 
 protected:
-    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+//    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
 private:
     int m_radius;
@@ -46,23 +46,17 @@ private:
     QColor m_borderColor;
 
     QFrame *m_frame = nullptr;
-    QLabel *m_dateLabel = nullptr;
-    QLabel *m_dWeatherLabel = nullptr;
-    QLabel *m_nWeatherLabel = nullptr;
-    QLabel *m_dIconLabel = nullptr;
-    QLabel *m_nIconLabel = nullptr;
-    QLabel *m_tempLabel = nullptr;
-    QLabel *m_mrmsLabel = nullptr;
-    QLabel *m_srssLabel = nullptr;
-    QLabel *m_humLabel = nullptr;
-    QLabel *m_pcpnLabel = nullptr;
-    QLabel *m_popLabel = nullptr;
-    QLabel *m_presLabel = nullptr;
-    QLabel *m_uvIndexLabel = nullptr;
-    QLabel *m_visLabel = nullptr;
-    QLabel *m_windLabel = nullptr;
+    QLabel *m_aqiLabel = nullptr;
+    QLabel *m_qltyLabel = nullptr;
+    QLabel *m_mainLabel = nullptr;
+    QLabel *m_pm25Label = nullptr;
+    QLabel *m_pm10Label = nullptr;
+    QLabel *m_no2Label = nullptr;
+    QLabel *m_so2Label = nullptr;
+    QLabel *m_coLabel = nullptr;
+    QLabel *m_o3Label = nullptr;
 
     QVBoxLayout *m_layout = nullptr;
 };
 
-#endif // TOOLTIP_H
+#endif // AQI_TOOLTIP_H

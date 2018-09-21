@@ -17,28 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WEATHER_FORECAST_WIDGET_H
-#define WEATHER_FORECAST_WIDGET_H
+#ifndef CITYVIEW_H
+#define CITYVIEW_H
 
-#include <QFrame>
+#include <QListView>
 
-#include "data.h"
-
-class ForecastItemWidget;
-
-class WeatherForecastWidget : public QFrame
+class CityView : public QListView
 {
     Q_OBJECT
-public:
-    explicit WeatherForecastWidget(QWidget *parent = 0);
-    ~ WeatherForecastWidget();
 
-    //void onDataChanged();
+public:
+    CityView(QWidget *parent = 0);
+
+    const QModelIndex &currentHoverIndex() const;
+    void onItemEntered(const QModelIndex &index);
+
+protected:
+    void enterEvent(QEvent *event) Q_DECL_OVERRIDE;
+    void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
+
+signals:
+    void currentHoverChanged(const QModelIndex &pre, const QModelIndex &cur);
 
 private:
-    QWidget *m_displayWidget = nullptr;
-    QList<ForecastItemWidget *> m_items;
-    Forecast forecast[6];
+    QModelIndex m_previousIndex;
+    QModelIndex m_currentIndex;
 };
 
-#endif // WEATHER_FORECAST_WIDGET_H
+#endif // CITYVIEW_H

@@ -52,11 +52,20 @@ SOURCES += src/main.cpp \
     src/locationwidget.cpp \
     src/forecastitemwidget.cpp \
     src/translucentlabel.cpp \
-    src/tooltip.cpp \
+    src/aqitooltip.cpp \
     src/categorybutton.cpp \
     src/indexitemwidget.cpp \
     src/texttip.cpp \
-    src/tipmodule.cpp
+    src/tipmodule.cpp \
+    src/windtooltip.cpp \
+    src/cityview.cpp \
+    src/citymodel.cpp \
+    src/citydelegate.cpp \
+    src/settingdialog.cpp \
+    src/settingtitlebar.cpp \
+    src/citywidget.cpp \
+    src/activebutton.cpp \
+    src/citybtngroups.cpp
 
 HEADERS  += src/mainwindow.h \
     src/titlebar.h \
@@ -75,11 +84,20 @@ HEADERS  += src/mainwindow.h \
     src/utils.h \
     src/translucentlabel.h \
     src/data.h \
-    src/tooltip.h \
+    src/aqitooltip.h \
     src/categorybutton.h \
     src/indexitemwidget.h \
     src/texttip.h \
-    src/tipmodule.h
+    src/tipmodule.h \
+    src/windtooltip.h \
+    src/cityview.h \
+    src/citymodel.h \
+    src/citydelegate.h \
+    src/settingdialog.h \
+    src/settingtitlebar.h \
+    src/citywidget.h \
+    src/activebutton.h \
+    src/citybtngroups.h
 
 TRANSLATIONS += \
     translation/xiaoming-weather_zh_CN.ts

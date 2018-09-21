@@ -31,12 +31,14 @@ class QGridLayout;
 class IndexItemWidget;
 class TextTip;
 class TipModule;
+class WindTooltip;
 class QPropertyAnimation;
 class QParallelAnimationGroup;
 
 class WeatherNowCategoryWidget : public QFrame
 {
     Q_OBJECT
+
 public:
     explicit WeatherNowCategoryWidget(QWidget *parent = 0);
     ~ WeatherNowCategoryWidget();
@@ -46,7 +48,6 @@ public:
     void initPopWidget();
     void initLifeStyleWidget();
     void refershLifeIndexGridLayout();
-
 
     void paintTemperatureCurve();
     void paintWindCurve();
@@ -58,7 +59,9 @@ public:
     void refreshLifestyleData(const LifeStyle &data);
     TextTip *setTipWidget(QWidget *w, const QString &txt);
 
-    void calculateHoverIndex(int hoverX);
+    void calculateTemperatureHoverIndex(int hoverX);
+    int calculateWindHoverIndex(int hoverX);
+    void calculatePopHoverIndex(int hoverX);
 
 public slots:
     void changeCurrentPage(CategoryButton *btn);
@@ -77,23 +80,18 @@ private:
     QStringList m_btnTextLists;
     QLabel *m_temperatureCurveLabel = nullptr;
     QLabel *m_windCurveLabel = nullptr;
-    QLabel *m_popCurveLabel = nullptr;
+    QLabel *m_popLabel = nullptr;
     QWidget *m_lifestyleWidget = nullptr;
     QGridLayout *m_indexGridLayout = nullptr;
 
     QWidget *m_btnsWidget = nullptr;
     CategoryButton *m_btnArray[4];
-    QList<IndexItemWidget *> m_lifeItems;
-    QStringList m_lifeIndexList;
-    QStringList m_lifeIndexIconList;
 
     //QPropertyAnimation *m_tempAnimation = nullptr;
 //    QPropertyAnimation *m_lifeAnimation = nullptr;
     //QParallelAnimationGroup *m_animationGroup = nullptr;
-    Forecast forecast[8];
 
-    QList<TextTip *> m_tips;
-    TipModule *m_tipModule = nullptr;
+    Forecast forecast[8];
 
     // for temperature
     int m_tempCount;
@@ -110,6 +108,22 @@ private:
     QList<int> *m_windX;
     int m_windHoverIndex;
     bool m_windMouseEnterPress;
+    WindTooltip *m_windTip= nullptr;
+
+    // for pop
+    int m_popCount;
+    int m_firstPopX;
+    QList<int> *m_popX;
+    int m_popHoverIndex;
+    bool m_popMouseEnterPress;
+
+    // for lifestyle
+    QList<IndexItemWidget *> m_lifeItems;
+    QStringList m_lifeIndexList;
+    QStringList m_lifeIndexIconList;
+    QList<TextTip *> m_lifestyleTips;
+    TipModule *m_tipModule = nullptr;
+
 };
 
 #endif // WEATHER_NOW_CATEGORY_WIDGET_H
