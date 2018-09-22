@@ -65,7 +65,9 @@ SOURCES += src/main.cpp \
     src/settingtitlebar.cpp \
     src/citywidget.cpp \
     src/activebutton.cpp \
-    src/citybtngroups.cpp
+    src/citybtngroups.cpp \
+    src/preferences.cpp \
+    src/global.cpp
 
 HEADERS  += src/mainwindow.h \
     src/titlebar.h \
@@ -97,7 +99,10 @@ HEADERS  += src/mainwindow.h \
     src/settingtitlebar.h \
     src/citywidget.h \
     src/activebutton.h \
-    src/citybtngroups.h
+    src/citybtngroups.h \
+    src/preferences.h \
+    src/global.h
+
 
 TRANSLATIONS += \
     translation/xiaoming-weather_zh_CN.ts

@@ -41,6 +41,7 @@ public:
 
     void setData();
     void refreshCityList(const QString &id);
+    void fillCityList();
 
 public slots:
     virtual void accept();

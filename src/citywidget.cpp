@@ -19,6 +19,10 @@
 
 #include "citywidget.h"
 
+#include "preferences.h"
+#include "global.h"
+using namespace Global;
+
 #include <QDebug>
 #include <QVBoxLayout>
 #include <QPushButton>
@@ -64,20 +68,22 @@ CityWidget::CityWidget(QWidget *parent)
     connect(m_cityDelegate, &CityDelegate::defaultCityButtonClicked, this, [=] {
         const QModelIndex &index = m_cityView->currentHoverIndex();
         const QString id = index.data(CityModel::IdRole).toString();
-        qDebug() << "default===" << id << index.data(CityModel::NameRole).toString();
-        //TODO: refresh m_cityDataList which in CityModel
-        QList<CitySettingData> m_cityList = m_cityModel->getCityListData();
-        QList<CitySettingData>::iterator iter = m_cityList.begin();
-        for (; iter != m_cityList.end(); iter++) {
-            if (iter->id == id)
-                iter->setActive(false);
-            else
-                iter->setActive(true);
-        }
+        //qDebug() << "default===" << id << index.data(CityModel::NameRole).toString();
+        m_preferences->m_currentCityId = id;
+        m_preferences->m_currentCity = index.data(CityModel::NameRole).toString();
+        m_cityModel->updateCityListData(id);
     });
     connect(m_cityDelegate, &CityDelegate::removeCityButtonClicked, this, [=] {
+        if (m_preferences->citiesCount() == 1) {
+            qDebug() << "At least there must be a city!!!";
+            return;
+        }
         const QModelIndex &index = m_cityView->currentHoverIndex();
-        qDebug() << "remove===" << index.data(CityModel::IdRole).toString() << index.data(CityModel::NameRole).toString();
+        const QString id = index.data(CityModel::IdRole).toString();
+        //qDebug() << "remove===" << index.data(CityModel::IdRole).toString() << index.data(CityModel::NameRole).toString();
+        m_preferences->removeCityInfoFromPref(id, index.data(CityModel::ActiveRole).toBool());
+        m_cityModel->removeItem(id);
+        m_cityModel->updateCityListData(m_preferences->m_currentCityId);
         m_cityView->closePersistentEditor(index);
         m_cityModel->showRemoveAnimation(index, m_cityView->width());
     });
@@ -104,9 +110,6 @@ CityWidget::CityWidget(QWidget *parent)
      connect(mbtn, &QPushButton::clicked, this , [=] {
          this->m_cityModel->resetCityListData();
      });*/
-
-    //test
-    this->onCityLIstDataChanged();
 }
 
 CityWidget::~CityWidget()
@@ -114,68 +117,21 @@ CityWidget::~CityWidget()
 
 }
 
-void CityWidget::onCityLIstDataChanged()
+void CityWidget::onCityListDataChanged()
 {
     this->m_cityModel->removeRows(0, this->m_cityModel->rowCount(QModelIndex()));
 
-    //TODO test data
     QList<CitySettingData> cityDataList;
-
-    CitySettingData data1;
-    data1.active = true;
-    data1.id = "12345";
-    data1.name = "长沙";
-    data1.temperature = "33";
-    data1.icon = "101";
-    cityDataList.append(data1);
-
-    CitySettingData data2;
-    data2.active = false;
-    data2.id = "45235";
-    data2.name = "北京";
-    data2.temperature = "33";
-    data2.icon = "101";
-    cityDataList.append(data2);
-
-    CitySettingData data3;
-    data3.active = false;
-    data3.id = "33335";
-    data3.name = "上海";
-    data3.temperature = "33";
-    data3.icon = "101";
-    cityDataList.append(data3);
-
-    CitySettingData data4;
-    data4.active = false;
-    data4.id = "34908";
-    data4.name = "岳阳";
-    data4.temperature = "33";
-    data4.icon = "101";
-    cityDataList.append(data4);
-
-    CitySettingData data5;
-    data5.active = false;
-    data5.id = "34901";
-    data5.name = "深圳";
-    data5.temperature = "33";
-    data5.icon = "101";
-    cityDataList.append(data5);
-
-    CitySettingData data6;
-    data6.active = false;
-    data6.id = "34902";
-    data6.name = "广州";
-    data6.temperature = "33";
-    data6.icon = "101";
-    cityDataList.append(data6);
-
-    CitySettingData data7;
-    data7.active = false;
-    data7.id = "34903";
-    data7.name = "东莞";
-    data7.temperature = "33";
-    data7.icon = "101";
-    cityDataList.append(data7);
+    QList<QString> cityIdList = m_preferences->getCityIdList();
+    for (int i=0; i<cityIdList.size(); i++) {
+        CitySettingData data;
+        data.active = (m_preferences->m_currentCityId == cityIdList.at(i)) ? true : false;
+        data.id = cityIdList.at(i);
+        data.name = m_preferences->getCitiesList().at(i);
+        data.temperature = "33";
+        data.icon = "101";
+        cityDataList.append(data);
+    }
 
     this->m_cityModel->resetCityListData(cityDataList);
 }

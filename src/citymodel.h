@@ -48,9 +48,11 @@ public:
     QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
     Qt::ItemFlags flags(const QModelIndex &index) const Q_DECL_OVERRIDE;
 
+    void updateCityListData(const QString &currentId);
     void resetCityListData(QList<CitySettingData> cityDataList);
     QList<CitySettingData> getCityListData() const;
     void addItem(const CitySettingData &data);
+    void removeItem(const QString &id);
 
 public slots:
     void showRemoveAnimation(const QModelIndex &removeIndex, int maxXOffset);

@@ -25,6 +25,10 @@
 #include "settingdialog.h"
 #include "utils.h"
 
+#include "preferences.h"
+#include "global.h"
+using namespace Global;
+
 #include <QApplication>
 #include <QMouseEvent>
 #include <QVBoxLayout>
@@ -47,6 +51,8 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowIcon(QIcon(":/res/xiaoming-weather.png"));
 //    this->setWindowOpacity(0.9);
     this->setWindowOpacity(1.0);
+
+    global_init();
 
     m_backgroundWidget = new BackgroundWidget(this);
     m_backgroundWidget->setGeometry(rect());
@@ -112,7 +118,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-
+    global_end();
 }
 
 
@@ -128,6 +134,7 @@ void MainWindow::createSettingDialog()
     QApplication::setOverrideCursor(Qt::WaitCursor);
     m_setttingDialog = new SettingDialog;
     m_setttingDialog->setModal(false);
+    m_setttingDialog->fillCityList();
 //    connect(m_setttingDialog, SIGNAL(applied()), this, SLOT(applySettings()));
 //    connect(m_setttingDialog, &SettingDialog::requestRefreshCityMenu, this, [this] (bool removedDefault) {
 //        this->refreshCityActions();
@@ -137,7 +144,7 @@ void MainWindow::createSettingDialog()
 //        }
 //    });
 //    connect(m_setttingDialog, &SettingDialog::requestRefreshWeatherById, this, [this] (const QString &id) {
-//        m_preferences->resetCurrentCityNameById(id);
+//        m_preferences->setCurrentCityNameById(id);
 //        this->refreshCityActions();
 //        this->startGetWeather();
 //    });
@@ -152,11 +159,11 @@ void MainWindow::createSettingDialog()
 
 
 
-    /*connect(m_setttingDialog, &SettingDialog::requestSetDefaultCity, this, [=] {
-        m_preferences->setDefaultCity();
-        m_setttingDialog->refreshCityList(m_preferences->m_currentCityId);
-        this->startGetWeather();
-    });*/
+//    connect(m_setttingDialog, &SettingDialog::requestSetDefaultCity, this, [=] {
+//        m_preferences->setDefaultCity();
+//        m_setttingDialog->refreshCityList(m_preferences->m_currentCityId);
+//        //this->startGetWeather();
+//    });
 
     QApplication::restoreOverrideCursor();
 }

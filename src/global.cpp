@@ -17,34 +17,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CITYWIDGET_H
-#define CITYWIDGET_H
+#include "global.h"
+#include "preferences.h"
 
-#include <QFrame>
-#include <QLabel>
+#include <QApplication>
+#include <QSettings>
+#include <QFile>
+#include <QDir>
+#include <QDebug>
 
-#include "data.h"
-#include "cityview.h"
-#include "citymodel.h"
-#include "citydelegate.h"
+QSettings *Global::m_settings = 0;
+Preferences *Global::m_preferences = 0;
 
-class CityWidget : public QFrame
+using namespace Global;
+
+void Global::global_init()
 {
-    Q_OBJECT
+    QString filename = QDir::homePath() + "/.config/xiaoming/xiaoming-weather.ini";
+    m_settings = new QSettings(filename, QSettings::IniFormat);
+    m_settings->setIniCodec("UTF-8");
 
-public:
-    explicit CityWidget(QWidget *parent = 0);
-    ~CityWidget();
+    m_preferences = new Preferences;
+}
 
-public slots:
-    void onCityListStateChanged(bool isEmpty);
-    void onCityListDataChanged();
+void Global::global_end()
+{
+    delete m_preferences;
+    m_preferences = 0;
 
-private:
-    CityView *m_cityView = nullptr;
-    CityModel *m_cityModel = nullptr;
-    CityDelegate *m_cityDelegate = nullptr;
-    QLabel *m_noResultLabel = nullptr;
-};
-
-#endif // CITYWIDGET_H
+    delete m_settings;
+    m_settings = 0;
+}
