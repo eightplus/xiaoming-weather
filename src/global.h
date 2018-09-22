@@ -17,34 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CITYWIDGET_H
-#define CITYWIDGET_H
+#ifndef GLOBAL_H
+#define GLOBAL_H
 
-#include <QFrame>
-#include <QLabel>
+#include <QString>
 
-#include "data.h"
-#include "cityview.h"
-#include "citymodel.h"
-#include "citydelegate.h"
+class QSettings;
+class Preferences;
 
-class CityWidget : public QFrame
-{
-    Q_OBJECT
+namespace Global {
 
-public:
-    explicit CityWidget(QWidget *parent = 0);
-    ~CityWidget();
+    extern QSettings *m_settings;
+    extern Preferences *m_preferences;
 
-public slots:
-    void onCityListStateChanged(bool isEmpty);
-    void onCityListDataChanged();
+    void global_init();
+    void global_end();
+}
 
-private:
-    CityView *m_cityView = nullptr;
-    CityModel *m_cityModel = nullptr;
-    CityDelegate *m_cityDelegate = nullptr;
-    QLabel *m_noResultLabel = nullptr;
-};
-
-#endif // CITYWIDGET_H
+#endif // GLOBAL_H

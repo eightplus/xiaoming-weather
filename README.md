@@ -28,4 +28,6 @@ https://free-api.heweather.com/s6/weather/hourly?location=CN101250101&key=40cc3e
 
 ### 
 
+qdbusxml2cpp com.kylin.weather.xml -a dbusadaptor -c DbusAdaptor -l MainWindow
+
 https://www.easyicon.net/

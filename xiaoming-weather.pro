@@ -4,9 +4,13 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += network xml
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+#greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+isEqual(QT_MAJOR_VERSION, 5) {
+    QT += widgets gui core dbus
+}
 
 TARGET = xiaoming-weather
 TEMPLATE = app
@@ -24,6 +28,8 @@ INSTALLS += inst1 \
 CONFIG += c++14
 CONFIG += qt warn_on
 CONFIG += release
+CONFIG += link_pkgconfig
+PKGCONFIG += geoip
 
 QMAKE_CPPFLAGS *= $(shell dpkg-buildflags --get CPPFLAGS)
 QMAKE_CFLAGS   *= $(shell dpkg-buildflags --get CFLAGS)
@@ -65,7 +71,10 @@ SOURCES += src/main.cpp \
     src/settingtitlebar.cpp \
     src/citywidget.cpp \
     src/activebutton.cpp \
-    src/citybtngroups.cpp
+    src/citybtngroups.cpp \
+    src/preferences.cpp \
+    src/global.cpp \
+    src/weatherworker.cpp
 
 HEADERS  += src/mainwindow.h \
     src/titlebar.h \
@@ -97,7 +106,11 @@ HEADERS  += src/mainwindow.h \
     src/settingtitlebar.h \
     src/citywidget.h \
     src/activebutton.h \
-    src/citybtngroups.h
+    src/citybtngroups.h \
+    src/preferences.h \
+    src/global.h \
+    src/weatherworker.h
+
 
 TRANSLATIONS += \
     translation/xiaoming-weather_zh_CN.ts

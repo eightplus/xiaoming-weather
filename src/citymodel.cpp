@@ -56,6 +56,17 @@ CityModel::~CityModel()
     //emit cityListStateChanged(true);
 }
 
+void CityModel::updateCityListData(const QString &currentId)
+{
+    QList<CitySettingData>::iterator iter = m_cityDataList.begin();
+    for (; iter != m_cityDataList.end(); iter++) {
+        if (iter->id == currentId)
+            iter->setActive(true);
+        else
+            iter->setActive(false);
+    }
+}
+
 void CityModel::resetCityListData(QList<CitySettingData> cityDataList)
 {
     beginResetModel();
@@ -89,6 +100,23 @@ void CityModel::addItem(const CitySettingData &data)
         m_cityDataList.append(data);
         const QModelIndex mindex = index(0);
         emit dataChanged(mindex, mindex);
+    }
+}
+
+void CityModel::removeItem(const QString &id)
+{
+//    m_cityDataList.remove(id);
+
+    foreach (const CitySettingData &data, m_cityDataList) {
+        if (data.id == id) {
+            const int idx = m_cityDataList.indexOf(data);
+
+            if (idx == -1)
+                return;
+
+            m_cityDataList.removeAt(idx);
+            break;
+        }
     }
 }
 

@@ -9,7 +9,8 @@ Build-Depends: debhelper (>=9),
                qt5-qmake,
                qt5-default,
                qtscript5-dev,
-               qttools5-dev-tools
+               qttools5-dev-tools,
+               libgeoip-dev
 Standards-Version: 3.9.6
 Homepage: https://github.com/eightplus/xiaoming-weather
 Vcs-Git: git://github.com/eightplus/xiaoming-weather.git

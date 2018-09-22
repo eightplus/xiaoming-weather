@@ -22,6 +22,12 @@
 
 #include <QObject>
 
+struct City
+{
+    QString id;
+    QString name;
+};
+
 struct Forecast
 {
     QString date;
@@ -76,10 +82,15 @@ public:
     void setActive(bool b) { active = b; }
 };
 
+inline bool operator ==(const City &data, const City &other) {
+    return data.id == other.id;
+}
+
 inline bool operator ==(const CitySettingData &data, const CitySettingData &other) {
     return data.id == other.id;
 }
 
+Q_DECLARE_METATYPE(City)
 Q_DECLARE_METATYPE(LifeStyle)
 Q_DECLARE_METATYPE(ForecastWeather)
 Q_DECLARE_METATYPE(CitySettingData)

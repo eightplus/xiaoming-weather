@@ -141,6 +141,13 @@ void SettingDialog::refreshCityList(const QString &id)
 //    }
 }
 
+void SettingDialog::fillCityList()
+{
+    if (m_cityWidget) {
+        m_cityWidget->onCityListDataChanged();
+    }
+}
+
 void SettingDialog::accept()
 {
     hide();
