@@ -111,7 +111,6 @@ HEADERS  += src/mainwindow.h \
     src/global.h \
     src/weatherworker.h
 
-
 TRANSLATIONS += \
     translation/xiaoming-weather_zh_CN.ts
 

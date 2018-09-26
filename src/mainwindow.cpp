@@ -30,6 +30,10 @@
 #include "global.h"
 using namespace Global;
 
+#include "preferences.h"
+#include "global.h"
+using namespace Global;
+
 #include <QApplication>
 #include <QMouseEvent>
 #include <QVBoxLayout>
