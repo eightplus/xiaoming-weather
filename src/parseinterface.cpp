@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 kobe24_lixiang@126.com
+ * Copyright (C) 2018 ~ 2019 kobe24_lixiang@126.com
  *
  * Authors:
  *  lixiang    kobe24_lixiang@126.com
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 #include "parseinterface.h"
 

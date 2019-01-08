@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 kobe24_lixiang@126.com
+ * Copyright (C) 2018 ~ 2019 kobe24_lixiang@126.com
  *
  * Authors:
  *  lixiang    kobe24_lixiang@126.com
@@ -25,7 +25,6 @@
 #include "settingdialog.h"
 #include "utils.h"
 #include "weatherworker.h"
-
 #include "preferences.h"
 #include "global.h"
 using namespace Global;
@@ -57,6 +56,8 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowIcon(QIcon(":/res/xiaoming-weather.png"));
 //    this->setWindowOpacity(0.9);
     this->setWindowOpacity(1.0);
+
+//    m_weatherWorker = new WeatherWorker(this);
 
     global_init();
 

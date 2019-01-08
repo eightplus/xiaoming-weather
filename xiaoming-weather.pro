@@ -4,9 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += network xml
-
-#greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += network xml svg
 
 isEqual(QT_MAJOR_VERSION, 5) {
     QT += widgets gui core dbus
@@ -74,7 +72,8 @@ SOURCES += src/main.cpp \
     src/citybtngroups.cpp \
     src/preferences.cpp \
     src/global.cpp \
-    src/weatherworker.cpp
+    src/weatherworker.cpp \
+    src/automaticlocation.cpp
 
 HEADERS  += src/mainwindow.h \
     src/titlebar.h \
@@ -109,7 +108,8 @@ HEADERS  += src/mainwindow.h \
     src/citybtngroups.h \
     src/preferences.h \
     src/global.h \
-    src/weatherworker.h
+    src/weatherworker.h \
+    src/automaticlocation.h
 
 TRANSLATIONS += \
     translation/xiaoming-weather_zh_CN.ts

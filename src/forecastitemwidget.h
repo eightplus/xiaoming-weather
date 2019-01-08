@@ -1,8 +1,8 @@
 /*
- * Copyright (C) 2013 ~ 2018 National University of Defense Technology(NUDT) & Tianjin Kylin Ltd.
+ * Copyright (C) 2018 ~ 2019 kobe24_lixiang@126.com
  *
  * Authors:
- *  Kobe Lee    lixiang@kylinos.cn/kobe24_lixiang@126.com
+ *  lixiang    kobe24_lixiang@126.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

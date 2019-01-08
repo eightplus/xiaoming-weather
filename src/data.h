@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 kobe24_lixiang@126.com
+ * Copyright (C) 2018 ~ 2019 kobe24_lixiang@126.com
  *
  * Authors:
  *  lixiang    kobe24_lixiang@126.com
@@ -26,6 +26,8 @@ struct City
 {
     QString id;
     QString name;
+    double latitude;
+    double longitude;
 };
 
 struct Forecast

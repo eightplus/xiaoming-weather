@@ -43,4 +43,7 @@
     <qresource prefix="/qm">
         <file>translation/xiaoming-weather_zh_CN.qm</file>
     </qresource>
+    <qresource prefix="/data">
+        <file>data/china-city-list.csv</file>
+    </qresource>
 </RCC>

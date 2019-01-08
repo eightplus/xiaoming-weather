@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 kobe24_lixiang@126.com
+ * Copyright (C) 2018 ~ 2019 kobe24_lixiang@126.com
  *
  * Authors:
  *  lixiang    kobe24_lixiang@126.com
@@ -29,6 +29,7 @@
 #include <QDomDocument>
 #include <QLocale>
 
+#include "automaticlocation.h"
 #include "preferences.h"
 #include "global.h"
 using namespace Global;
@@ -44,9 +45,16 @@ WeatherWorker::WeatherWorker(QObject *parent) :
 //    });
 
     //TODO: test geo api
-    this->setCity("Langli");
-    this->requestAccessGeoNameIDByLongitudeAndLatitude(28.1792, 113.114);
-//    this->requestAccessGeoNameDataByGeonameId("1804526");
+//    this->setCity("Langli");
+
+    m_automatic = new AutomaticLocation(this);
+    connect(m_automatic, &AutomaticLocation::do_finish, this, &WeatherWorker::setAutoCity);
+    m_automatic->start();
+
+    //this->requestAccessGeoNameIDByLongitudeAndLatitude(28.1792, 113.114);//QString::arg: Argument missing: 无法解析res_nclose中的符号“res_nclose”：libresolv.so.2, (/lib/x86_64-linux-gnu/libresolv.so.2: undefined symbol: res_nclose)
+
+
+    //    this->requestAccessGeoNameDataByGeonameId("1804526");
 //    this->requestWeatherDataById("CN101250101");
 }
 
@@ -55,13 +63,52 @@ WeatherWorker::~WeatherWorker()
     m_networkManager->deleteLater();
 }
 
+void WeatherWorker::setAutoCity(const QString &cityName)
+{
+    if (cityName.isEmpty()) {
+        return;
+    }
+    //CN101250101,changsha,长沙,CN,China,中国,hunan,湖南,changsha,长沙,28.19409,112.98228,"430101,430100,430000",
+    QFile file(":/data/data/china-city-list.csv");
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QString line = file.readLine();
+        line = line.replace("\n", "");
+        while (!line.isEmpty()) {
+            QStringList resultList = line.split(",");
+            if (resultList.length() < 10) {
+                line = file.readLine();
+                line = line.replace("\n", "");
+                continue;
+            }
+
+            QString id = resultList.at(0);
+            if (!id.startsWith("CN")) {
+                line = file.readLine();
+                line = line.replace("\n", "");
+                continue;
+            }
+
+            if (resultList.at(1).compare(cityName, Qt::CaseInsensitive) == 0) {
+                qDebug() << "id=" << id.remove(0, 2);//remove "CN"
+                qDebug() << "city=" << resultList.at(2);
+                break;
+            }
+
+            line = file.readLine();
+            line = line.replace("\n", "");
+        }
+        file.close();
+    }
+
+}
+
 void WeatherWorker::setCity(const QString &city)
 {
     m_city = city;
 }
 
 void WeatherWorker::requestSearchCityByInput(const QString &input)
-{
+{ 
     const QString current_lang = QLocale::system().name().split("_").at(0);
     //examples: http://api.geonames.org/search?q=changsha&maxRows=10&username=kobe&lang=zh
     QString url = QString("http://api.geonames.org/search?q=%1&maxRows=10&username=kobe&lang=%2").arg(input).arg(current_lang);

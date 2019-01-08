@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 kobe24_lixiang@126.com
+ * Copyright (C) 2018 ~ 2019 kobe24_lixiang@126.com
  *
  * Authors:
  *  lixiang    kobe24_lixiang@126.com
@@ -28,6 +28,8 @@
 
 #include "data.h"
 
+class AutomaticLocation;
+
 class WeatherWorker : public QObject
 {
     Q_OBJECT
@@ -47,6 +49,7 @@ public:
 public slots:
     void onWeatherDataReply();
     void onSearchCityReply();
+    void setAutoCity(const QString& cityName);
 
 private slots:
     void onGeoNameIdByLongitudeAndLatitudeReply();
@@ -55,6 +58,7 @@ private slots:
 private:
     QNetworkAccessManager *m_networkManager = nullptr;
     QString m_city;
+    AutomaticLocation *m_automatic = nullptr;
 };
 
 #endif // WEATHERWORKER_H

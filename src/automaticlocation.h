@@ -17,15 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef AUTOMATIC_LOCATION_H
+#define AUTOMATIC_LOCATION_H
 
-#include <QString>
+#include <QObject>
+#include <QThread>
 
-#define WIDGET_WIDTH 900
-#define WIDGET_HEIGHT 600
+#include "data.h"
 
-const QString EIGHTPLUS_COMPANY_SETTING = "eightplus/xiaoming-weather";
-const QString EIGHTPLUS_SETTING_FILE_NAME_SETTING = "xiaoming-weather";
+class AutomaticLocation : public QThread
+{
+    Q_OBJECT
 
-#endif // UTILS_H
+public:
+    explicit AutomaticLocation(QObject* parent = 0);
+
+signals:
+    void do_finish(const QString& cityName);
+
+protected:
+    void run();
+};
+
+#endif // AUTOMATIC_LOCATION_H
