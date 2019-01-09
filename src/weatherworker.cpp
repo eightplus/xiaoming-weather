@@ -55,7 +55,6 @@ WeatherWorker::WeatherWorker(QObject *parent) :
 
 
     //    this->requestAccessGeoNameDataByGeonameId("1804526");
-//    this->requestWeatherDataById("CN101250101");
 }
 
 WeatherWorker::~WeatherWorker()
@@ -65,7 +64,8 @@ WeatherWorker::~WeatherWorker()
 
 void WeatherWorker::setAutoCity(const QString &cityName)
 {
-    if (cityName.isEmpty()) {
+    if (cityName.isEmpty()) {//TODO
+        //this->requestWeatherDataById(m_preferences->m_currentCityId);
         return;
     }
     //CN101250101,changsha,长沙,CN,China,中国,hunan,湖南,changsha,长沙,28.19409,112.98228,"430101,430100,430000",
@@ -89,8 +89,14 @@ void WeatherWorker::setAutoCity(const QString &cityName)
             }
 
             if (resultList.at(1).compare(cityName, Qt::CaseInsensitive) == 0) {
-                qDebug() << "id=" << id.remove(0, 2);//remove "CN"
+                qDebug() << "id=" << id;//id.remove(0, 2);//remove "CN"
                 qDebug() << "city=" << resultList.at(2);
+                City city;
+                city.id = id;
+                city.name = resultList.at(2);
+                m_preferences->addCityInfoToPref(city);
+                m_preferences->setCurrentCityNameById(id);
+                m_preferences->save();
                 break;
             }
 
@@ -100,6 +106,8 @@ void WeatherWorker::setAutoCity(const QString &cityName)
         file.close();
     }
 
+    //TODO:
+//    this->requestWeatherDataById(m_preferences->m_currentCityId);
 }
 
 void WeatherWorker::setCity(const QString &city)

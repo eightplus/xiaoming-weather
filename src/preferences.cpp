@@ -29,6 +29,7 @@ Preferences::Preferences()
 {
     m_maxCityItems = 10;
 
+    //TODO
     load();
 }
 
