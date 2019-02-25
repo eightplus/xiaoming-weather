@@ -30,24 +30,28 @@
 
 class AutomaticLocation;
 
+#define g_weatherWorker WeatherWorker::getInstance()
+
 class WeatherWorker : public QObject
 {
     Q_OBJECT
 
 public:
-
     explicit WeatherWorker(QObject *parent = 0);
     ~WeatherWorker();
 
+    static WeatherWorker *getInstance(void);
+    QList<ForecastWeather> getForecastList();
     void requestSearchCityByInput(const QString &input);
     void requestWeatherDataByLongitudeAndLatitude(double latitude, double longitude);
-    void requestWeatherDataById(const QString &cityId);
+    void requestWeatherAndApiDataById(const QString &cityId);
     void setCity(const QString &city);
     void requestAccessGeoNameIDByLongitudeAndLatitude(double latitude, double longitude);
     void requestAccessGeoNameDataByGeonameId(const QString &geonameId);
 
 public slots:
     void onWeatherDataReply();
+    void onApiDataReply();
     void onSearchCityReply();
     void setAutoCity(const QString& cityName);
 
@@ -59,6 +63,7 @@ private:
     QNetworkAccessManager *m_networkManager = nullptr;
     QString m_city;
     AutomaticLocation *m_automatic = nullptr;
+    QList<ForecastWeather> m_forecastList;
 };
 
 #endif // WEATHERWORKER_H

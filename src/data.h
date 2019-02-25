@@ -30,16 +30,51 @@ struct City
     double longitude;
 };
 
-struct Forecast
+typedef struct _Air
+{
+    QString id;
+    QString aqi;
+    QString qlty;
+    QString main;
+    QString pm25;
+    QString pm10;
+    QString no2;
+    QString so2;
+    QString co;
+    QString o3;
+} Air;
+
+typedef struct _ObserveWeather
+{
+    QString id;
+    QString city;
+    QString updatetime;
+    QString air;//空气质量
+    QString cloud;//云量
+    QString cond_code;//实况天气状况代码 	100
+    QString cond_txt;//实况天气状况描述 晴
+    QString fl;//体感温度，默认单位：摄氏度 	23
+    QString hum;//相对湿度 	40
+    QString pcpn;//降水量(毫米 mm) 	0
+    QString pres;//大气压强(百帕 hPa) 	1020
+    QString tmp;//温度，默认单位：摄氏度℃ 	21
+    QString vis;//能见度，默认单位：公里 km 	10
+    QString wind_deg;//风向360角度 	305
+    QString wind_dir;//风向 	西北
+    QString wind_sc;//风力 	3 (0:静风  1:1级风)
+    QString wind_spd;//风速，公里/小时 km/h 	15
+} ObserveWeather;
+
+typedef struct _Forecast
 {
     QString date;
     QString high;
     QString low;
     QString aqi;
     QString type;
-};
+} Forecast;
 
-struct LifeStyle {
+typedef struct _LifeStyle {
     QString air_brf;
     QString air_txt;
     QString comf_brf;
@@ -56,19 +91,35 @@ struct LifeStyle {
     QString trav_txt;
     QString uv_brf;
     QString uv_txt;
-};
+} LifeStyle;
 
-struct ForecastWeather
+typedef struct _ForecastWeather
 {
     QString id;
     QString city;
     QString cond_code_d;//白天天气状况代码 	100
+    QString cond_code_n;//晚间天气状况代码 	100
     QString cond_txt_d;//白天天气状况描述 	晴
+    QString cond_txt_n;//晚间天气状况描述 	晴
     QString forcast_date;//预报日期 	2013-12-30
     QString hum;//相对湿度 	37
+    QString mr_ms;//月升时间 	04:47   月落时间 	14:59
+    QString pcpn;//降水量 	0
+    QString pop;//降水概率 	0
+    QString pres;//大气压强 	1018
+    QString sr_ss;//日出时间 	07:36   日落时间 	16:58
     QString tmp_max;//最高温度 	4
     QString tmp_min;//最低温度 	-5
-};
+    QString uv_index;//紫外线强度指数 	3
+    QString vis;//能见度，单位：公里 	10
+    QString wind_deg;//风向360角度 	310
+    QString wind_dir;//风向 	西北风
+    QString wind_sc;//风力 	1-2 (级风)
+    QString wind_spd;//风速，公里/小时 	14
+//    _ForecastWeather()
+//        : id(QString())
+//    {}
+} ForecastWeather;
 
 class CitySettingData
 {
@@ -94,6 +145,7 @@ inline bool operator ==(const CitySettingData &data, const CitySettingData &othe
 
 Q_DECLARE_METATYPE(City)
 Q_DECLARE_METATYPE(LifeStyle)
+Q_DECLARE_METATYPE(ObserveWeather)
 Q_DECLARE_METATYPE(ForecastWeather)
 Q_DECLARE_METATYPE(CitySettingData)
 

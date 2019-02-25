@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , m_mousePressed(false)
     , m_isNight(false)
-    , m_weatherWorker(new WeatherWorker(this))
+    , m_weatherWorker(new WeatherWorker(this))//g_weatherWorker
 {
     this->setFixedSize(WIDGET_WIDTH, WIDGET_HEIGHT);
     this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);//需要加上Qt::WindowMinimizeButtonHint，否则showMinimized无效

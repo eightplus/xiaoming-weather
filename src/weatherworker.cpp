@@ -38,8 +38,10 @@ using namespace Global;
 
 WeatherWorker::WeatherWorker(QObject *parent) :
     QObject(parent)
-    , m_networkManager(new QNetworkAccessManager(this))
+//    , m_networkManager(new QNetworkAccessManager(this))
 {
+    m_forecastList.clear();
+    m_networkManager = new QNetworkAccessManager(this);
 //    connect(m_networkManager, &QNetworkAccessManager::finished, this, [] (QNetworkReply *reply) {
 //        reply->deleteLater();
 //    });
@@ -52,9 +54,13 @@ WeatherWorker::WeatherWorker(QObject *parent) :
     m_automatic->start();
 
     //this->requestAccessGeoNameIDByLongitudeAndLatitude(28.1792, 113.114);//QString::arg: Argument missing: 无法解析res_nclose中的符号“res_nclose”：libresolv.so.2, (/lib/x86_64-linux-gnu/libresolv.so.2: undefined symbol: res_nclose)
+    //this->requestAccessGeoNameDataByGeonameId("1804526");
+}
 
-
-    //    this->requestAccessGeoNameDataByGeonameId("1804526");
+WeatherWorker *WeatherWorker::getInstance(void)
+{
+    static WeatherWorker instance;
+    return &instance;
 }
 
 WeatherWorker::~WeatherWorker()
@@ -62,10 +68,15 @@ WeatherWorker::~WeatherWorker()
     m_networkManager->deleteLater();
 }
 
+QList<ForecastWeather> WeatherWorker::getForecastList()
+{
+    return m_forecastList;
+}
+
 void WeatherWorker::setAutoCity(const QString &cityName)
 {
     if (cityName.isEmpty()) {//TODO
-        //this->requestWeatherDataById(m_preferences->m_currentCityId);
+        //this->requestWeatherAndApiDataById(m_preferences->m_currentCityId);
         return;
     }
     //CN101250101,changsha,长沙,CN,China,中国,hunan,湖南,changsha,长沙,28.19409,112.98228,"430101,430100,430000",
@@ -89,8 +100,8 @@ void WeatherWorker::setAutoCity(const QString &cityName)
             }
 
             if (resultList.at(1).compare(cityName, Qt::CaseInsensitive) == 0) {
-                qDebug() << "id=" << id;//id.remove(0, 2);//remove "CN"
-                qDebug() << "city=" << resultList.at(2);
+                //qDebug() << "id=" << id;//id.remove(0, 2);//remove "CN"
+                //qDebug() << "city=" << resultList.at(2);
                 City city;
                 city.id = id;
                 city.name = resultList.at(2);
@@ -106,8 +117,7 @@ void WeatherWorker::setAutoCity(const QString &cityName)
         file.close();
     }
 
-    //TODO:
-//    this->requestWeatherDataById(m_preferences->m_currentCityId);
+    this->requestWeatherAndApiDataById(m_preferences->m_currentCityId);
 }
 
 void WeatherWorker::setCity(const QString &city)
@@ -116,7 +126,7 @@ void WeatherWorker::setCity(const QString &city)
 }
 
 void WeatherWorker::requestSearchCityByInput(const QString &input)
-{ 
+{
     const QString current_lang = QLocale::system().name().split("_").at(0);
     //examples: http://api.geonames.org/search?q=changsha&maxRows=10&username=kobe&lang=zh
     QString url = QString("http://api.geonames.org/search?q=%1&maxRows=10&username=kobe&lang=%2").arg(input).arg(current_lang);
@@ -158,19 +168,34 @@ void WeatherWorker::requestWeatherDataByLongitudeAndLatitude(double latitude, do
     connect(reply, &QNetworkReply::finished, this, &WeatherWorker::onWeatherDataReply);
 }
 
-void WeatherWorker::requestWeatherDataById(const QString &cityId)
+void WeatherWorker::requestWeatherAndApiDataById(const QString &cityId)
 {
+    /*
+     * https://free-api.heweather.com/s6/weather?location=CN101250101&key=4ff2e595e593439380e52d2519523d0a
+     * https://free-api.heweather.net/s6/air/now?location=CN101250101&key=4ff2e595e593439380e52d2519523d0a
+     */
+
+    // 获取实时天气 + 3天天气预报 + 生活指数
     QString url = QString("https://free-api.heweather.com/s6/weather?location=%1&key=4ff2e595e593439380e52d2519523d0a").arg(cityId);
     QNetworkRequest request;
     request.setUrl(url);
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, this, &WeatherWorker::onWeatherDataReply);
+
+
+    url = QString("https://free-api.heweather.net/s6/air/now?location=%1&key=4ff2e595e593439380e52d2519523d0a").arg(cityId);
+    request.setUrl(url);
+    //QEventLoop loop;
+    QNetworkReply *apiReply = m_networkManager->get(request);
+    connect(apiReply, &QNetworkReply::finished, this, &WeatherWorker::onApiDataReply);
+    //connect(apiReply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+    //loop.exec();
 }
 
 void WeatherWorker::onWeatherDataReply()
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
-    int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();//QVariant to int
 
     if(reply->error() != QNetworkReply::NoError || statusCode != 200) {//200 is normal status
         //qDebug() << "weather request error:" << reply->error() << ", statusCode=" << statusCode;
@@ -190,6 +215,137 @@ void WeatherWorker::onWeatherDataReply()
 
     QJsonParseError err;
     QJsonDocument jsonDocument = QJsonDocument::fromJson(ba, &err);
+    if (jsonDocument.isNull() || !jsonDocument.isObject() || err.error != QJsonParseError::NoError) {// Json type error
+        qDebug() << "Json type error or null";
+        return;
+    }
+
+    QJsonArray mainDataJsonArray;
+    QJsonObject jsonObject = jsonDocument.object();
+    //qDebug() << "jsonObject" << jsonObject;
+    if (jsonObject.contains("HeWeather6")) {
+        QJsonValue jsonValue = jsonObject.value("HeWeather6");
+        if (jsonValue.isArray()) {
+            mainDataJsonArray = jsonValue.toArray();
+            QJsonObject mainDataJsonObject = mainDataJsonArray.at(0).toObject();
+
+            // basic
+            if (mainDataJsonObject.contains("basic")) {
+                QJsonObject basicJsonObject = mainDataJsonObject.value("basic").toObject();
+                qDebug() << "cid=" << basicJsonObject.value("cid").toString();
+                qDebug() << "location=" << basicJsonObject.value("location").toString();
+                qDebug() << "parent_city=" << basicJsonObject.value("parent_city").toString();
+                qDebug() << "admin_area=" << basicJsonObject.value("admin_area").toString();
+                qDebug() << "cnty=" << basicJsonObject.value("cnty").toString();
+                qDebug() << "lat=" << basicJsonObject.value("lat").toString().toDouble();
+                qDebug() << "lon=" << basicJsonObject.value("lon").toString().toDouble();
+                qDebug() << "tz=" << basicJsonObject.value("tz").toString();
+            }
+
+            // update time
+            if (mainDataJsonObject.contains("update")) {
+                QJsonObject updateJsonObject = mainDataJsonObject.value("update").toObject();
+                qDebug() << "loc =" << updateJsonObject.value("loc").toString();//QDateTime::fromString()
+                qDebug() << "utc =" << updateJsonObject.value("utc").toString();
+            }
+
+            // status
+            if (mainDataJsonObject.contains("status")) {
+                qDebug() << "status=" << mainDataJsonObject.value("status").toString();
+            }
+
+            // now
+            if (mainDataJsonObject.contains("now")) {
+                QJsonObject nowJsonObject = mainDataJsonObject.value("now").toObject();
+                qDebug() << "cloud=" << nowJsonObject.value("cloud").toString();
+                qDebug() << "cond_code=" << nowJsonObject.value("cond_code").toString();
+                qDebug() << "cond_txt=" << nowJsonObject.value("cond_txt").toString();
+                qDebug() << "fl=" << nowJsonObject.value("fl").toString();
+                qDebug() << "hum=" << nowJsonObject.value("hum").toString();
+                qDebug() << "pcpn=" << nowJsonObject.value("pcpn").toString();
+                qDebug() << "pres=" << nowJsonObject.value("pres").toString();
+                qDebug() << "tmp=" << nowJsonObject.value("tmp").toString();
+                qDebug() << "vis=" << nowJsonObject.value("vis").toString();
+                qDebug() << "wind_deg=" << nowJsonObject.value("wind_deg").toString();
+                qDebug() << "wind_dir=" << nowJsonObject.value("wind_dir").toString();
+                qDebug() << "wind_sc=" << nowJsonObject.value("wind_sc").toString();
+                qDebug() << "wind_spd=" << nowJsonObject.value("wind_spd").toString();
+            }
+
+            // daily_forecast
+            if (mainDataJsonObject.contains("daily_forecast")) {
+                QJsonArray dailyArray = mainDataJsonObject.value("daily_forecast").toArray();
+                foreach (QJsonValue val, dailyArray) {
+                    QJsonObject dailyJsonObject = val.toObject();
+
+                    qDebug() << "Daily cond_code_d=" << dailyJsonObject.value("cond_code_d").toString();
+                    qDebug() << "Daily cond_code_n=" << dailyJsonObject.value("cond_code_n").toString();
+                    qDebug() << "Daily cond_txt_d=" << dailyJsonObject.value("cond_txt_d").toString();
+                    qDebug() << "Daily cond_txt_n=" << dailyJsonObject.value("cond_txt_n").toString();
+                    qDebug() << "Daily date=" << dailyJsonObject.value("date").toString();
+                    qDebug() << "Daily hum=" << dailyJsonObject.value("hum").toString();
+                    qDebug() << "Daily mr=" << dailyJsonObject.value("mr").toString();//QTime::fromString(dailyJsonObject.value("mr").toString(), "hh:mm")
+                    qDebug() << "Daily ms=" << dailyJsonObject.value("ms").toString();
+                    qDebug() << "Daily pcpn=" << dailyJsonObject.value("pcpn").toString();
+                    qDebug() << "Daily pop=" << dailyJsonObject.value("pop").toString();
+                    qDebug() << "Daily pres=" << dailyJsonObject.value("pres").toString();
+                    qDebug() << "Daily sr=" << dailyJsonObject.value("sr").toString();
+                    qDebug() << "Daily ss=" << dailyJsonObject.value("ss").toString();
+
+                    qDebug() << "Daily tmp_max=" << dailyJsonObject.value("tmp_max").toString();
+                    qDebug() << "Daily tmp_min=" << dailyJsonObject.value("tmp_min").toString();
+                    qDebug() << "Daily uv_index=" << dailyJsonObject.value("uv_index").toString();
+                    qDebug() << "Daily vis=" << dailyJsonObject.value("vis").toString();
+                    qDebug() << "Daily wind_deg=" << dailyJsonObject.value("wind_deg").toString();
+                    qDebug() << "Daily wind_dir=" << dailyJsonObject.value("wind_dir").toString();
+                    qDebug() << "Daily wind_sc=" << dailyJsonObject.value("wind_sc").toString();
+                    qDebug() << "Daily wind_spd=" << dailyJsonObject.value("wind_spd").toString();
+
+                    ForecastWeather forecast;
+                    forecast.cond_txt_n = dailyJsonObject.value("cond_txt_n").toString();
+                    m_forecastList.push_back(forecast);
+                }
+            }
+
+            //lifestyle
+            if (mainDataJsonObject.contains("lifestyle")) {
+                QJsonArray lifestyleArray = mainDataJsonObject.value("lifestyle").toArray();
+                foreach (QJsonValue val, lifestyleArray) {//lifestyleArray.isArray()
+                    QJsonObject lifestyleObject = val.toObject();
+                    qDebug() << "type=" << lifestyleObject.value("type").toString();//comf drsg flu sport trav uv cw  air
+                    qDebug() << "brf=" << lifestyleObject.value("brf").toString();
+                    qDebug() << "txt=" << lifestyleObject.value("txt").toString();
+                }
+                //QJsonObject comfObject = lifestyleArray.at(0).toObject();
+                //QJsonObject drsgObject = lifestyleArray.at(1).toObject();
+            }
+        }
+    }
+}
+
+void WeatherWorker::onApiDataReply()
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+    if(reply->error() != QNetworkReply::NoError || statusCode != 200) {//200 is normal status
+        //qDebug() << "weather request error:" << reply->error() << ", statusCode=" << statusCode;
+        if (statusCode == 301 || statusCode == 302) {//redirect
+            reply->close();
+            reply->deleteLater();
+        }
+
+        return;
+    }
+
+    QByteArray ba = reply->readAll();
+    //QString reply_content = QString::fromUtf8(ba);
+    reply->close();
+    reply->deleteLater();
+//    qDebug() << "api size: " << ba.size();
+
+    QJsonParseError err;
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(ba, &err);
     if (err.error != QJsonParseError::NoError) {// Json type error
         qDebug() << "Json type error";
         return;
@@ -199,9 +355,78 @@ void WeatherWorker::onWeatherDataReply()
         return;
     }
 
+    QJsonArray mainDataJsonArray;
     QJsonObject jsonObject = jsonDocument.object();
-    qDebug() << "jsonObject" << jsonObject;
+//    qDebug() << "jsonObject" << jsonObject;
+    if (jsonObject.contains("HeWeather6")) {
+        QJsonValue jsonValue = jsonObject.value("HeWeather6");
+        if (jsonValue.isArray()) {
+            mainDataJsonArray = jsonValue.toArray();
+            QJsonObject mainDataJsonObject = mainDataJsonArray.at(0).toObject();
 
+            // basic
+            if (mainDataJsonObject.contains("basic")) {
+                QJsonObject basicJsonObject = mainDataJsonObject.value("basic").toObject();
+                qDebug() << "cid=" << basicJsonObject.value("cid").toString();
+                qDebug() << "location=" << basicJsonObject.value("location").toString();
+                qDebug() << "parent_city=" << basicJsonObject.value("parent_city").toString();
+                qDebug() << "admin_area=" << basicJsonObject.value("admin_area").toString();
+                qDebug() << "cnty=" << basicJsonObject.value("cnty").toString();
+                qDebug() << "lat=" << basicJsonObject.value("lat").toString().toDouble();
+                qDebug() << "lon=" << basicJsonObject.value("lon").toString().toDouble();
+                qDebug() << "tz=" << basicJsonObject.value("tz").toString();
+            }
+
+            // update time
+            if (mainDataJsonObject.contains("update")) {
+                QJsonObject updateJsonObject = mainDataJsonObject.value("update").toObject();
+                qDebug() << "loc =" << updateJsonObject.value("loc").toString();
+                qDebug() << "utc =" << updateJsonObject.value("utc").toString();
+            }
+
+            // status
+            if (mainDataJsonObject.contains("status")) {
+                qDebug() << "status=" << mainDataJsonObject.value("status").toString();
+            }
+
+            // air_now_city
+            if (mainDataJsonObject.contains("air_now_city")) {
+                QJsonObject ariNowJsonObject = mainDataJsonObject.value("air_now_city").toObject();
+                qDebug() << "aqi=" << ariNowJsonObject.value("aqi").toString();
+                qDebug() << "qlty=" << ariNowJsonObject.value("qlty").toString();
+                qDebug() << "main=" << ariNowJsonObject.value("main").toString();
+                qDebug() << "pm25=" << ariNowJsonObject.value("pm25").toString();
+                qDebug() << "pm10=" << ariNowJsonObject.value("pm10").toString();
+                qDebug() << "no2=" << ariNowJsonObject.value("no2").toString();
+                qDebug() << "so2=" << ariNowJsonObject.value("so2").toString();
+                qDebug() << "co=" << ariNowJsonObject.value("co").toString();
+                qDebug() << "o3=" << ariNowJsonObject.value("o3").toString();
+                qDebug() << "pub_time=" << ariNowJsonObject.value("pub_time").toString();
+            }
+
+            // air_now_station
+            if (mainDataJsonObject.contains("air_now_station")) {
+                QJsonArray airNowArray = mainDataJsonObject.value("air_now_station").toArray();
+                foreach (QJsonValue val, airNowArray) {//airNowArray.isArray()
+                    QJsonObject airNowObject = val.toObject();
+                    qDebug() << "air_sta=" << airNowObject.value("air_sta").toString();
+                    qDebug() << "aqi=" << airNowObject.value("aqi").toString();
+                    qDebug() << "asid=" << airNowObject.value("asid").toString();
+                    qDebug() << "co=" << airNowObject.value("co").toString();
+                    qDebug() << "lat=" << airNowObject.value("lat").toString();
+                    qDebug() << "lon=" << airNowObject.value("lon").toString();
+                    qDebug() << "main=" << airNowObject.value("main").toString();
+                    qDebug() << "no2=" << airNowObject.value("no2").toString();
+                    qDebug() << "o3=" << airNowObject.value("o3").toString();
+                    qDebug() << "pm10=" << airNowObject.value("pm10").toString();
+                    qDebug() << "pm25=" << airNowObject.value("pm25").toString();
+                    qDebug() << "pub_time=" << airNowObject.value("pub_time").toString();
+                    qDebug() << "qlty=" << airNowObject.value("qlty").toString();
+                    qDebug() << "so2=" << airNowObject.value("so2").toString();
+                }
+            }
+        }
+    }
 }
 
 void WeatherWorker::onSearchCityReply()

@@ -38,7 +38,7 @@ GEOIP_API unsigned long _GeoIP_lookupaddress(const char *host); //_GeoIP_lookupa
 
 namespace {
 
-const QString getIpAddrByUrl(const QString &url)
+const QString getPublicIpAddrByUrl(const QString &url)
 {
     QNetworkAccessManager *manager = new QNetworkAccessManager();
     QNetworkReply *reply = manager->get(QNetworkRequest(QUrl(url)));
@@ -47,6 +47,7 @@ const QString getIpAddrByUrl(const QString &url)
     QObject::connect(manager, SIGNAL(finished(QNetworkReply *)), &loop, SLOT(quit()));
     loop.exec();
     ba = reply->readAll();
+
     QString reply_content = QString::fromUtf8(ba);
     reply->close();
     reply->deleteLater();
@@ -58,9 +59,13 @@ const QString getIpAddrByUrl(const QString &url)
         htmlStr = htmlStr.replace("\n", "");
         QStringList htmlList = htmlStr.split("<br/>");
         if(htmlList.size() >= 4) {
-            QString ipStr = htmlList.at(3);
-            QStringList ipList = ipStr.split("=");
+            QStringList ipList = htmlList.at(4).split("=");
             if (ipList.count() > 1) {
+                if (ipList.at(1).contains(",")) {
+                    ipList = ipList.at(1).split(",");
+                    return ipList.at(0);
+                }
+
                 return ipList.at(1);
             }
         }
@@ -89,8 +94,9 @@ const QString getCityFromIPAddr(const QString &ip)
 
 const QString automaicCity()
 {
-    QString ip = getIpAddrByUrl("http://whois.pconline.com.cn/");
-    return getCityFromIPAddr(ip);
+    QString publicIP = getPublicIpAddrByUrl("http://whois.pconline.com.cn/");
+    qDebug() << "publicIP=" << publicIP;
+    return getCityFromIPAddr(publicIP);
 }
 }
 
