@@ -73,7 +73,12 @@ SOURCES += src/main.cpp \
     src/preferences.cpp \
     src/global.cpp \
     src/weatherworker.cpp \
-    src/automaticlocation.cpp
+    src/automaticlocation.cpp \
+    src/weatherbaseanalysiser.cpp \
+    src/weatherairanalysiser.cpp \
+    src/weathernowanalysiser.cpp \
+    src/weatherforecastanalysiser.cpp \
+    src/weatherlifestyleanalysiser.cpp
 
 HEADERS  += src/mainwindow.h \
     src/titlebar.h \
@@ -109,7 +114,12 @@ HEADERS  += src/mainwindow.h \
     src/preferences.h \
     src/global.h \
     src/weatherworker.h \
-    src/automaticlocation.h
+    src/automaticlocation.h \
+    src/weatherbaseanalysiser.h \
+    src/weatherairanalysiser.h \
+    src/weathernowanalysiser.h \
+    src/weatherforecastanalysiser.h \
+    src/weatherlifestyleanalysiser.h
 
 TRANSLATIONS += \
     translation/xiaoming-weather_zh_CN.ts

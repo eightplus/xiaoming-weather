@@ -29,6 +29,11 @@
 #include "data.h"
 
 class AutomaticLocation;
+class WeatherBaseAnalysiser;
+class WeatherAirAnalysiser;
+class WeatherNowAnalysiser;
+class WeatherForecastAnalysiser;
+class WeatherLifestyleAnalysiser;
 
 #define g_weatherWorker WeatherWorker::getInstance()
 
@@ -37,6 +42,14 @@ class WeatherWorker : public QObject
     Q_OBJECT
 
 public:
+    enum WeatherType
+    {
+        W_Now_Type = 0,
+        W_Forecast_Type,
+        W_LifeStyle_Type,
+        W_Air_Type
+    };
+
     explicit WeatherWorker(QObject *parent = 0);
     ~WeatherWorker();
 
@@ -48,6 +61,11 @@ public:
     void setCity(const QString &city);
     void requestAccessGeoNameIDByLongitudeAndLatitude(double latitude, double longitude);
     void requestAccessGeoNameDataByGeonameId(const QString &geonameId);
+
+    ObserveWeather getObserveData();
+    QList<ForecastWeather> getForecastData();
+    QList<LifeStyle> getLifestyleData();
+    Air getAirData();
 
 public slots:
     void onWeatherDataReply();
@@ -64,6 +82,8 @@ private:
     QString m_city;
     AutomaticLocation *m_automatic = nullptr;
     QList<ForecastWeather> m_forecastList;
+    QMap<WeatherType, WeatherBaseAnalysiser*> m_weatherMap;
+    WeatherType m_weatherType;
 };
 
 #endif // WEATHERWORKER_H

@@ -18,6 +18,10 @@
  */
 
 #include "weatherworker.h"
+#include "weatherairanalysiser.h"
+#include "weathernowanalysiser.h"
+#include "weatherforecastanalysiser.h"
+#include "weatherlifestyleanalysiser.h"
 
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -41,6 +45,12 @@ WeatherWorker::WeatherWorker(QObject *parent) :
 //    , m_networkManager(new QNetworkAccessManager(this))
 {
     m_forecastList.clear();
+    m_weatherMap.clear();
+    /*m_weatherMap.insert(W_Now_Type, new WeatherNowAnalysiser);
+    m_weatherMap.insert(W_Forecast_Type, new WeatherForecastAnalysiser);
+    m_weatherMap.insert(W_LifeStyle_Type, new WeatherLifestyleAnalysiser);
+    m_weatherMap.insert(W_Air_Type, new WeatherAirAnalysiser);*/
+
     m_networkManager = new QNetworkAccessManager(this);
 //    connect(m_networkManager, &QNetworkAccessManager::finished, this, [] (QNetworkReply *reply) {
 //        reply->deleteLater();
@@ -219,6 +229,10 @@ void WeatherWorker::onWeatherDataReply()
         qDebug() << "Json type error or null";
         return;
     }
+
+
+//    m_weatherType = W_Air_Type;
+//    m_weatherMap[m_weatherType]->parseJson(mainDataJsonObject);
 
     QJsonArray mainDataJsonArray;
     QJsonObject jsonObject = jsonDocument.object();
@@ -525,5 +539,49 @@ void WeatherWorker::onGeoNameDataByGeonameIdReply()
     QDomElement nameElement = rootElement.firstChildElement("name");
     if (!nameElement.text().isEmpty()) {
         qDebug() << "City=" << nameElement.text();
+    }
+}
+
+QList<ForecastWeather> WeatherWorker::getForecastData()
+{
+    WeatherForecastAnalysiser *forecastAnalysiser = dynamic_cast<WeatherForecastAnalysiser*>(m_weatherMap[W_Forecast_Type]);
+    if (forecastAnalysiser) {
+        return forecastAnalysiser->getForecastData();
+    }
+    else {
+        return QList<ForecastWeather>();
+    }
+}
+
+ObserveWeather WeatherWorker::getObserveData()
+{
+    WeatherNowAnalysiser *observeAnalysiser = dynamic_cast<WeatherNowAnalysiser*>(m_weatherMap[W_Now_Type]);
+    if (observeAnalysiser) {
+        return observeAnalysiser->getObserveData();
+    }
+    else {
+        return ObserveWeather();
+    }
+}
+
+QList<LifeStyle> WeatherWorker::getLifestyleData()
+{
+    WeatherLifestyleAnalysiser *lifestyleAnalysiser = dynamic_cast<WeatherLifestyleAnalysiser*>(m_weatherMap[W_LifeStyle_Type]);
+    if (lifestyleAnalysiser) {
+        return lifestyleAnalysiser->getLifestyleData();
+    }
+    else {
+        return QList<LifeStyle>();
+    }
+}
+
+Air WeatherWorker::getAirData()
+{
+    WeatherAirAnalysiser *airAnalysiser = dynamic_cast<WeatherAirAnalysiser*>(m_weatherMap[W_Air_Type]);
+    if (airAnalysiser) {
+        return airAnalysiser->getAirData();
+    }
+    else {
+        return Air();
     }
 }
