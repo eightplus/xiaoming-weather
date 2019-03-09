@@ -30,9 +30,35 @@ struct City
     double longitude;
 };
 
+//城市各行政区的空气质量结构体
+typedef struct _DistrictAir
+{
+    QString pub_time;
+    QString air_sta;
+    QString aqi;
+    QString asid;
+    QString co;
+    QString lat;
+    QString lon;
+    QString main;
+    QString no2;
+    QString o3;
+    QString pm10;
+    QString pm25;
+    QString qlty;
+    QString so2;
+} DistrictAir;
+
+//城市空气质量结构体
 typedef struct _Air
 {
-    QString id;
+//    QString id;
+//    QString city;
+    QString lat;
+    QString lon;
+    QString tz;
+    QString updateTime;
+    QString pubTime;
     QString aqi;
     QString qlty;
     QString main;
@@ -42,14 +68,19 @@ typedef struct _Air
     QString so2;
     QString co;
     QString o3;
+    QList<DistrictAir> districtAirs;
+    _Air()
+    {
+        districtAirs.clear();
+    }
 } Air;
 
 typedef struct _ObserveWeather
 {
-    QString id;
-    QString city;
-    QString updatetime;
-    QString air;//空气质量
+//    QString id;
+//    QString city;
+//    QString updatetime;
+//    QString air;//空气质量
     QString cloud;//云量
     QString cond_code;//实况天气状况代码 	100
     QString cond_txt;//实况天气状况描述 晴
@@ -95,8 +126,8 @@ typedef struct _LifeStyle {
 
 typedef struct _ForecastWeather
 {
-    QString id;
-    QString city;
+//    QString id;
+//    QString city;
     QString cond_code_d;//白天天气状况代码 	100
     QString cond_code_n;//晚间天气状况代码 	100
     QString cond_txt_d;//白天天气状况描述 	晴

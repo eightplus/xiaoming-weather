@@ -121,6 +121,10 @@ MainWindow::MainWindow(QWidget *parent)
 //           "; exec bash'");
 
 //    xterm -e "cd /etc; bash"
+
+    connect(m_weatherWorker, &WeatherWorker::readyUpdateWeather, this, [=] () {
+        m_weatherWidget->onUpdateWeather();
+    });
 }
 
 MainWindow::~MainWindow()

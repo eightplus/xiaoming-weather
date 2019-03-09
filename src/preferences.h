@@ -51,8 +51,14 @@ public:
 
     QString m_currentCityId;
     QString m_currentCity;
+    QString m_updateTime;
     int m_maxCityItems;
     QMap<QString, QString> m_cityMap;
+
+    ObserveWeather m_observeWeather;
+    QList<ForecastWeather> m_forecasts;
+    LifeStyle m_lifestyle;
+    Air m_air;
 };
 
 #endif // PREFERENCES_H

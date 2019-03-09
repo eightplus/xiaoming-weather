@@ -21,6 +21,10 @@
 #include "imagebutton.h"
 #include "aqitooltip.h"
 
+#include "preferences.h"
+#include "global.h"
+using namespace Global;
+
 #include <QApplication>
 #include <QDebug>
 #include <QMouseEvent>
@@ -147,7 +151,8 @@ void WeatherNowWidget::paintEvent(QPaintEvent *event)
 
     QRect dateRect(5 ,0, this->width()- 5*2, dateLineHeight);
     dateRect.moveTop(dateTopOffset);
-    painter.drawText(dateRect, Qt::AlignLeft, tr("08月12日 周日 农历七月初二"));
+    painter.drawText(dateRect, Qt::AlignLeft, m_preferences->m_updateTime);
+//    painter.drawText(dateRect, Qt::AlignLeft, tr("08月12日 周日 农历七月初二"));
 
     painter.setRenderHint(QPainter::Antialiasing, true);
     QPixmap icon = QPixmap(":/res/101.png");
@@ -164,8 +169,8 @@ void WeatherNowWidget::paintEvent(QPaintEvent *event)
     painter.setPen(pen);
     painter.setFont(font);
 
-    const int temperature = 37;
-    QString tempText = QString("%1").arg(temperature);
+//    const int temperature = 37;
+    QString tempText = QString("%1").arg(m_preferences->m_observeWeather.tmp);
 
     QRect nowTempRect(30, dateRect.bottom(), fm.width(tempText), 60);
     painter.drawText(nowTempRect, Qt::AlignTop | Qt::AlignRight, tempText);
@@ -187,13 +192,30 @@ void WeatherNowWidget::paintEvent(QPaintEvent *event)
 
     QRect weatherRect(0, 0, width(), itemHeight);
     weatherRect.moveTop(weatherTopOffset);
-    painter.drawText(weatherRect, Qt::AlignCenter, "多云");
+    painter.drawText(weatherRect, Qt::AlignCenter, m_preferences->m_observeWeather.cond_txt);
+
+
+
+//    QString cloud;//云量
+//    QString cond_code;//实况天气状况代码 	100
+//    QString cond_txt;//实况天气状况描述 晴
+//    QString fl;//体感温度，默认单位：摄氏度 	23
+//    QString hum;//相对湿度 	40
+//    QString pcpn;//降水量(毫米 mm) 	0
+//    QString pres;//大气压强(百帕 hPa) 	1020
+//    QString tmp;//温度，默认单位：摄氏度℃ 	21
+//    QString vis;//能见度，默认单位：公里 km 	10
+//    QString wind_deg;//风向360角度 	305
+//    QString wind_dir;//风向 	西北
+//    QString wind_sc;//风力 	3 (0:静风  1:1级风)
+//    QString wind_spd;//风速，公里/小时 km/h 	15
+
 
     QRect tempRect(0, weatherRect.bottom(), width(), itemHeight);
-    painter.drawText(tempRect, Qt::AlignCenter, "28 ~ 36℃");
+    painter.drawText(tempRect, Qt::AlignCenter, QString("%1℃").arg(m_preferences->m_observeWeather.tmp));
 
     QRect windRect(0, tempRect.bottom(), width(), itemHeight);
-    painter.drawText(windRect, Qt::AlignCenter, "东北风微风");
+    painter.drawText(windRect, Qt::AlignCenter, QString("%1 %2").arg(m_preferences->m_observeWeather.wind_dir).arg(m_preferences->m_observeWeather.wind_dir));
 
     QRect aqiRect(width()/2 - 40, windRect.bottom(), 40*2, itemHeight);
     QMarginsF shadowMargins = QMarginsF(2.0, 2.0, 2.0, 2.0);
@@ -204,11 +226,11 @@ void WeatherNowWidget::paintEvent(QPaintEvent *event)
     QPixmap pixmap = QPixmap(":/res/aqi.png");
     QRect aqiIconRect(aqiRect.x() + 5, aqiRect.center().y() -pixmap.height()/2, pixmap.width(), pixmap.height());
     painter.drawPixmap(aqiIconRect, pixmap);
-    painter.drawText(aqiRect, Qt::AlignCenter, "70 良");
+    painter.drawText(aqiRect, Qt::AlignCenter, QString("%1 (%2)").arg(m_preferences->m_air.aqi).arg(m_preferences->m_air.qlty));
 
     if (!m_locationBtn->isVisible()) {
         fm = QFontMetrics(font);
-        QString currentCity = "长沙";
+        QString currentCity = m_preferences->m_currentCity;
         QRect cityRect(width() - fm.width(currentCity) - 10, dateRect.y(), fm.width(currentCity), dateLineHeight);
         painter.drawText(cityRect, Qt::AlignTop | Qt::AlignRight, fm.elidedText(currentCity, Qt::ElideRight, cityRect.width()));
     }

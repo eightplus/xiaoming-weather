@@ -36,6 +36,9 @@ public:
     explicit WeatherWidget(QWidget *parent = 0);
     ~ WeatherWidget();
 
+public slots:
+    void onUpdateWeather();
+
 signals:
     void locationBtnClicked();
 

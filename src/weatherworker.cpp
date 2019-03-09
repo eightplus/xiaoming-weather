@@ -192,7 +192,7 @@ void WeatherWorker::requestWeatherAndApiDataById(const QString &cityId)
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, this, &WeatherWorker::onWeatherDataReply);
 
-
+    // 获取空气质量数据
     url = QString("https://free-api.heweather.net/s6/air/now?location=%1&key=4ff2e595e593439380e52d2519523d0a").arg(cityId);
     request.setUrl(url);
     //QEventLoop loop;
@@ -202,6 +202,7 @@ void WeatherWorker::requestWeatherAndApiDataById(const QString &cityId)
     //loop.exec();
 }
 
+// 解析实时天气 + 3天天气预报 + 生活指数
 void WeatherWorker::onWeatherDataReply()
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
@@ -240,50 +241,69 @@ void WeatherWorker::onWeatherDataReply()
     if (jsonObject.contains("HeWeather6")) {
         QJsonValue jsonValue = jsonObject.value("HeWeather6");
         if (jsonValue.isArray()) {
+            QString m_status;
             mainDataJsonArray = jsonValue.toArray();
             QJsonObject mainDataJsonObject = mainDataJsonArray.at(0).toObject();
 
             // basic
             if (mainDataJsonObject.contains("basic")) {
                 QJsonObject basicJsonObject = mainDataJsonObject.value("basic").toObject();
-                qDebug() << "cid=" << basicJsonObject.value("cid").toString();
-                qDebug() << "location=" << basicJsonObject.value("location").toString();
-                qDebug() << "parent_city=" << basicJsonObject.value("parent_city").toString();
-                qDebug() << "admin_area=" << basicJsonObject.value("admin_area").toString();
-                qDebug() << "cnty=" << basicJsonObject.value("cnty").toString();
-                qDebug() << "lat=" << basicJsonObject.value("lat").toString().toDouble();
-                qDebug() << "lon=" << basicJsonObject.value("lon").toString().toDouble();
-                qDebug() << "tz=" << basicJsonObject.value("tz").toString();
+                m_preferences->m_currentCityId = basicJsonObject.value("cid").toString();
+                m_preferences->m_currentCity = basicJsonObject.value("location").toString();
+//                qDebug() << "cid=" << basicJsonObject.value("cid").toString();
+//                qDebug() << "location=" << basicJsonObject.value("location").toString();
+//                qDebug() << "parent_city=" << basicJsonObject.value("parent_city").toString();
+//                qDebug() << "admin_area=" << basicJsonObject.value("admin_area").toString();
+//                qDebug() << "cnty=" << basicJsonObject.value("cnty").toString();
+//                qDebug() << "lat=" << basicJsonObject.value("lat").toString().toDouble();
+//                qDebug() << "lon=" << basicJsonObject.value("lon").toString().toDouble();
+//                qDebug() << "tz=" << basicJsonObject.value("tz").toString();
             }
 
             // update time
             if (mainDataJsonObject.contains("update")) {
                 QJsonObject updateJsonObject = mainDataJsonObject.value("update").toObject();
-                qDebug() << "loc =" << updateJsonObject.value("loc").toString();//QDateTime::fromString()
-                qDebug() << "utc =" << updateJsonObject.value("utc").toString();
+                m_preferences->m_updateTime = updateJsonObject.value("loc").toString();
+//                qDebug() << "loc =" << updateJsonObject.value("loc").toString();//QDateTime::fromString()
+//                qDebug() << "utc =" << updateJsonObject.value("utc").toString();
             }
 
             // status
             if (mainDataJsonObject.contains("status")) {
-                qDebug() << "status=" << mainDataJsonObject.value("status").toString();
+                m_status = mainDataJsonObject.value("status").toString();
+//                qDebug() << "status=" << mainDataJsonObject.value("status").toString();
             }
 
             // now
             if (mainDataJsonObject.contains("now")) {
                 QJsonObject nowJsonObject = mainDataJsonObject.value("now").toObject();
-                qDebug() << "cloud=" << nowJsonObject.value("cloud").toString();
-                qDebug() << "cond_code=" << nowJsonObject.value("cond_code").toString();
-                qDebug() << "cond_txt=" << nowJsonObject.value("cond_txt").toString();
-                qDebug() << "fl=" << nowJsonObject.value("fl").toString();
-                qDebug() << "hum=" << nowJsonObject.value("hum").toString();
-                qDebug() << "pcpn=" << nowJsonObject.value("pcpn").toString();
-                qDebug() << "pres=" << nowJsonObject.value("pres").toString();
-                qDebug() << "tmp=" << nowJsonObject.value("tmp").toString();
-                qDebug() << "vis=" << nowJsonObject.value("vis").toString();
-                qDebug() << "wind_deg=" << nowJsonObject.value("wind_deg").toString();
-                qDebug() << "wind_dir=" << nowJsonObject.value("wind_dir").toString();
-                qDebug() << "wind_sc=" << nowJsonObject.value("wind_sc").toString();
-                qDebug() << "wind_spd=" << nowJsonObject.value("wind_spd").toString();
+//                qDebug() << "cloud=" << nowJsonObject.value("cloud").toString();
+//                qDebug() << "cond_code=" << nowJsonObject.value("cond_code").toString();
+//                qDebug() << "cond_txt=" << nowJsonObject.value("cond_txt").toString();
+//                qDebug() << "fl=" << nowJsonObject.value("fl").toString();
+//                qDebug() << "hum=" << nowJsonObject.value("hum").toString();
+//                qDebug() << "pcpn=" << nowJsonObject.value("pcpn").toString();
+//                qDebug() << "pres=" << nowJsonObject.value("pres").toString();
+//                qDebug() << "tmp=" << nowJsonObject.value("tmp").toString();
+//                qDebug() << "vis=" << nowJsonObject.value("vis").toString();
+//                qDebug() << "wind_deg=" << nowJsonObject.value("wind_deg").toString();
+//                qDebug() << "wind_dir=" << nowJsonObject.value("wind_dir").toString();
+//                qDebug() << "wind_sc=" << nowJsonObject.value("wind_sc").toString();
+//                qDebug() << "wind_spd=" << nowJsonObject.value("wind_spd").toString();
+
+                m_preferences->m_observeWeather.cloud = nowJsonObject.value("cloud").toString();
+                m_preferences->m_observeWeather.cond_code = nowJsonObject.value("cond_code").toString();
+                m_preferences->m_observeWeather.cond_txt = nowJsonObject.value("cond_txt").toString();
+                m_preferences->m_observeWeather.fl = nowJsonObject.value("fl").toString();
+                m_preferences->m_observeWeather.hum = nowJsonObject.value("hum").toString();
+                m_preferences->m_observeWeather.pcpn = nowJsonObject.value("pcpn").toString();
+                m_preferences->m_observeWeather.pres = nowJsonObject.value("pres").toString();
+                m_preferences->m_observeWeather.tmp = nowJsonObject.value("tmp").toString();
+                m_preferences->m_observeWeather.vis = nowJsonObject.value("vis").toString();
+                m_preferences->m_observeWeather.wind_deg = nowJsonObject.value("wind_deg").toString();
+                m_preferences->m_observeWeather.wind_dir = nowJsonObject.value("wind_dir").toString();
+                m_preferences->m_observeWeather.wind_sc = nowJsonObject.value("wind_sc").toString();
+                m_preferences->m_observeWeather.wind_spd = nowJsonObject.value("wind_spd").toString();
             }
 
             // daily_forecast
@@ -292,32 +312,51 @@ void WeatherWorker::onWeatherDataReply()
                 foreach (QJsonValue val, dailyArray) {
                     QJsonObject dailyJsonObject = val.toObject();
 
-                    qDebug() << "Daily cond_code_d=" << dailyJsonObject.value("cond_code_d").toString();
-                    qDebug() << "Daily cond_code_n=" << dailyJsonObject.value("cond_code_n").toString();
-                    qDebug() << "Daily cond_txt_d=" << dailyJsonObject.value("cond_txt_d").toString();
-                    qDebug() << "Daily cond_txt_n=" << dailyJsonObject.value("cond_txt_n").toString();
-                    qDebug() << "Daily date=" << dailyJsonObject.value("date").toString();
-                    qDebug() << "Daily hum=" << dailyJsonObject.value("hum").toString();
-                    qDebug() << "Daily mr=" << dailyJsonObject.value("mr").toString();//QTime::fromString(dailyJsonObject.value("mr").toString(), "hh:mm")
-                    qDebug() << "Daily ms=" << dailyJsonObject.value("ms").toString();
-                    qDebug() << "Daily pcpn=" << dailyJsonObject.value("pcpn").toString();
-                    qDebug() << "Daily pop=" << dailyJsonObject.value("pop").toString();
-                    qDebug() << "Daily pres=" << dailyJsonObject.value("pres").toString();
-                    qDebug() << "Daily sr=" << dailyJsonObject.value("sr").toString();
-                    qDebug() << "Daily ss=" << dailyJsonObject.value("ss").toString();
+//                    qDebug() << "Daily cond_code_d=" << dailyJsonObject.value("cond_code_d").toString();
+//                    qDebug() << "Daily cond_code_n=" << dailyJsonObject.value("cond_code_n").toString();
+//                    qDebug() << "Daily cond_txt_d=" << dailyJsonObject.value("cond_txt_d").toString();
+//                    qDebug() << "Daily cond_txt_n=" << dailyJsonObject.value("cond_txt_n").toString();
+//                    qDebug() << "Daily date=" << dailyJsonObject.value("date").toString();
+//                    qDebug() << "Daily hum=" << dailyJsonObject.value("hum").toString();
+//                    qDebug() << "Daily mr=" << dailyJsonObject.value("mr").toString();//QTime::fromString(dailyJsonObject.value("mr").toString(), "hh:mm")
+//                    qDebug() << "Daily ms=" << dailyJsonObject.value("ms").toString();
+//                    qDebug() << "Daily pcpn=" << dailyJsonObject.value("pcpn").toString();
+//                    qDebug() << "Daily pop=" << dailyJsonObject.value("pop").toString();
+//                    qDebug() << "Daily pres=" << dailyJsonObject.value("pres").toString();
+//                    qDebug() << "Daily sr=" << dailyJsonObject.value("sr").toString();
+//                    qDebug() << "Daily ss=" << dailyJsonObject.value("ss").toString();
 
-                    qDebug() << "Daily tmp_max=" << dailyJsonObject.value("tmp_max").toString();
-                    qDebug() << "Daily tmp_min=" << dailyJsonObject.value("tmp_min").toString();
-                    qDebug() << "Daily uv_index=" << dailyJsonObject.value("uv_index").toString();
-                    qDebug() << "Daily vis=" << dailyJsonObject.value("vis").toString();
-                    qDebug() << "Daily wind_deg=" << dailyJsonObject.value("wind_deg").toString();
-                    qDebug() << "Daily wind_dir=" << dailyJsonObject.value("wind_dir").toString();
-                    qDebug() << "Daily wind_sc=" << dailyJsonObject.value("wind_sc").toString();
-                    qDebug() << "Daily wind_spd=" << dailyJsonObject.value("wind_spd").toString();
+//                    qDebug() << "Daily tmp_max=" << dailyJsonObject.value("tmp_max").toString();
+//                    qDebug() << "Daily tmp_min=" << dailyJsonObject.value("tmp_min").toString();
+//                    qDebug() << "Daily uv_index=" << dailyJsonObject.value("uv_index").toString();
+//                    qDebug() << "Daily vis=" << dailyJsonObject.value("vis").toString();
+//                    qDebug() << "Daily wind_deg=" << dailyJsonObject.value("wind_deg").toString();
+//                    qDebug() << "Daily wind_dir=" << dailyJsonObject.value("wind_dir").toString();
+//                    qDebug() << "Daily wind_sc=" << dailyJsonObject.value("wind_sc").toString();
+//                    qDebug() << "Daily wind_spd=" << dailyJsonObject.value("wind_spd").toString();
 
                     ForecastWeather forecast;
+                    forecast.cond_code_d = dailyJsonObject.value("cond_code_d").toString();
+                    forecast.cond_code_n = dailyJsonObject.value("cond_code_n").toString();
+                    forecast.cond_txt_d = dailyJsonObject.value("cond_txt_d").toString();
                     forecast.cond_txt_n = dailyJsonObject.value("cond_txt_n").toString();
-                    m_forecastList.push_back(forecast);
+                    forecast.forcast_date = dailyJsonObject.value("date").toString();
+                    forecast.hum = dailyJsonObject.value("hum").toString();
+                    forecast.mr_ms = dailyJsonObject.value("mr").toString() + "+" + dailyJsonObject.value("ms").toString();
+                    forecast.pcpn = dailyJsonObject.value("pcpn").toString();
+                    forecast.pop = dailyJsonObject.value("pop").toString();
+                    forecast.pres = dailyJsonObject.value("pres").toString();
+                    forecast.sr_ss = dailyJsonObject.value("sr").toString() + "+" + dailyJsonObject.value("ss").toString();
+                    forecast.tmp_max = dailyJsonObject.value("tmp_max").toString();
+                    forecast.tmp_min = dailyJsonObject.value("tmp_min").toString();
+                    forecast.uv_index = dailyJsonObject.value("uv_index").toString();
+                    forecast.vis = dailyJsonObject.value("vis").toString();
+                    forecast.wind_deg = dailyJsonObject.value("wind_deg").toString();
+                    forecast.wind_dir = dailyJsonObject.value("wind_dir").toString();
+                    forecast.wind_sc = dailyJsonObject.value("wind_sc").toString();
+                    forecast.wind_spd = dailyJsonObject.value("wind_spd").toString();
+                    //m_forecastList.push_back(forecast);
+                    m_preferences->m_forecasts.push_back(forecast);
                 }
             }
 
@@ -326,17 +365,54 @@ void WeatherWorker::onWeatherDataReply()
                 QJsonArray lifestyleArray = mainDataJsonObject.value("lifestyle").toArray();
                 foreach (QJsonValue val, lifestyleArray) {//lifestyleArray.isArray()
                     QJsonObject lifestyleObject = val.toObject();
-                    qDebug() << "type=" << lifestyleObject.value("type").toString();//comf drsg flu sport trav uv cw  air
-                    qDebug() << "brf=" << lifestyleObject.value("brf").toString();
-                    qDebug() << "txt=" << lifestyleObject.value("txt").toString();
+                    if (lifestyleObject.value("type").toString() == "comf") {
+                        m_preferences->m_lifestyle.comf_brf = lifestyleObject.value("brf").toString();
+                        m_preferences->m_lifestyle.comf_txt = lifestyleObject.value("txt").toString();
+                    }
+                    else if (lifestyleObject.value("type").toString() == "drsg") {
+                        m_preferences->m_lifestyle.drsg_brf = lifestyleObject.value("brf").toString();
+                        m_preferences->m_lifestyle.drsg_txt = lifestyleObject.value("txt").toString();
+                    }
+                    else if (lifestyleObject.value("type").toString() == "flu") {
+                        m_preferences->m_lifestyle.flu_brf = lifestyleObject.value("brf").toString();
+                        m_preferences->m_lifestyle.flu_txt = lifestyleObject.value("txt").toString();
+                    }
+                    else if (lifestyleObject.value("type").toString() == "sport") {
+                        m_preferences->m_lifestyle.sport_brf = lifestyleObject.value("brf").toString();
+                        m_preferences->m_lifestyle.sport_txt = lifestyleObject.value("txt").toString();
+                    }
+                    else if (lifestyleObject.value("type").toString() == "trav") {
+                        m_preferences->m_lifestyle.trav_brf = lifestyleObject.value("brf").toString();
+                        m_preferences->m_lifestyle.trav_txt = lifestyleObject.value("txt").toString();
+                    }
+                    else if (lifestyleObject.value("type").toString() == "uv") {
+                        m_preferences->m_lifestyle.uv_brf = lifestyleObject.value("brf").toString();
+                        m_preferences->m_lifestyle.uv_txt = lifestyleObject.value("txt").toString();
+                    }
+                    else if (lifestyleObject.value("type").toString() == "cw") {
+                        m_preferences->m_lifestyle.cw_brf = lifestyleObject.value("brf").toString();
+                        m_preferences->m_lifestyle.cw_txt = lifestyleObject.value("txt").toString();
+                    }
+                    else if (lifestyleObject.value("type").toString() == "air") {
+                        m_preferences->m_lifestyle.air_brf = lifestyleObject.value("brf").toString();
+                        m_preferences->m_lifestyle.air_txt = lifestyleObject.value("txt").toString();
+                    }
+//                    qDebug() << "type=" << lifestyleObject.value("type").toString();//comf drsg flu sport trav uv cw  air
+//                    qDebug() << "brf=" << lifestyleObject.value("brf").toString();
+//                    qDebug() << "txt=" << lifestyleObject.value("txt").toString();
                 }
                 //QJsonObject comfObject = lifestyleArray.at(0).toObject();
                 //QJsonObject drsgObject = lifestyleArray.at(1).toObject();
+            }
+
+            if (m_status == "ok") {
+                emit this->readyUpdateWeather();
             }
         }
     }
 }
 
+// 解析空气质量数据
 void WeatherWorker::onApiDataReply()
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
@@ -375,47 +451,64 @@ void WeatherWorker::onApiDataReply()
     if (jsonObject.contains("HeWeather6")) {
         QJsonValue jsonValue = jsonObject.value("HeWeather6");
         if (jsonValue.isArray()) {
+            QString m_status;
             mainDataJsonArray = jsonValue.toArray();
             QJsonObject mainDataJsonObject = mainDataJsonArray.at(0).toObject();
 
             // basic
             if (mainDataJsonObject.contains("basic")) {
                 QJsonObject basicJsonObject = mainDataJsonObject.value("basic").toObject();
-                qDebug() << "cid=" << basicJsonObject.value("cid").toString();
-                qDebug() << "location=" << basicJsonObject.value("location").toString();
-                qDebug() << "parent_city=" << basicJsonObject.value("parent_city").toString();
-                qDebug() << "admin_area=" << basicJsonObject.value("admin_area").toString();
-                qDebug() << "cnty=" << basicJsonObject.value("cnty").toString();
-                qDebug() << "lat=" << basicJsonObject.value("lat").toString().toDouble();
-                qDebug() << "lon=" << basicJsonObject.value("lon").toString().toDouble();
-                qDebug() << "tz=" << basicJsonObject.value("tz").toString();
+                m_preferences->m_air.lat = basicJsonObject.value("lat").toString();
+                m_preferences->m_air.lon = basicJsonObject.value("lon").toString();
+                m_preferences->m_air.tz = basicJsonObject.value("tz").toString();
+//                qDebug() << "cid=" << basicJsonObject.value("cid").toString();
+//                qDebug() << "location=" << basicJsonObject.value("location").toString();
+//                qDebug() << "parent_city=" << basicJsonObject.value("parent_city").toString();
+//                qDebug() << "admin_area=" << basicJsonObject.value("admin_area").toString();
+//                qDebug() << "cnty=" << basicJsonObject.value("cnty").toString();
+//                qDebug() << "lat=" << basicJsonObject.value("lat").toString().toDouble();
+//                qDebug() << "lon=" << basicJsonObject.value("lon").toString().toDouble();
+//                qDebug() << "tz=" << basicJsonObject.value("tz").toString();
             }
 
             // update time
             if (mainDataJsonObject.contains("update")) {
                 QJsonObject updateJsonObject = mainDataJsonObject.value("update").toObject();
-                qDebug() << "loc =" << updateJsonObject.value("loc").toString();
-                qDebug() << "utc =" << updateJsonObject.value("utc").toString();
+                m_preferences->m_air.updateTime = updateJsonObject.value("loc").toString();
+//                qDebug() << "loc =" << updateJsonObject.value("loc").toString();
+//                qDebug() << "utc =" << updateJsonObject.value("utc").toString();
             }
 
             // status
             if (mainDataJsonObject.contains("status")) {
-                qDebug() << "status=" << mainDataJsonObject.value("status").toString();
+                m_status = mainDataJsonObject.value("status").toString();
+//                qDebug() << "air aqi status=" << mainDataJsonObject.value("status").toString();
             }
 
             // air_now_city
             if (mainDataJsonObject.contains("air_now_city")) {
                 QJsonObject ariNowJsonObject = mainDataJsonObject.value("air_now_city").toObject();
-                qDebug() << "aqi=" << ariNowJsonObject.value("aqi").toString();
-                qDebug() << "qlty=" << ariNowJsonObject.value("qlty").toString();
-                qDebug() << "main=" << ariNowJsonObject.value("main").toString();
-                qDebug() << "pm25=" << ariNowJsonObject.value("pm25").toString();
-                qDebug() << "pm10=" << ariNowJsonObject.value("pm10").toString();
-                qDebug() << "no2=" << ariNowJsonObject.value("no2").toString();
-                qDebug() << "so2=" << ariNowJsonObject.value("so2").toString();
-                qDebug() << "co=" << ariNowJsonObject.value("co").toString();
-                qDebug() << "o3=" << ariNowJsonObject.value("o3").toString();
-                qDebug() << "pub_time=" << ariNowJsonObject.value("pub_time").toString();
+                m_preferences->m_air.aqi = ariNowJsonObject.value("aqi").toString();
+                m_preferences->m_air.qlty = ariNowJsonObject.value("qlty").toString();
+                m_preferences->m_air.main = ariNowJsonObject.value("main").toString();
+                m_preferences->m_air.pm25 = ariNowJsonObject.value("pm25").toString();
+                m_preferences->m_air.pm10 = ariNowJsonObject.value("pm10").toString();
+                m_preferences->m_air.no2 = ariNowJsonObject.value("no2").toString();
+                m_preferences->m_air.so2 = ariNowJsonObject.value("so2").toString();
+                m_preferences->m_air.co = ariNowJsonObject.value("co").toString();
+                m_preferences->m_air.o3 = ariNowJsonObject.value("o3").toString();
+                m_preferences->m_air.pubTime = ariNowJsonObject.value("pub_time").toString();
+
+//                qDebug() << "aqi=" << ariNowJsonObject.value("aqi").toString();
+//                qDebug() << "qlty=" << ariNowJsonObject.value("qlty").toString();
+//                qDebug() << "main=" << ariNowJsonObject.value("main").toString();
+//                qDebug() << "pm25=" << ariNowJsonObject.value("pm25").toString();
+//                qDebug() << "pm10=" << ariNowJsonObject.value("pm10").toString();
+//                qDebug() << "no2=" << ariNowJsonObject.value("no2").toString();
+//                qDebug() << "so2=" << ariNowJsonObject.value("so2").toString();
+//                qDebug() << "co=" << ariNowJsonObject.value("co").toString();
+//                qDebug() << "o3=" << ariNowJsonObject.value("o3").toString();
+//                qDebug() << "pub_time=" << ariNowJsonObject.value("pub_time").toString();
             }
 
             // air_now_station
@@ -423,21 +516,41 @@ void WeatherWorker::onApiDataReply()
                 QJsonArray airNowArray = mainDataJsonObject.value("air_now_station").toArray();
                 foreach (QJsonValue val, airNowArray) {//airNowArray.isArray()
                     QJsonObject airNowObject = val.toObject();
-                    qDebug() << "air_sta=" << airNowObject.value("air_sta").toString();
-                    qDebug() << "aqi=" << airNowObject.value("aqi").toString();
-                    qDebug() << "asid=" << airNowObject.value("asid").toString();
-                    qDebug() << "co=" << airNowObject.value("co").toString();
-                    qDebug() << "lat=" << airNowObject.value("lat").toString();
-                    qDebug() << "lon=" << airNowObject.value("lon").toString();
-                    qDebug() << "main=" << airNowObject.value("main").toString();
-                    qDebug() << "no2=" << airNowObject.value("no2").toString();
-                    qDebug() << "o3=" << airNowObject.value("o3").toString();
-                    qDebug() << "pm10=" << airNowObject.value("pm10").toString();
-                    qDebug() << "pm25=" << airNowObject.value("pm25").toString();
-                    qDebug() << "pub_time=" << airNowObject.value("pub_time").toString();
-                    qDebug() << "qlty=" << airNowObject.value("qlty").toString();
-                    qDebug() << "so2=" << airNowObject.value("so2").toString();
+                    DistrictAir districtAir;
+                    districtAir.air_sta = airNowObject.value("air_sta").toString();
+                    districtAir.aqi = airNowObject.value("aqi").toString();
+                    districtAir.asid = airNowObject.value("asid").toString();
+                    districtAir.co = airNowObject.value("co").toString();
+                    districtAir.lat = airNowObject.value("lat").toString();
+                    districtAir.lon = airNowObject.value("lon").toString();
+                    districtAir.main = airNowObject.value("main").toString();
+                    districtAir.no2 = airNowObject.value("no2").toString();
+                    districtAir.o3 = airNowObject.value("o3").toString();
+                    districtAir.pm10 = airNowObject.value("pm10").toString();
+                    districtAir.pm25 = airNowObject.value("pm25").toString();
+                    districtAir.pub_time = airNowObject.value("pub_time").toString();
+                    districtAir.qlty = airNowObject.value("qlty").toString();
+                    districtAir.so2 = airNowObject.value("so2").toString();
+                    m_preferences->m_air.districtAirs.push_back(districtAir);
+
+//                    qDebug() << "air_sta=" << airNowObject.value("air_sta").toString();
+//                    qDebug() << "aqi=" << airNowObject.value("aqi").toString();
+//                    qDebug() << "asid=" << airNowObject.value("asid").toString();
+//                    qDebug() << "co=" << airNowObject.value("co").toString();
+//                    qDebug() << "lat=" << airNowObject.value("lat").toString();
+//                    qDebug() << "lon=" << airNowObject.value("lon").toString();
+//                    qDebug() << "main=" << airNowObject.value("main").toString();
+//                    qDebug() << "no2=" << airNowObject.value("no2").toString();
+//                    qDebug() << "o3=" << airNowObject.value("o3").toString();
+//                    qDebug() << "pm10=" << airNowObject.value("pm10").toString();
+//                    qDebug() << "pm25=" << airNowObject.value("pm25").toString();
+//                    qDebug() << "pub_time=" << airNowObject.value("pub_time").toString();
+//                    qDebug() << "qlty=" << airNowObject.value("qlty").toString();
+//                    qDebug() << "so2=" << airNowObject.value("so2").toString();
                 }
+            }
+            if (m_status == "ok") {
+                emit this->readyUpdateWeather();
             }
         }
     }

@@ -77,6 +77,9 @@ private slots:
     void onGeoNameIdByLongitudeAndLatitudeReply();
     void onGeoNameDataByGeonameIdReply();
 
+signals:
+    void readyUpdateWeather();
+
 private:
     QNetworkAccessManager *m_networkManager = nullptr;
     QString m_city;

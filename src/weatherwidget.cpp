@@ -100,3 +100,8 @@ WeatherWidget::~WeatherWidget()
         delete child;
     }
 }
+
+void WeatherWidget::onUpdateWeather()
+{
+    m_nowWidget->refreshNowWeatherData();
+}
