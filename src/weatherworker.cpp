@@ -357,6 +357,10 @@ void WeatherWorker::onWeatherDataReply()
                     forecast.wind_spd = dailyJsonObject.value("wind_spd").toString();
                     //m_forecastList.push_back(forecast);
                     m_preferences->m_forecasts.push_back(forecast);
+//                    for (int i=0;i<m_preferences->m_forecasts.size();i++) {
+//                        qDebug() << "000 " << m_preferences->m_forecasts.at(i).forcast_date;
+//                    }
+//                    qDebug() << "111a" << forecast.forcast_date << m_preferences->m_forecasts.size();
                 }
             }
 
@@ -550,7 +554,7 @@ void WeatherWorker::onApiDataReply()
                 }
             }
             if (m_status == "ok") {
-                emit this->readyUpdateWeather();
+                emit this->readyUpdateAqi();
             }
         }
     }

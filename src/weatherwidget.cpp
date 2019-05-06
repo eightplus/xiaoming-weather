@@ -20,7 +20,7 @@
 #include "weatherwidget.h"
 #include "weathernowwidget.h"
 #include "weatherforecastwidget.h"
-#include "weathernowcategorywidget.h"
+#include "weathercategorywidget.h"
 #include "navigationwidget.h"
 
 #include <QDebug>
@@ -40,8 +40,8 @@ WeatherWidget::WeatherWidget(QWidget *parent)
     m_nowWidget->setFixedSize(300, 340);
     m_forecastWidget = new WeatherForecastWidget(this);
     m_forecastWidget->setFixedSize(600, 340);
-    m_nowCategoryWidget = new WeatherNowCategoryWidget(this);
-    m_nowCategoryWidget->setFixedSize(900, 160);
+    m_categoryWidget = new WeatherCategoryWidget(this);
+    m_categoryWidget->setFixedSize(900, 160);
     m_navigationWidget = new NavigationWidget(this, 5);//5是默认城市的个数
     m_navigationWidget->setFixedWidth(900);
 
@@ -53,42 +53,19 @@ WeatherWidget::WeatherWidget(QWidget *parent)
     m_topLayout->addWidget(m_nowWidget);
     m_topLayout->addWidget(m_forecastWidget);
 
-    m_layout->addWidget(m_nowCategoryWidget);
+    m_layout->addWidget(m_categoryWidget);
     m_layout->addWidget(m_navigationWidget/*, 0, Qt::AlignBottom*/);
 
     connect(m_navigationWidget, &NavigationWidget::requestNextCity, this, [=] {
         //TODO:刷新城市天气信息 & 设置所有页面模块的数据
-        m_nowWidget->refreshNowWeatherData();
+        this->onUpdateWeather();
     });
     connect(m_navigationWidget, &NavigationWidget::requestPrevCity, this, [=] {
         //TODO:刷新城市天气信息 & 设置所有页面模块的数据
-        m_nowWidget->refreshNowWeatherData();
+        this->onUpdateWeather();
     });
 
     connect(m_nowWidget, &WeatherNowWidget::locationBtnClicked, this, &WeatherWidget::locationBtnClicked);
-
-    m_nowWidget->refreshNowWeatherData();
-
-
-    //TODO: test data
-    LifeStyle lifeData;
-    lifeData.air_brf = "111";
-    lifeData.air_txt = "ABDCFET#EGEWHEGEAG";
-    lifeData.comf_brf = "111";
-    lifeData.comf_txt = "ABDCFET#EGEWHEGEAG";
-    lifeData.cw_brf = "111";
-    lifeData.cw_txt = "ABDCFET#EGEWHEGEAG";
-    lifeData.drsg_brf = "111";
-    lifeData.drsg_txt = "ABDCFET#EGEWHEGEAG";
-    lifeData.flu_brf = "111";
-    lifeData.flu_txt = "ABDCFET#EGEWHEGEAG";
-    lifeData.sport_brf = "111";
-    lifeData.sport_txt = "ABDCFET#EGEWHEGEAG";
-    lifeData.trav_brf = "111";
-    lifeData.trav_txt = "ABDCFET#EGEWHEGEAG";
-    lifeData.uv_brf = "111";
-    lifeData.uv_txt = "ABDCFET#EGEWHEGEAG";
-    m_nowCategoryWidget->refreshLifestyleData(lifeData);
 }
 
 WeatherWidget::~WeatherWidget()
@@ -101,7 +78,16 @@ WeatherWidget::~WeatherWidget()
     }
 }
 
+//天气数据获取完毕后开始更新界面数据
 void WeatherWidget::onUpdateWeather()
 {
     m_nowWidget->refreshNowWeatherData();
+    m_forecastWidget->refreshForecastWeatherData();
+    m_categoryWidget->refreshLifestyleData();
+}
+
+//空气质量数据获取完毕后开始更新界面数据
+void WeatherWidget::onUpdateAqi()
+{
+
 }

@@ -20,6 +20,10 @@
 #include "weatherforecastwidget.h"
 #include "forecastitemwidget.h"
 
+#include "preferences.h"
+#include "global.h"
+using namespace Global;
+
 #include <QPainter>
 #include <QDebug>
 #include <QGuiApplication>
@@ -71,4 +75,19 @@ WeatherForecastWidget::~WeatherForecastWidget()
     m_items.clear();
 
     delete m_displayWidget;
+}
+
+
+void WeatherForecastWidget::refreshForecastWeatherData()
+{
+    for (int i=0; i<m_items.count(); i++) {
+        ForecastItemWidget *item = m_items.at(i);
+        if (m_preferences->m_observeWeather.cond_code.contains(QChar('n'))) {
+            item->setNightStyleSheets();
+        }
+        else {
+            item->setDayStyleSheets();
+        }
+        item->resetForecastData(m_preferences->m_forecasts.at(i), i);
+    }
 }

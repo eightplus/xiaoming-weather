@@ -17,12 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "weathernowcategorywidget.h"
+#include "weathercategorywidget.h"
 #include "categorybutton.h"
 #include "indexitemwidget.h"
-#include "texttip.h"
+#include "lifestyletip.h"
 #include "tipmodule.h"
 #include "windtooltip.h"
+
+#include "preferences.h"
+#include "global.h"
+using namespace Global;
 
 #include <QApplication>
 #include <QDebug>
@@ -61,7 +65,7 @@ const QStringList LIFESTYLEICON = {":/res/lifestyle/comf_index.png", ":/res/life
 
 }
 
-WeatherNowCategoryWidget::WeatherNowCategoryWidget(QWidget *parent)
+WeatherCategoryWidget::WeatherCategoryWidget(QWidget *parent)
     : QFrame(parent)
     , m_stackedLayout(new QStackedLayout)
     , m_tipModule(new TipModule)
@@ -163,7 +167,7 @@ WeatherNowCategoryWidget::WeatherNowCategoryWidget(QWidget *parent)
     m_animationGroup->addAnimation(m_lifeAnimation);*/
 }
 
-WeatherNowCategoryWidget::~WeatherNowCategoryWidget()
+WeatherCategoryWidget::~WeatherCategoryWidget()
 {
 //    delete m_tempAnimation;
 //    delete m_lifeAnimation;
@@ -180,7 +184,7 @@ WeatherNowCategoryWidget::~WeatherNowCategoryWidget()
     m_lifeItems.clear();
 
     for(int i=0; i<m_lifestyleTips.count(); i++) {
-        TextTip *tip = m_lifestyleTips.at(i);
+        LifestyleTip *tip = m_lifestyleTips.at(i);
         delete tip;
         tip = NULL;
     }
@@ -206,7 +210,7 @@ WeatherNowCategoryWidget::~WeatherNowCategoryWidget()
     }
 }
 
-void WeatherNowCategoryWidget::changeCurrentPage(CategoryButton *label)
+void WeatherCategoryWidget::changeCurrentPage(CategoryButton *label)
 {
     for(int i=0; i<4; i++) {
         if(label != m_btnArray[i]) {
@@ -235,7 +239,7 @@ void WeatherNowCategoryWidget::changeCurrentPage(CategoryButton *label)
     }
 }
 
-void WeatherNowCategoryWidget::calculateTemperatureHoverIndex(int hoverX)
+void WeatherCategoryWidget::calculateTemperatureHoverIndex(int hoverX)
 {
     if (m_tempX->size() < 8) {
         m_tempHoverIndex = -1;
@@ -271,7 +275,7 @@ void WeatherNowCategoryWidget::calculateTemperatureHoverIndex(int hoverX)
     }
 }
 
-int WeatherNowCategoryWidget::calculateWindHoverIndex(int hoverX)
+int WeatherCategoryWidget::calculateWindHoverIndex(int hoverX)
 {
     if (m_windX->size() < 8) {
         m_windHoverIndex = -1;
@@ -360,7 +364,7 @@ int WeatherNowCategoryWidget::calculateWindHoverIndex(int hoverX)
     }
 }
 
-void WeatherNowCategoryWidget::calculatePopHoverIndex(int hoverX)
+void WeatherCategoryWidget::calculatePopHoverIndex(int hoverX)
 {
     if (m_popX->size() < 8) {
         m_popHoverIndex = -1;
@@ -399,7 +403,7 @@ void WeatherNowCategoryWidget::calculatePopHoverIndex(int hoverX)
     }
 }
 
-bool WeatherNowCategoryWidget::eventFilter(QObject *obj, QEvent *event)
+bool WeatherCategoryWidget::eventFilter(QObject *obj, QEvent *event)
 {
     if (obj == m_temperatureCurveLabel) {
         if (event->type() == QEvent::Paint) {
@@ -513,7 +517,7 @@ bool WeatherNowCategoryWidget::eventFilter(QObject *obj, QEvent *event)
     return QWidget::eventFilter(obj,event);
 }
 
-void WeatherNowCategoryWidget::paintTemperatureCurve()
+void WeatherCategoryWidget::paintTemperatureCurve()
 {
     //TODO: access new data
 
@@ -679,7 +683,7 @@ void WeatherNowCategoryWidget::paintTemperatureCurve()
 }
 
 
-void WeatherNowCategoryWidget::paintWindCurve()
+void WeatherCategoryWidget::paintWindCurve()
 {
 //    1-2 	1-2级风(微风)
 //    3-4 	3-4级风
@@ -792,7 +796,7 @@ void WeatherNowCategoryWidget::paintWindCurve()
     painter.restore();
 }
 
-void WeatherNowCategoryWidget::paintPopWidget()
+void WeatherCategoryWidget::paintPopWidget()
 {
     m_popX->clear();
 
@@ -864,7 +868,7 @@ void WeatherNowCategoryWidget::paintPopWidget()
     }
 }
 
-void WeatherNowCategoryWidget::initTemperatureWidget()
+void WeatherCategoryWidget::initTemperatureWidget()
 {
     m_temperatureCurveLabel = new QLabel;
     m_temperatureCurveLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -882,7 +886,7 @@ void WeatherNowCategoryWidget::initTemperatureWidget()
     m_stackedLayout->setCurrentIndex(idx);
 }
 
-void WeatherNowCategoryWidget::initWindWidget()
+void WeatherCategoryWidget::initWindWidget()
 {
     //TODO:跟温度一样绘制曲线，图标处绘制图片wind.png,设置MouseEnter和MouseLeave，鼠标在某个区域范围内（x固定了），显示对应的tooptip
     m_windCurveLabel = new QLabel;
@@ -899,7 +903,7 @@ void WeatherNowCategoryWidget::initWindWidget()
     m_windTip->hide();
 }
 
-void WeatherNowCategoryWidget::initPopWidget()
+void WeatherCategoryWidget::initPopWidget()
 {
     m_popLabel = new QLabel;
     m_popLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -909,7 +913,7 @@ void WeatherNowCategoryWidget::initPopWidget()
     m_stackedLayout->addWidget(m_popLabel);
 }
 
-void WeatherNowCategoryWidget::initLifeStyleWidget()
+void WeatherCategoryWidget::initLifeStyleWidget()
 {
     m_lifestyleWidget = new QWidget;
     m_lifestyleWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -932,7 +936,7 @@ void WeatherNowCategoryWidget::initLifeStyleWidget()
 //    showLifeStyleIndex(QString());
 }
 
-void WeatherNowCategoryWidget::refershLifeIndexGridLayout()
+void WeatherCategoryWidget::refershLifeIndexGridLayout()
 {
     while (QLayoutItem *item = m_indexGridLayout->takeAt(0)) {
         item->widget()->deleteLater();
@@ -940,7 +944,7 @@ void WeatherNowCategoryWidget::refershLifeIndexGridLayout()
     }
 
     for(int i=0; i<m_lifestyleTips.count(); i++) {
-        TextTip *tip = m_lifestyleTips.at(i);
+        LifestyleTip *tip = m_lifestyleTips.at(i);
         delete tip;
         tip = NULL;
     }
@@ -952,66 +956,65 @@ void WeatherNowCategoryWidget::refershLifeIndexGridLayout()
         IndexItemWidget *item = new IndexItemWidget(m_lifeIndexList[i], m_lifeIndexIconList[i]);
         connect(item, SIGNAL(requestShowMsg(QString)), this, SLOT(showLifeStyleIndex(QString)));
         m_indexGridLayout->addWidget(item, index / 3, index % 3);
-        TextTip *tip = this->setTipWidget(item, "");
+        LifestyleTip *tip = this->setTipWidget(item, "");
         m_lifestyleTips.append(tip);
         m_lifeItems.append(item);
     }
 }
 
-void WeatherNowCategoryWidget::showLifeStyleIndex(const QString &name)
+void WeatherCategoryWidget::showLifeStyleIndex(const QString &name)
 {
 
 }
 
-
-void WeatherNowCategoryWidget::refreshLifestyleData(const LifeStyle &data)
+void WeatherCategoryWidget::refreshLifestyleData()
 {
     int n = 0;
     if (m_lifeItems.count() == 8 && m_lifestyleTips.count() == 8) {
         //舒适度指数
-        m_lifeItems[n]->refreshLifeStyle(data.comf_brf, data.comf_txt);
-        m_lifestyleTips[n++]->resetTipText(data.comf_txt);
+        m_lifeItems[n]->refreshLifeStyle(m_preferences->m_lifestyle.comf_brf, m_preferences->m_lifestyle.comf_txt);
+        m_lifestyleTips[n++]->resetTipText(m_preferences->m_lifestyle.comf_txt);
 
         //穿衣指数
-        m_lifeItems[n]->refreshLifeStyle(data.drsg_brf, data.drsg_txt);
-        m_lifestyleTips[n++]->resetTipText(data.drsg_txt);
+        m_lifeItems[n]->refreshLifeStyle(m_preferences->m_lifestyle.drsg_brf, m_preferences->m_lifestyle.drsg_txt);
+        m_lifestyleTips[n++]->resetTipText(m_preferences->m_lifestyle.drsg_txt);
 
         //感冒指数
-        m_lifeItems[n]->refreshLifeStyle(data.flu_brf, data.flu_txt);
-        m_lifestyleTips[n++]->resetTipText(data.flu_txt);
+        m_lifeItems[n]->refreshLifeStyle(m_preferences->m_lifestyle.flu_brf, m_preferences->m_lifestyle.flu_txt);
+        m_lifestyleTips[n++]->resetTipText(m_preferences->m_lifestyle.flu_txt);
 
         //运动指数
-        m_lifeItems[n]->refreshLifeStyle(data.sport_brf, data.sport_txt);
-        m_lifestyleTips[n++]->resetTipText(data.sport_txt);
+        m_lifeItems[n]->refreshLifeStyle(m_preferences->m_lifestyle.sport_brf, m_preferences->m_lifestyle.sport_txt);
+        m_lifestyleTips[n++]->resetTipText(m_preferences->m_lifestyle.sport_txt);
 
         //旅游指数
-        m_lifeItems[n]->refreshLifeStyle(data.trav_brf, data.trav_txt);
-        m_lifestyleTips[n++]->resetTipText(data.trav_txt);
+        m_lifeItems[n]->refreshLifeStyle(m_preferences->m_lifestyle.trav_brf, m_preferences->m_lifestyle.trav_txt);
+        m_lifestyleTips[n++]->resetTipText(m_preferences->m_lifestyle.trav_txt);
 
         //紫外线指数
-        m_lifeItems[n]->refreshLifeStyle(data.uv_brf, data.uv_txt);
-        m_lifestyleTips[n++]->resetTipText(data.uv_txt);
+        m_lifeItems[n]->refreshLifeStyle(m_preferences->m_lifestyle.uv_brf, m_preferences->m_lifestyle.uv_txt);
+        m_lifestyleTips[n++]->resetTipText(m_preferences->m_lifestyle.uv_txt);
 
         //洗车指数
-        m_lifeItems[n]->refreshLifeStyle(data.cw_brf, data.cw_txt);
-        m_lifestyleTips[n++]->resetTipText(data.cw_txt);
+        m_lifeItems[n]->refreshLifeStyle(m_preferences->m_lifestyle.cw_brf, m_preferences->m_lifestyle.cw_txt);
+        m_lifestyleTips[n++]->resetTipText(m_preferences->m_lifestyle.cw_txt);
 
         //空气污染扩散条件指数
-        m_lifeItems[n]->refreshLifeStyle(data.air_brf, data.air_txt);
-        m_lifestyleTips[n++]->resetTipText(data.air_txt);
+        m_lifeItems[n]->refreshLifeStyle(m_preferences->m_lifestyle.air_brf, m_preferences->m_lifestyle.air_txt);
+        m_lifestyleTips[n++]->resetTipText(m_preferences->m_lifestyle.air_txt);
     }
 }
 
-TextTip *WeatherNowCategoryWidget::setTipWidget(QWidget *w, const QString &txt)
+LifestyleTip *WeatherCategoryWidget::setTipWidget(QWidget *w, const QString &txt)
 {
-    TextTip *tip = new TextTip(txt, this);
+    LifestyleTip *tip = new LifestyleTip(txt, this);
     w->setProperty("TextTipWidget", QVariant::fromValue<QWidget *>(tip));
     w->installEventFilter(m_tipModule);
 
     return tip;
 }
 
-void WeatherNowCategoryWidget::setDayStyleSheets()
+void WeatherCategoryWidget::setDayStyleSheets()
 {
     for(int i=0; i<m_lifeItems.count(); i++) {
         IndexItemWidget *item = m_lifeItems.at(i);
@@ -1019,7 +1022,7 @@ void WeatherNowCategoryWidget::setDayStyleSheets()
     }
 }
 
-void WeatherNowCategoryWidget::setNightStyleSheets()
+void WeatherCategoryWidget::setNightStyleSheets()
 {
     for(int i=0; i<m_lifeItems.count(); i++) {
         IndexItemWidget *item = m_lifeItems.at(i);
@@ -1027,7 +1030,7 @@ void WeatherNowCategoryWidget::setNightStyleSheets()
     }
 }
 
-void WeatherNowCategoryWidget::resizeEvent(QResizeEvent *event)
+void WeatherCategoryWidget::resizeEvent(QResizeEvent *event)
 {
     QFrame::resizeEvent(event);
 
@@ -1035,14 +1038,14 @@ void WeatherNowCategoryWidget::resizeEvent(QResizeEvent *event)
     m_btnsWidget->move(0, event->size().height() - m_btnsWidget->height());
 }
 
-/*void WeatherNowCategoryWidget::showEvent(QShowEvent *event)
+/*void WeatherCategoryWidget::showEvent(QShowEvent *event)
 {
     QFrame::showEvent(event);
 
     m_temperatureCurveLabel->update();
 }
 
-void WeatherNowCategoryWidget::enterEvent(QEvent *event)
+void WeatherCategoryWidget::enterEvent(QEvent *event)
 {
     QPoint windowPos = mapFromGlobal(QCursor::pos());//将显示器坐标转换成窗口坐标
     int hoverX = windowPos.x();
@@ -1053,7 +1056,7 @@ void WeatherNowCategoryWidget::enterEvent(QEvent *event)
     event->accept();
 }
 
-void WeatherNowCategoryWidget::leaveEvent(QEvent *event)
+void WeatherCategoryWidget::leaveEvent(QEvent *event)
 {
     m_tempMouseEnterPress = false;
     m_tempHoverIndex = -1;
@@ -1062,7 +1065,7 @@ void WeatherNowCategoryWidget::leaveEvent(QEvent *event)
     event->accept();
 }*/
 
-//void WeatherNowCategoryWidget::mouseMoveEvent(QMouseEvent *event)
+//void WeatherCategoryWidget::mouseMoveEvent(QMouseEvent *event)
 //{
 //    QFrame::mouseMoveEvent(event);
 //    qDebug() << "event->pos()" << event->pos();

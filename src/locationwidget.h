@@ -23,6 +23,7 @@
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QPushButton>
 
 class LocationWidget : public QWidget
 {
@@ -31,9 +32,13 @@ public:
     explicit LocationWidget(QWidget *parent = 0);
     ~ LocationWidget();
 
+signals:
+    void backBtnClicked();
+
 private:
     QVBoxLayout *m_layout = nullptr;
     QLabel *m_label = nullptr;
+    QPushButton *m_backBtn = nullptr;
 };
 
 #endif // LOCATION_WIDGET_H

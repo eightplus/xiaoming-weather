@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WEATHER_NOW_CATEGORY_WIDGET_H
-#define WEATHER_NOW_CATEGORY_WIDGET_H
+#ifndef WEATHER_CATEGORY_WIDGET_H
+#define WEATHER_CATEGORY_WIDGET_H
 
 #include <QFrame>
 
@@ -29,19 +29,19 @@ class CategoryButton;
 class QLabel;
 class QGridLayout;
 class IndexItemWidget;
-class TextTip;
+class LifestyleTip;
 class TipModule;
 class WindTooltip;
 class QPropertyAnimation;
 class QParallelAnimationGroup;
 
-class WeatherNowCategoryWidget : public QFrame
+class WeatherCategoryWidget : public QFrame
 {
     Q_OBJECT
 
 public:
-    explicit WeatherNowCategoryWidget(QWidget *parent = 0);
-    ~ WeatherNowCategoryWidget();
+    explicit WeatherCategoryWidget(QWidget *parent = 0);
+    ~ WeatherCategoryWidget();
 
     void initTemperatureWidget();
     void initWindWidget();
@@ -56,8 +56,8 @@ public:
     void setDayStyleSheets();
     void setNightStyleSheets();
 
-    void refreshLifestyleData(const LifeStyle &data);
-    TextTip *setTipWidget(QWidget *w, const QString &txt);
+    void refreshLifestyleData();
+    LifestyleTip *setTipWidget(QWidget *w, const QString &txt);
 
     void calculateTemperatureHoverIndex(int hoverX);
     int calculateWindHoverIndex(int hoverX);
@@ -121,9 +121,9 @@ private:
     QList<IndexItemWidget *> m_lifeItems;
     QStringList m_lifeIndexList;
     QStringList m_lifeIndexIconList;
-    QList<TextTip *> m_lifestyleTips;
+    QList<LifestyleTip *> m_lifestyleTips;
     TipModule *m_tipModule = nullptr;
 
 };
 
-#endif // WEATHER_NOW_CATEGORY_WIDGET_H
+#endif // WEATHER_CATEGORY_WIDGET_H

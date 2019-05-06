@@ -24,16 +24,16 @@
 
 class QLabel;
 
-class TextTip : public QFrame
+class LifestyleTip : public QFrame
 {
     Q_OBJECT
 
     enum TrianglePostion {TopLeft, TopMiddle, TopRight, BottomLeft, BottomMiddle, BottomRight};
 
 public:
-    explicit TextTip(const QString &txt, QWidget *parent = 0);
-    explicit TextTip(const QString &title, const QString &desc, QWidget *parent = 0);
-    ~TextTip();
+    explicit LifestyleTip(const QString &txt, QWidget *parent = 0);
+    explicit LifestyleTip(const QString &title, const QString &desc, QWidget *parent = 0);
+    ~LifestyleTip();
 
     void resetTipText(const QString &txt);
     void resetTipText(const QString &title, const QString &desc);

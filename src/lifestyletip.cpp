@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "texttip.h"
+#include "lifestyletip.h"
 
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPainter>
 #include <QDebug>
 
-TextTip::TextTip(const QString &txt, QWidget *parent) : QFrame(parent)
+LifestyleTip::LifestyleTip(const QString &txt, QWidget *parent) : QFrame(parent)
   , m_radius(1)
   , m_background(QBrush(QColor(255,255,255,255)))
   , m_borderColor(QColor(224,224,224,130))
@@ -60,7 +60,7 @@ TextTip::TextTip(const QString &txt, QWidget *parent) : QFrame(parent)
     hide();
 }
 
-TextTip::TextTip(const QString &title, const QString &desc, QWidget *parent) : QFrame(parent)
+LifestyleTip::LifestyleTip(const QString &title, const QString &desc, QWidget *parent) : QFrame(parent)
   , m_radius(1)
   , m_background(QBrush(QColor(255,255,255,255)))
   , m_borderColor(QColor(224,224,224,130))
@@ -103,23 +103,23 @@ TextTip::TextTip(const QString &title, const QString &desc, QWidget *parent) : Q
     hide();
 }
 
-TextTip::~TextTip()
+LifestyleTip::~LifestyleTip()
 {
 
 }
 
-void TextTip::resetTipText(const QString &txt)
+void LifestyleTip::resetTipText(const QString &txt)
 {
     m_textLabel->setText(txt);
 }
 
-void TextTip::resetTipText(const QString &title, const QString &desc)
+void LifestyleTip::resetTipText(const QString &title, const QString &desc)
 {
     m_textLabel->setText(title);
     m_descLabel->setText(desc);
 }
 
-/*void TextTip::paintEvent(QPaintEvent *event)
+/*void LifestyleTip::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
@@ -146,7 +146,7 @@ void TextTip::resetTipText(const QString &title, const QString &desc)
     painter.strokePath(borderPath, borderPen);
 }*/
 
-void TextTip::paintEvent(QPaintEvent *event)
+void LifestyleTip::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);

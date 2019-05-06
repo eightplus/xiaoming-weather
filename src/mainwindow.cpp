@@ -111,7 +111,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_weatherWidget, &WeatherWidget::locationBtnClicked, this, [this, m_stackedLayout] {
         //TODO:弹出设置城市界面，城市设置完毕后，刷新城市天气信息 & 设置所有页面模块的数据
         m_stackedLayout->setCurrentWidget(m_locationWidget);
-//        m_nowWidget->refreshNowWeatherData();
+    });
+    connect(m_locationWidget, &LocationWidget::backBtnClicked, this, [this, m_stackedLayout] {
+        m_stackedLayout->setCurrentWidget(m_weatherWidget);
     });
 
 //    system("xterm -e '"
@@ -124,6 +126,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_weatherWorker, &WeatherWorker::readyUpdateWeather, this, [=] () {
         m_weatherWidget->onUpdateWeather();
+    });
+    connect(m_weatherWorker, &WeatherWorker::readyUpdateAqi, this, [=] () {
+        m_weatherWidget->onUpdateAqi();
     });
 }
 

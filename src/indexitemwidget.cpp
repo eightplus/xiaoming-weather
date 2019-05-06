@@ -114,7 +114,7 @@ void IndexItemWidget::paintEvent(QPaintEvent *e)
 
     painter.setRenderHint(QPainter::Antialiasing, true);
 
-    // Attention: 20 + icon.width()/ratio/2 = 30可当作TextTip的箭头的指向坐标的x
+    // Attention: 20 + icon.width()/ratio/2 = 30可当作LifestyleTip的箭头的指向坐标的x
     QPixmap icon = QPixmap(this->m_iconPath);
     QRect iconRect(20, center.y() - icon.height()/ratio/2, icon.width()/ratio, icon.height()/ratio);
     painter.drawPixmap(iconRect, icon);

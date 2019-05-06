@@ -79,6 +79,7 @@ private slots:
 
 signals:
     void readyUpdateWeather();
+    void readyUpdateAqi();
 
 private:
     QNetworkAccessManager *m_networkManager = nullptr;

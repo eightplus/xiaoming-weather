@@ -34,6 +34,7 @@ public:
     ~ WeatherForecastWidget();
 
     //void onDataChanged();
+    void refreshForecastWeatherData();
 
 private:
     QWidget *m_displayWidget = nullptr;

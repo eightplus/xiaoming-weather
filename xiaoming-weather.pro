@@ -49,7 +49,7 @@ SOURCES += src/main.cpp \
     src/parseinterface.cpp \
     src/weathernowwidget.cpp \
     src/weatherforecastwidget.cpp \
-    src/weathernowcategorywidget.cpp \
+    src/weathercategorywidget.cpp \
     src/navigationwidget.cpp \
     src/citynavigation.cpp \
     src/imagebutton.cpp \
@@ -59,7 +59,7 @@ SOURCES += src/main.cpp \
     src/aqitooltip.cpp \
     src/categorybutton.cpp \
     src/indexitemwidget.cpp \
-    src/texttip.cpp \
+    src/lifestyletip.cpp \
     src/tipmodule.cpp \
     src/windtooltip.cpp \
     src/cityview.cpp \
@@ -78,7 +78,8 @@ SOURCES += src/main.cpp \
     src/weatherairanalysiser.cpp \
     src/weathernowanalysiser.cpp \
     src/weatherforecastanalysiser.cpp \
-    src/weatherlifestyleanalysiser.cpp
+    src/weatherlifestyleanalysiser.cpp \
+    src/forecasttip.cpp
 
 HEADERS  += src/mainwindow.h \
     src/titlebar.h \
@@ -88,7 +89,7 @@ HEADERS  += src/mainwindow.h \
     src/parseinterface.h \
     src/weathernowwidget.h \
     src/weatherforecastwidget.h \
-    src/weathernowcategorywidget.h \
+    src/weathercategorywidget.h \
     src/navigationwidget.h \
     src/citynavigation.h \
     src/imagebutton.h \
@@ -100,7 +101,7 @@ HEADERS  += src/mainwindow.h \
     src/aqitooltip.h \
     src/categorybutton.h \
     src/indexitemwidget.h \
-    src/texttip.h \
+    src/lifestyletip.h \
     src/tipmodule.h \
     src/windtooltip.h \
     src/cityview.h \
@@ -119,7 +120,8 @@ HEADERS  += src/mainwindow.h \
     src/weatherairanalysiser.h \
     src/weathernowanalysiser.h \
     src/weatherforecastanalysiser.h \
-    src/weatherlifestyleanalysiser.h
+    src/weatherlifestyleanalysiser.h \
+    src/forecasttip.h
 
 TRANSLATIONS += \
     translation/xiaoming-weather_zh_CN.ts

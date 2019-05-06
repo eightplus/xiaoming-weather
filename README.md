@@ -52,6 +52,6 @@ https://free-api.heweather.net/s6/weather/now?location=CN101250101&key=4ff2e595e
 
 ### 
 
-qdbusxml2cpp com.kylin.weather.xml -a dbusadaptor -c DbusAdaptor -l MainWindow
+qdbusxml2cpp com.xiaoming.weather.xml -a dbusadaptor -c DbusAdaptor -l MainWindow
 
 https://www.easyicon.net/

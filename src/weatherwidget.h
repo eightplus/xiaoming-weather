@@ -26,7 +26,7 @@
 
 class WeatherNowWidget;
 class WeatherForecastWidget;
-class WeatherNowCategoryWidget;
+class WeatherCategoryWidget;
 class NavigationWidget;
 
 class WeatherWidget : public QFrame
@@ -38,6 +38,7 @@ public:
 
 public slots:
     void onUpdateWeather();
+    void onUpdateAqi();
 
 signals:
     void locationBtnClicked();
@@ -48,7 +49,7 @@ private:
 
     WeatherNowWidget *m_nowWidget = nullptr;
     WeatherForecastWidget *m_forecastWidget = nullptr;
-    WeatherNowCategoryWidget *m_nowCategoryWidget = nullptr;
+    WeatherCategoryWidget *m_categoryWidget = nullptr;
     NavigationWidget *m_navigationWidget = nullptr;
 };
 

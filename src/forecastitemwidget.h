@@ -28,6 +28,8 @@
 
 #include "data.h"
 
+class ForecastTip;
+
 class ForecastItemWidget : public QWidget
 {
     Q_OBJECT
@@ -54,6 +56,7 @@ private:
     QLabel *m_iconLabel = nullptr;
     QLabel *m_tempLabel = nullptr;
     QVBoxLayout *m_layout = nullptr;
+    ForecastTip *m_toolTip = nullptr;
     bool m_isDayOrNight;
 };
 
