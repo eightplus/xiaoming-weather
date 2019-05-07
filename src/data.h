@@ -152,6 +152,23 @@ typedef struct _ForecastWeather
 //    {}
 } ForecastWeather;
 
+typedef struct _HourlyWeather
+{
+    QString cloud;//云量  86
+    QString cond_code;//实况天气状况代码 	100
+    QString cond_txt;//实况天气状况描述 晴
+    QString dew;//露点温度  13
+    QString hum;//相对湿度 	37
+    QString pop;//降水概率 	0
+    QString pres;//大气压强 	1018
+    QString time_hour;//预报时间  "2019-05-07 22:00"
+    QString tmp;//温度，默认单位：摄氏度℃ 	21
+    QString wind_deg;//风向360角度 	310
+    QString wind_dir;//风向 	西北风
+    QString wind_sc;//风力 	1-2 (级风)
+    QString wind_spd;//风速，公里/小时 	14
+} HourlyWeather;
+
 class CitySettingData
 {
 public:

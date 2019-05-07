@@ -241,12 +241,24 @@ void WeatherCategoryWidget::changeCurrentPage(CategoryButton *label)
 
 void WeatherCategoryWidget::calculateTemperatureHoverIndex(int hoverX)
 {
-    if (m_tempX->size() < 8) {
+    int count = m_preferences->m_hourlyWeather.size();
+    if (count == 0)
+        return;
+
+    if (m_tempX->size() < count) {
         m_tempHoverIndex = -1;
         return;
     }
 
-    if (hoverX <= m_tempX->at(0) + m_tempXSpace/2) {
+    m_tempHoverIndex = -1;
+    for (int i=0;i<count;i++) {
+        if (hoverX <= m_tempX->at(i) + m_tempXSpace/2) {
+            m_tempHoverIndex = i;
+            break;
+        }
+    }
+
+    /*if (hoverX <= m_tempX->at(0) + m_tempXSpace/2) {
         m_tempHoverIndex = 0;
     }
     else if (hoverX <= m_tempX->at(1) + m_tempXSpace/2) {
@@ -272,12 +284,18 @@ void WeatherCategoryWidget::calculateTemperatureHoverIndex(int hoverX)
     }
     else {
         m_tempHoverIndex = -1;
-    }
+    }*/
 }
 
 int WeatherCategoryWidget::calculateWindHoverIndex(int hoverX)
 {
-    if (m_windX->size() < 8) {
+    int count = m_preferences->m_hourlyWeather.size();
+    if (count == 0) {
+        m_windHoverIndex = -1;
+        return 0;
+    }
+
+    if (m_windX->size() < count) {
         m_windHoverIndex = -1;
         return 0;
     }
@@ -286,6 +304,23 @@ int WeatherCategoryWidget::calculateWindHoverIndex(int hoverX)
         m_windHoverIndex = -1;
         return 0;
     }
+
+    for (int i=0;i<count;i++) {
+        if (hoverX <= m_windX->at(i) + m_windXSpace/2) {
+            if (m_windHoverIndex == i) {
+                return 0;
+            }
+            else {
+                m_windHoverIndex = i;
+            }
+            return m_windX->at(i);
+        }
+    }
+
+    m_windHoverIndex = -1;
+    return 0;
+
+/*
     if (hoverX <= m_windX->at(0) + m_windXSpace/2) {
         if (m_windHoverIndex == 0) {
             return 0;
@@ -361,11 +396,17 @@ int WeatherCategoryWidget::calculateWindHoverIndex(int hoverX)
     else {
         m_windHoverIndex = -1;
         return 0;
-    }
+    }*/
 }
 
 void WeatherCategoryWidget::calculatePopHoverIndex(int hoverX)
 {
+    int count = m_preferences->m_hourlyWeather.size();
+    if (count == 0) {
+        m_popHoverIndex = -1;
+        return;
+    }
+
     if (m_popX->size() < 8) {
         m_popHoverIndex = -1;
         return;
@@ -373,8 +414,18 @@ void WeatherCategoryWidget::calculatePopHoverIndex(int hoverX)
 
     if (hoverX < m_firstPopX) {
         m_popHoverIndex = -1;
+        return;
     }
-    else if (hoverX <= m_popX->at(0) + PopItemWidth) {
+
+    m_popHoverIndex = -1;
+    for (int i=0;i<count;i++) {
+        if (hoverX <= m_popX->at(i) + PopItemWidth) {
+            m_popHoverIndex = i;
+            break;
+        }
+    }
+
+    /*else if (hoverX <= m_popX->at(0) + PopItemWidth) {
         m_popHoverIndex = 0;
     }
     else if (hoverX <= m_popX->at(1) + PopItemWidth) {
@@ -400,7 +451,7 @@ void WeatherCategoryWidget::calculatePopHoverIndex(int hoverX)
     }
     else {
         m_popHoverIndex = -1;
-    }
+    }*/
 }
 
 bool WeatherCategoryWidget::eventFilter(QObject *obj, QEvent *event)
@@ -517,43 +568,52 @@ bool WeatherCategoryWidget::eventFilter(QObject *obj, QEvent *event)
     return QWidget::eventFilter(obj,event);
 }
 
+//24小时温度
 void WeatherCategoryWidget::paintTemperatureCurve()
 {
-    //TODO: access new data
+    int count = m_preferences->m_hourlyWeather.size();
+    if (count == 0)
+        return;
+
 
     m_tempX->clear();
-    for (int i=0;i<8;i++) {
+    int temp[count];
+//    Forecast forecast[8];
+    for (int i=0;i<count;i++) {
         m_tempX->append(m_firstTempX + i*m_tempXSpace);
+        temp[i] = m_preferences->m_hourlyWeather.at(i).tmp.toInt();
     }
 
-    int i = 0;
-    forecast[i].high = "33";
-    i = 1;
-    forecast[i].high = "32";
-    i = 2;
-    forecast[i].high = "37";
-    i = 3;
-    forecast[i].high = "36";
-    i = 4;
-    forecast[i].high = "38";
-    i = 5;
-    forecast[i].high = "35";
-    i = 6;
-    forecast[i].high = "25";
-    i = 7;
-    forecast[i].high = "30";
+//    int i = 0;
+//    forecast[i].high = "33";
+//    i = 1;
+//    forecast[i].high = "32";
+//    i = 2;
+//    forecast[i].high = "37";
+//    i = 3;
+//    forecast[i].high = "36";
+//    i = 4;
+//    forecast[i].high = "38";
+//    i = 5;
+//    forecast[i].high = "35";
+//    i = 6;
+//    forecast[i].high = "25";
+//    i = 7;
+//    forecast[i].high = "30";
 
     QPainter painter(m_temperatureCurveLabel);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
     int tempTotal = 0;
-    int temperatureArray[8] = {};
+//    int temperatureArray[8] = {};
+    int temperatureArray[count] = {};
     int minValue = 0;
     int maxValue = 0;
     int maxPos = 0;
 
     for (int i = 0; i < 8; i++) {
-        temperatureArray[i] = forecast[i].high.toInt();
+//        temperatureArray[i] = forecast[i].high.toInt();
+        temperatureArray[i] = temp[i];
         tempTotal += temperatureArray[i];
 
         if (i==0) {
@@ -570,7 +630,8 @@ void WeatherCategoryWidget::paintTemperatureCurve()
         }
     }
     //qDebug() << "temperatureArray=" << temperatureArray[0] << temperatureArray[1] << temperatureArray[2] << temperatureArray[3] << temperatureArray[4] << temperatureArray[5] << temperatureArray[6] << temperatureArray[7];
-    int tempAverage = (int)(tempTotal / 8); //当天各小时段温度的平均值
+//    int tempAverage = (int)(tempTotal / 8); //当天各小时段温度的平均值
+    int tempAverage = (int)(tempTotal / count); //当天各小时段温度的平均值
     int tempDiffMaxMin = abs(maxValue - minValue);//最高温和最低温的差
     int tempMiddle = maxValue - (int)(tempDiffMaxMin / 2);//最高温和最低温的中间值
     int basePosY = m_temperatureCurveLabel->height()/2 - TimeTextHeight/2;
@@ -578,8 +639,8 @@ void WeatherCategoryWidget::paintTemperatureCurve()
     //qDebug() << "tempMiddle=" << tempMiddle << ",tempDiffMaxMin=" << tempDiffMaxMin << ",unitHeight=" << unitHeight << m_temperatureCurveLabel->height();
     //qDebug() << "tempAverage=" << tempAverage << ", maxPos=" << maxPos << temperature[maxPos];
 
-    int pointHY[8] = {0};
-    for (int i = 0; i < 8; i++) {
+    int pointHY[count] = {0};
+    for (int i = 0; i < count; i++) {
         if (temperatureArray[i] >= tempMiddle) {
             pointHY[i] = basePosY - abs(temperatureArray[i] - tempMiddle) * unitHeight;
         }
@@ -616,7 +677,7 @@ void WeatherCategoryWidget::paintTemperatureCurve()
         painter.drawEllipse(QPoint(m_tempX->at(0), pointHY[0]), TemperatureDotSize, TemperatureDotSize);
     }
     //绘制其他圆点和圆点之间的连线
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < count-1; i++) {
         if (m_tempMouseEnterPress) {
             if (m_tempHoverIndex == i+1) {
                 painter.drawEllipse(QPoint(m_tempX->at(i+1), pointHY[i+1]), TemperatureDotSize+5, TemperatureDotSize+5);
@@ -634,7 +695,7 @@ void WeatherCategoryWidget::paintTemperatureCurve()
     }
 
     // 绘制每个圆点对应的温度值和时间点
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < count; i++) {
         QFont font = painter.font();
         font.setPixelSize(12);
         QFontMetrics fm(font);
@@ -651,7 +712,8 @@ void WeatherCategoryWidget::paintTemperatureCurve()
             painter.drawText(valueRect, Qt::AlignCenter, tempStr);
         }
 
-        QString timeStr = "14点";
+//        QString timeStr = "14点";
+        QString timeStr = m_preferences->m_hourlyWeather.at(i).time_hour;
         QRect timeRect(m_tempX->at(i) - fm.width(timeStr)/2, height()- AlignMent - TimeTextHeight, fm.width(timeStr), TimeTextHeight);
         painter.drawText(timeRect, Qt::AlignCenter, timeStr);
     }
@@ -682,7 +744,7 @@ void WeatherCategoryWidget::paintTemperatureCurve()
     painter.restore();
 }
 
-
+//风力风向
 void WeatherCategoryWidget::paintWindCurve()
 {
 //    1-2 	1-2级风(微风)
@@ -695,21 +757,26 @@ void WeatherCategoryWidget::paintWindCurve()
 //    9-10 	9-10级风
 //    10-11 	10-11级风
 //    11-12 	11-12级风
+    int count = m_preferences->m_hourlyWeather.size();
+    if (count == 0)
+        return;
 
     m_windX->clear();
-    for (int i=0;i<8;i++) {
+    QStringList windList;
+    for (int i=0;i<count;i++) {
         m_windX->append(m_firstWindX + i*m_windXSpace);
+        windList.append(m_preferences->m_hourlyWeather.at(i).wind_sc);
     }
 
-    QStringList windList;
-    windList.append("4-5");
-    windList.append("1-2");
-    windList.append("6-7");
-    windList.append("9-10");
-    windList.append("4-5");
-    windList.append("10-11");
-    windList.append("8-9");
-    windList.append("4-5");
+//    QStringList windList;
+//    windList.append("4-5");
+//    windList.append("1-2");
+//    windList.append("6-7");
+//    windList.append("9-10");
+//    windList.append("4-5");
+//    windList.append("10-11");
+//    windList.append("8-9");
+//    windList.append("4-5");
 
     const int levelCount = 11;
     int unitHeight = (m_temperatureCurveLabel->height() - AlignMent*2 - TimeTextHeight)/levelCount;//每个风级占据的高度,让显示曲线顶部和底部均空出AlignMent个像素
@@ -788,7 +855,8 @@ void WeatherCategoryWidget::paintWindCurve()
         painter.setFont(font);
         painter.setPen(QPen(QColor("#808080")));
 
-        QString timeStr = "14点";
+        //QString timeStr = "14点";
+        QString timeStr = m_preferences->m_hourlyWeather.at(i).time_hour;
         QRect timeRect(m_windX->at(i) - fm.width(timeStr)/2, height()- AlignMent - TimeTextHeight, fm.width(timeStr), TimeTextHeight);
         painter.drawText(timeRect, Qt::AlignCenter, timeStr);
     }
@@ -796,8 +864,13 @@ void WeatherCategoryWidget::paintWindCurve()
     painter.restore();
 }
 
+//降水量
 void WeatherCategoryWidget::paintPopWidget()
 {
+    int count = m_preferences->m_hourlyWeather.size();
+    if (count == 0)
+        return;
+
     m_popX->clear();
 
     const qreal ratio = qApp->devicePixelRatio();
@@ -812,7 +885,7 @@ void WeatherCategoryWidget::paintPopWidget()
     painter.drawText(rect, Qt::AlignCenter, tr("N/A"));*/
 
     //test
-    m_popCount = 8;
+    m_popCount = count;
     int xPos = m_firstPopX;
 
     for(int i= 0; i<m_popCount; i++) {
@@ -846,7 +919,7 @@ void WeatherCategoryWidget::paintPopWidget()
         painter.setPen(QPen(QColor("#000000")));
         painter.save();
 
-        QString text = "08点";
+        QString text = m_preferences->m_hourlyWeather.at(i).time_hour;//"08点"
         QFontMetrics fm(curFont);
         QRect textRect(center.x()- fm.width(text)/2, AlignMent, fm.width(text), 28);
         painter.drawText(textRect, Qt::AlignCenter, text);
@@ -859,7 +932,7 @@ void WeatherCategoryWidget::paintPopWidget()
         painter.drawPixmap(iconRect, pixmap);
 
         painter.save();
-        QString precipitationStr = "0mm";
+        QString precipitationStr = m_preferences->m_hourlyWeather.at(i).pop + "%";//"0mm"
         QRect weekArea(center.x()- fm.width(precipitationStr)/2, iconRect.bottom(), fm.width(precipitationStr), 28);
         painter.drawText(weekArea, Qt::AlignCenter, precipitationStr);
         painter.restore();

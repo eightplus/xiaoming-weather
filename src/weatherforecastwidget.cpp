@@ -43,15 +43,16 @@ WeatherForecastWidget::WeatherForecastWidget(QWidget *parent)
 
     m_displayWidget = new QWidget();
     m_displayWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    QGridLayout *grid_layout = new QGridLayout();
-    for(int i=0; i<ITEM_COUNTS; i++) {
-        ForecastItemWidget *item = new ForecastItemWidget;
-        m_items.append(item);
-        grid_layout->addWidget(item, 0, i%ITEM_COUNTS);//, i/ITEM_COUNTS, i%ITEM_COUNTS
-    }
-    grid_layout->setVerticalSpacing(5);
-    grid_layout->setContentsMargins(0, 0, 0, 0);
-    m_displayWidget->setLayout(grid_layout);
+
+//    QGridLayout *grid_layout = new QGridLayout();
+//    for(int i=0; i<ITEM_COUNTS; i++) {
+//        ForecastItemWidget *item = new ForecastItemWidget;
+//        m_items.append(item);
+//        grid_layout->addWidget(item, 0, i%ITEM_COUNTS);//, i/ITEM_COUNTS, i%ITEM_COUNTS
+//    }
+//    grid_layout->setVerticalSpacing(5);
+//    grid_layout->setContentsMargins(0, 0, 0, 0);
+//    m_displayWidget->setLayout(grid_layout);
 
     QHBoxLayout *main_layout = new QHBoxLayout(this);
     main_layout->addWidget(m_displayWidget);
@@ -80,6 +81,26 @@ WeatherForecastWidget::~WeatherForecastWidget()
 
 void WeatherForecastWidget::refreshForecastWeatherData()
 {
+    // 清空原来的界面(为了动态适应api获取的天气预报的天数)
+    for (int i=0; i<m_items.count(); i++) {
+        ForecastItemWidget *item = m_items.at(i);
+        delete item;
+        item = nullptr;
+    }
+    m_items.clear();
+
+    // 根据新的预报设置新的界面
+    QGridLayout *grid_layout = new QGridLayout();
+    int count = m_preferences->m_forecasts.size();
+    for(int i=0; i<count; i++) {
+        ForecastItemWidget *item = new ForecastItemWidget;
+        m_items.append(item);
+        grid_layout->addWidget(item, 0, i%count);//, i/ITEM_COUNTS, i%ITEM_COUNTS
+    }
+    grid_layout->setVerticalSpacing(5);
+    grid_layout->setContentsMargins(0, 0, 0, 0);
+    m_displayWidget->setLayout(grid_layout);
+
     for (int i=0; i<m_items.count(); i++) {
         ForecastItemWidget *item = m_items.at(i);
         if (m_preferences->m_observeWeather.cond_code.contains(QChar('n'))) {

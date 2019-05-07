@@ -91,7 +91,7 @@ private:
 //    QPropertyAnimation *m_lifeAnimation = nullptr;
     //QParallelAnimationGroup *m_animationGroup = nullptr;
 
-    Forecast forecast[8];
+    //Forecast forecast[8];
 
     // for temperature
     int m_tempCount;

@@ -364,6 +364,29 @@ void WeatherWorker::onWeatherDataReply()
                 }
             }
 
+            // hourly
+            if (mainDataJsonObject.contains("hourly")) {
+                QJsonArray hourlyArray = mainDataJsonObject.value("hourly").toArray();
+                foreach (QJsonValue val, hourlyArray) {
+                    QJsonObject hourlyJsonObject = val.toObject();
+                    HourlyWeather hourly_weather;
+                    hourly_weather.cloud = hourlyJsonObject.value("cloud").toString();
+                    hourly_weather.cond_code = hourlyJsonObject.value("cond_code").toString();
+                    hourly_weather.cond_txt = hourlyJsonObject.value("cond_txt").toString();
+                    hourly_weather.dew = hourlyJsonObject.value("dew").toString();
+                    hourly_weather.hum = hourlyJsonObject.value("hum").toString();
+                    hourly_weather.pop = hourlyJsonObject.value("pop").toString();
+                    hourly_weather.pres = hourlyJsonObject.value("pres").toString();
+                    hourly_weather.time_hour = hourlyJsonObject.value("time").toString();
+                    hourly_weather.tmp = hourlyJsonObject.value("tmp").toString();
+                    hourly_weather.wind_deg = hourlyJsonObject.value("wind_deg").toString();
+                    hourly_weather.wind_dir = hourlyJsonObject.value("wind_dir").toString();
+                    hourly_weather.wind_sc = hourlyJsonObject.value("wind_sc").toString();
+                    hourly_weather.wind_spd = hourlyJsonObject.value("wind_spd").toString();
+                    m_preferences->m_hourlyWeather.push_back(hourly_weather);
+                }
+            }
+
             //lifestyle
             if (mainDataJsonObject.contains("lifestyle")) {
                 QJsonArray lifestyleArray = mainDataJsonObject.value("lifestyle").toArray();

@@ -57,6 +57,7 @@ public:
 
     ObserveWeather m_observeWeather;
     QList<ForecastWeather> m_forecasts;
+    QList<HourlyWeather> m_hourlyWeather;
     LifeStyle m_lifestyle;
     Air m_air;
 };
