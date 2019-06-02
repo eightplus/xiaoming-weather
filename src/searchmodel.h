@@ -17,16 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UTILS_H
-#define UTILS_H
+#include <QAbstractListModel>
 
-#include <QString>
+#include "data.h"
 
-#define WIDGET_WIDTH 900
-#define WIDGET_HEIGHT 600
-#define TITLE_HEIGHT 39
+class SearchModel : public QAbstractListModel
+{
+    Q_OBJECT
+public:
+    explicit SearchModel(QObject *parent = 0);
+    ~SearchModel();
 
-const QString EIGHTPLUS_COMPANY_SETTING = "eightplus/xiaoming-weather";
-const QString EIGHTPLUS_SETTING_FILE_NAME_SETTING = "xiaoming-weather";
+    void setLocationData(const QList<LocationData> &results);
+    QList<LocationData> locationList() const;
 
-#endif // UTILS_H
+private:
+    int rowCount(const QModelIndex &parent) const;
+    QVariant data(const QModelIndex &index, int role) const;
+    bool insertColumns(int column, int count, const QModelIndex & parent = QModelIndex());
+
+    QList<LocationData> m_locationDataList;
+};

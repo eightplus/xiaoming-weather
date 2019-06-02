@@ -65,8 +65,6 @@ SOURCES += src/main.cpp \
     src/cityview.cpp \
     src/citymodel.cpp \
     src/citydelegate.cpp \
-    src/settingdialog.cpp \
-    src/settingtitlebar.cpp \
     src/citywidget.cpp \
     src/activebutton.cpp \
     src/citybtngroups.cpp \
@@ -79,7 +77,14 @@ SOURCES += src/main.cpp \
     src/weathernowanalysiser.cpp \
     src/weatherforecastanalysiser.cpp \
     src/weatherlifestyleanalysiser.cpp \
-    src/forecasttip.cpp
+    src/forecasttip.cpp \
+    src/scroller.cpp \
+    src/searchwidget.cpp \
+    src/searchview.cpp \
+    src/searchmodel.cpp \
+    src/searchdelegate.cpp \
+    src/searchinputedit.cpp \
+    src/locationworker.cpp
 
 HEADERS  += src/mainwindow.h \
     src/titlebar.h \
@@ -107,8 +112,6 @@ HEADERS  += src/mainwindow.h \
     src/cityview.h \
     src/citymodel.h \
     src/citydelegate.h \
-    src/settingdialog.h \
-    src/settingtitlebar.h \
     src/citywidget.h \
     src/activebutton.h \
     src/citybtngroups.h \
@@ -121,7 +124,14 @@ HEADERS  += src/mainwindow.h \
     src/weathernowanalysiser.h \
     src/weatherforecastanalysiser.h \
     src/weatherlifestyleanalysiser.h \
-    src/forecasttip.h
+    src/forecasttip.h \
+    src/scroller.h \
+    src/searchwidget.h \
+    src/searchview.h \
+    src/searchmodel.h \
+    src/searchdelegate.h \
+    src/searchinputedit.h \
+    src/locationworker.h
 
 TRANSLATIONS += \
     translation/xiaoming-weather_zh_CN.ts

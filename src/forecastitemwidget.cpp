@@ -30,7 +30,7 @@ ForecastItemWidget::ForecastItemWidget(QWidget *parent) :
     QWidget(parent)
     , m_isHover(false)
 {
-    this->setFixedSize(100, 140);//140:initForecastWidget's height - 2*space = 160- 10*2
+    this->setFixedSize(80, 140);//140:initForecastWidget's height - 2*space = 160- 10*2
     this->setStyleSheet("QWidget{border-radius: 0px;color:rgb(250,250,250);background-color:rgba(0,0,0,0.2)}");
 //    setAttribute(Qt::WA_TransparentForMouseEvents);
 
@@ -145,7 +145,11 @@ bool ForecastItemWidget::event(QEvent *event)
 {
     if (event->type() == QEvent::Enter) {//QEvent::ToolTip
         m_isHover = true;
+    }
+    else if (event->type() == QEvent::ToolTip) {
         m_toolTip->popupTip(QCursor::pos());
+//        event->accept();
+//        return true;
     }
     else if (event->type() == QEvent::Leave) {
         m_isHover = false;

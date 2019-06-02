@@ -53,7 +53,6 @@ CityModel::~CityModel()
     beginResetModel();
     m_cityDataList.clear();
     endResetModel();
-    //emit cityListStateChanged(true);
 }
 
 void CityModel::updateCityListData(const QString &currentId)

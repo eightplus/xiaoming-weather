@@ -25,7 +25,7 @@
 #include <QDebug>
 
 CityDelegate::CityDelegate(QObject *parent) : QStyledItemDelegate(parent)
-  , m_hoverBackground(QColor("#2bb6ea"))//QColor(254, 254, 254, 130)
+  , m_hoverBackground(QColor("#2bb6ea"))
   , m_defaultBackground(QColor("#fbfbfb"))
   , m_default2Background(QColor("#ffffff"))
 {
@@ -34,6 +34,7 @@ CityDelegate::CityDelegate(QObject *parent) : QStyledItemDelegate(parent)
 
 void CityDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    //qDebug() << "option.rect=" << option.rect;
     if (!index.isValid()) {
         return;
     }
@@ -154,7 +155,7 @@ void CityDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewI
     bool isActive = index.data(CityModel::ActiveRole).toBool();
 
     CityBtnGroups *btnGroups = static_cast<CityBtnGroups *>(editor);
-    btnGroups->setFixedSize(QSize(120, 28));
+    btnGroups->setFixedSize(QSize(120, 28));//设置按钮组的尺寸为(120, 28)，按钮组包括两个按钮：设置为默认按钮、删除按钮
     if (isActive) {
         btnGroups->setActive(true);
     }

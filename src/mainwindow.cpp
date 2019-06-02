@@ -22,7 +22,6 @@
 #include "weatherwidget.h"
 #include "locationwidget.h"
 #include "backgroundwidget.h"
-#include "settingdialog.h"
 #include "utils.h"
 #include "weatherworker.h"
 #include "preferences.h"
@@ -58,6 +57,8 @@ inline void animationFromBottomToTop(QWidget *topWidget, QWidget *bottomWidget, 
 
     QRect topStartRect = QRect(0, 0, topWidget->width(), topWidget->height());
     QRect topEndRect = QRect(0, -topWidget->height(), topWidget->width(), topWidget->height());
+//    qDebug() << "FromBottomToTop: topStartRect" << topStartRect << ",topEndRect" << topEndRect;
+
     QPropertyAnimation *topAnimation = new QPropertyAnimation(topWidget, "geometry");
     topAnimation->setDuration(delay);
     topAnimation->setEasingCurve(QEasingCurve::InOutCubic);
@@ -69,6 +70,7 @@ inline void animationFromBottomToTop(QWidget *topWidget, QWidget *bottomWidget, 
 
     QRect bottomStartRect = QRect(0, topWidget->height(), bottomWidget->width(), bottomWidget->height());
     QRect bottomEndRect = QRect(0, 0, bottomWidget->width(), bottomWidget->height());
+//    qDebug() << "FromBottomToTop: bottomStartRect" << bottomStartRect << ",bottomEndRect" << bottomEndRect;
     QPropertyAnimation *bottomAnimation = new QPropertyAnimation(bottomWidget, "geometry");
     bottomAnimation->setEasingCurve(QEasingCurve::InOutCubic);
     bottomAnimation->setDuration(delay);
@@ -124,6 +126,8 @@ inline void animationFromTopToBottom(QWidget *topWidget, QWidget *bottomWidget, 
 
     QRect topStartRect = QRect(0, 0, topWidget->width(), topWidget->height());
     QRect topEndRect = QRect(0, topWidget->height(), topWidget->width(), topWidget->height());
+//    qDebug() << "FromTopToBottom: topStartRect" << topStartRect << ",topEndRect" << topEndRect;
+
     QPropertyAnimation *topAnimation = new QPropertyAnimation(topWidget, "geometry");
     topAnimation->setDuration(delay);
     topAnimation->setEasingCurve(QEasingCurve::InOutCubic);
@@ -135,6 +139,8 @@ inline void animationFromTopToBottom(QWidget *topWidget, QWidget *bottomWidget, 
 
     QRect bottomStartRect = QRect(0, -topWidget->height(), bottomWidget->width(), bottomWidget->height());
     QRect bottomEndRect = QRect(0, 0, bottomWidget->width(), bottomWidget->height());
+//    qDebug() << "FromTopToBottom: bottomStartRect" << bottomStartRect << ",bottomEndRect" << bottomEndRect;
+
     QPropertyAnimation *bottomAnimation = new QPropertyAnimation(bottomWidget, "geometry");
     bottomAnimation->setEasingCurve(QEasingCurve::InOutCubic);
     bottomAnimation->setDuration(delay);
@@ -231,19 +237,17 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->setCentralWidget(m_centerWidget);*/
 
-
-
     m_titleBar = new TitleBar(this);
-    m_titleBar->setFixedSize(width(), 39);
+    m_titleBar->setFixedSize(width(), TITLE_HEIGHT);
     this->setMenuWidget(m_titleBar);
 
-    m_weatherWidget = new WeatherWidget;
-    m_weatherWidget->setFixedWidth(width());
-    m_weatherWidget->setContentsMargins(0, 0/*m_titleBar->height()*/, 0, 0);
+    m_weatherWidget = new WeatherWidget(this);;
+    m_weatherWidget->setFixedWidth(width());//高度上减去标题栏的高度
+    m_weatherWidget->setContentsMargins(0, 0, 0, 0);
 
-    m_locationWidget = new LocationWidget;
-    m_locationWidget->setFixedWidth(width());
-    m_locationWidget->setContentsMargins(0, 0/*m_titleBar->height()*/, 0, 0);
+    m_locationWidget = new LocationWidget(this);
+    m_locationWidget->setFixedWidth(width());//高度上减去标题栏的高度
+    m_locationWidget->setContentsMargins(0, 0, 0, 0);
     m_centerWidget = new QWidget;
     QStackedLayout *m_stackedLayout = new QStackedLayout(m_centerWidget);
     this->setCentralWidget(m_centerWidget);
@@ -311,49 +315,14 @@ MainWindow::~MainWindow()
     }
 }
 
-
 void MainWindow::showSettingDialog()
 {
-    m_setttingDialog->move((width() - m_setttingDialog->width()) / 2 + mapToGlobal(QPoint(0, 0)).x(),
-                               (window()->height() - m_setttingDialog->height()) / 2 + mapToGlobal(QPoint(0, 0)).y());
-    m_setttingDialog->show();
+
 }
 
 void MainWindow::createSettingDialog()
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    m_setttingDialog = new SettingDialog;
-    m_setttingDialog->setModal(false);
-    m_setttingDialog->fillCityList();
-//    connect(m_setttingDialog, SIGNAL(applied()), this, SLOT(applySettings()));
-//    connect(m_setttingDialog, &SettingDialog::requestRefreshCityMenu, this, [this] (bool removedDefault) {
-//        this->refreshCityActions();
-
-//        if (removedDefault) {//刪除了默认城市后，重新设置了列表中第一个城市为默认城市后，从服务端获取该城市的天气
-//            this->startGetWeather();
-//        }
-//    });
-//    connect(m_setttingDialog, &SettingDialog::requestRefreshWeatherById, this, [this] (const QString &id) {
-//        m_preferences->setCurrentCityNameById(id);
-//        this->refreshCityActions();
-//        this->startGetWeather();
-//    });
-//    connect(m_setttingDialog, &SettingDialog::requestChangeOpacity, this, [this] (int opcatity) {
-//        double value = opcatity*0.01;
-//        if (value < 0.6) {
-//            value = 0.60;
-//            m_preferences->m_opacity = 60;
-//        }
-//        this->setOpacity(value);
-//    });
-
-
-
-//    connect(m_setttingDialog, &SettingDialog::requestSetDefaultCity, this, [=] {
-//        m_preferences->setDefaultCity();
-//        m_setttingDialog->refreshCityList(m_preferences->m_currentCityId);
-//        //this->startGetWeather();
-//    });
 
     QApplication::restoreOverrideCursor();
 }

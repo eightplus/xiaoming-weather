@@ -17,36 +17,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CITYWIDGET_H
-#define CITYWIDGET_H
+#ifndef SEARCH_WIDGET_H
+#define SEARCH_WIDGET_H
 
 #include <QFrame>
 #include <QLabel>
+#include <QTimer>
 
 #include "data.h"
-#include "cityview.h"
-#include "citymodel.h"
-#include "citydelegate.h"
 
-class CityWidget : public QFrame
+class SearchModel;
+class SearchView;
+class SearchDelegate;
+class SearchInputEdit;
+class LocationWorker;
+
+
+class SearchWidget : public QFrame
 {
     Q_OBJECT
 
 public:
-    explicit CityWidget(QWidget *parent = 0);
-    ~CityWidget();
+    explicit SearchWidget(QWidget *parent = 0);
+    ~SearchWidget();
+
+    void resetSearchInputEdit() const;
+    void setSearchResult(const QList<LocationData> data);
 
 signals:
-    void requestAddCity();
+    void requestBackToCityWidget();
 
 public slots:
-    void onCityListDataChanged();
+    void onSearchTimerOut();
 
 private:
-    CityView *m_cityView = nullptr;
-    CityModel *m_cityModel = nullptr;
-    CityDelegate *m_cityDelegate = nullptr;
+//    QFrame *m_searchFrame = nullptr;
+//    QWidget *m_displayWidget = nullptr;
     QLabel *m_noResultLabel = nullptr;
+    SearchModel *m_searchModel = nullptr;
+    SearchView *m_searchView = nullptr;
+    SearchDelegate *m_searchDelegate = nullptr;
+
+    SearchInputEdit *m_searchInputEdit = nullptr;
+    QTimer *m_searchTimer = nullptr;
+    LocationWorker *m_locationWorker = nullptr;
 };
 
-#endif // CITYWIDGET_H
+#endif // SEARCH_WIDGET_H

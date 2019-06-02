@@ -21,9 +21,13 @@
 #define LOCATION_WIDGET_H
 
 #include <QWidget>
-#include <QVBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+
+class QVBoxLayout;
+class QStackedWidget;
+class CityWidget;
+class SearchWidget;
 
 class LocationWidget : public QWidget
 {
@@ -32,13 +36,17 @@ public:
     explicit LocationWidget(QWidget *parent = 0);
     ~ LocationWidget();
 
+    void initWidgets();
+
 signals:
     void backBtnClicked();
 
 private:
     QVBoxLayout *m_layout = nullptr;
-    QLabel *m_label = nullptr;
+    CityWidget *m_cityWidget = nullptr;
+    SearchWidget *m_searchWidget = nullptr;
     QPushButton *m_backBtn = nullptr;
+    QStackedWidget *m_stackedWidget = nullptr;
 };
 
 #endif // LOCATION_WIDGET_H

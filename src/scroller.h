@@ -17,16 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef SCROLLER_H
+#define SCROLLER_H
 
-#include <QString>
+class QObject;
 
-#define WIDGET_WIDTH 900
-#define WIDGET_HEIGHT 600
-#define TITLE_HEIGHT 39
+class Scroller {
+public:
+    static void setScroller(QObject *w, bool touch = true);
+};
 
-const QString EIGHTPLUS_COMPANY_SETTING = "eightplus/xiaoming-weather";
-const QString EIGHTPLUS_SETTING_FILE_NAME_SETTING = "xiaoming-weather";
-
-#endif // UTILS_H
+#endif // SCROLLER_H

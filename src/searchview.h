@@ -17,16 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UTILS_H
-#define UTILS_H
+#include <QListView>
 
-#include <QString>
-
-#define WIDGET_WIDTH 900
-#define WIDGET_HEIGHT 600
-#define TITLE_HEIGHT 39
-
-const QString EIGHTPLUS_COMPANY_SETTING = "eightplus/xiaoming-weather";
-const QString EIGHTPLUS_SETTING_FILE_NAME_SETTING = "xiaoming-weather";
-
-#endif // UTILS_H
+class SearchView : public QListView
+{
+    Q_OBJECT
+public:
+    explicit SearchView(QWidget *parent = 0);
+    ~SearchView();
+};

@@ -18,7 +18,7 @@
  */
 
 #include "citywidget.h"
-
+#include "utils.h"
 #include "preferences.h"
 #include "global.h"
 using namespace Global;
@@ -34,6 +34,11 @@ CityWidget::CityWidget(QWidget *parent)
     this->setStyleSheet("QFrame{border:none;background-color:rgba(255, 255, 255, 0.8);}");
 
     QVBoxLayout *main_layout = new QVBoxLayout(this);
+    setFocusPolicy(Qt::ClickFocus);
+    main_layout->setMargin(0);
+    main_layout->setContentsMargins(0, 0, 0, 50);
+    main_layout->setSpacing(0);
+
     m_noResultLabel = new QLabel(tr("No City List"));
     m_noResultLabel->setAlignment(Qt::AlignCenter);
     m_noResultLabel->setVisible(false);
@@ -44,12 +49,29 @@ CityWidget::CityWidget(QWidget *parent)
     m_cityView->setModel(m_cityModel);
     m_cityView->setItemDelegate(m_cityDelegate);
     m_cityView->setEditTriggers(QListView::NoEditTriggers);
+    //设置item的宽度
+    if (parent) {
+        m_cityView->setFixedWidth(parent->width());
+    }
+    else {
+        m_cityView->setFixedWidth(WIDGET_WIDTH);
+    }
 
-    main_layout->addWidget(m_cityView);
+    QPushButton *btAdd = new QPushButton();
+    btAdd->setFixedSize(190, 36);
+    btAdd->setText("+ " + tr("Add City"));
+    connect(btAdd, &QPushButton::clicked, this, [=] () {
+        emit this->requestAddCity();
+    });
+
+    QSizePolicy sp(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    sp.setVerticalStretch(100);
+    m_cityView->setSizePolicy(sp);
+
+    main_layout->addWidget(m_cityView, 0, Qt::AlignHCenter);
     main_layout->addWidget(m_noResultLabel);
-    main_layout->setSpacing(1);
-    main_layout->setMargin(0);
-    main_layout->setContentsMargins(0, 0, 0, 0);
+    main_layout->addWidget(btAdd, 0, Qt::AlignHCenter | Qt::AlignBottom);
+    main_layout->addStretch();
     this->setLayout(main_layout);
 
     connect(m_cityView, &CityView::entered, this, [=] (const QModelIndex &index) {
@@ -104,17 +126,15 @@ CityWidget::CityWidget(QWidget *parent)
         }
     });
 
-
-     /*QPushButton *mbtn = new QPushButton(this);
-     mbtn->setText("Test");
-     connect(mbtn, &QPushButton::clicked, this , [=] {
-         this->m_cityModel->resetCityListData();
-     });*/
+    this->onCityListDataChanged();
 }
 
 CityWidget::~CityWidget()
 {
-
+    delete m_noResultLabel;
+    delete m_cityView;
+    delete m_cityModel;
+    delete m_cityDelegate;
 }
 
 void CityWidget::onCityListDataChanged()
@@ -134,16 +154,4 @@ void CityWidget::onCityListDataChanged()
     }
 
     this->m_cityModel->resetCityListData(cityDataList);
-}
-
-void CityWidget::onCityListStateChanged(bool isEmpty)
-{
-    if (isEmpty) {
-        m_cityView->setVisible(false);
-        m_noResultLabel->setVisible(true);
-    }
-    else {
-        m_cityView->setVisible(true);
-        m_noResultLabel->setVisible(false);
-    }
 }

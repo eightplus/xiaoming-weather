@@ -17,16 +17,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef LOCATIONWORKER_H
+#define LOCATIONWORKER_H
 
-#include <QString>
+#include <QList>
+#include <QObject>
+#include <QThread>
 
-#define WIDGET_WIDTH 900
-#define WIDGET_HEIGHT 600
-#define TITLE_HEIGHT 39
+#include "data.h"
 
-const QString EIGHTPLUS_COMPANY_SETTING = "eightplus/xiaoming-weather";
-const QString EIGHTPLUS_SETTING_FILE_NAME_SETTING = "xiaoming-weather";
+class LocationWorker;
 
-#endif // UTILS_H
+class WorkerThread : public QThread
+{
+    Q_OBJECT
+
+public:
+    explicit WorkerThread(LocationWorker *parent);
+    ~WorkerThread() {}
+
+    void run() Q_DECL_OVERRIDE;
+};
+
+class LocationWorker : public QObject
+{
+    Q_OBJECT
+public:
+    explicit LocationWorker(QObject *parent = 0);
+    ~LocationWorker();
+
+    QList<LocationData> exactMatchCity(const QString &inputText) const;
+
+private:
+    friend class WorkerThread;
+    QList<LocationData> m_locatonList;
+    WorkerThread *m_workerThread = nullptr;
+};
+
+#endif // LOCATIONWORKER_H

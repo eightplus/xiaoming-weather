@@ -17,16 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UTILS_H
-#define UTILS_H
+#include <QStyledItemDelegate>
 
-#include <QString>
+class SearchDelegate : public QStyledItemDelegate
+{
+    Q_OBJECT
+public:
+    explicit SearchDelegate(QObject *parent = 0);
+    ~SearchDelegate();
 
-#define WIDGET_WIDTH 900
-#define WIDGET_HEIGHT 600
-#define TITLE_HEIGHT 39
-
-const QString EIGHTPLUS_COMPANY_SETTING = "eightplus/xiaoming-weather";
-const QString EIGHTPLUS_SETTING_FILE_NAME_SETTING = "xiaoming-weather";
-
-#endif // UTILS_H
+private:
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+};

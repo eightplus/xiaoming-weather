@@ -26,7 +26,6 @@ class TitleBar;
 class WeatherWidget;
 class LocationWidget;
 class QVBoxLayout;
-class SettingDialog;
 class BackgroundWidget;
 class WeatherWorker;
 
@@ -57,7 +56,6 @@ private:
     LocationWidget *m_locationWidget = nullptr;
     QVBoxLayout *m_layout = nullptr;
     BackgroundWidget *m_backgroundWidget = nullptr;
-    SettingDialog *m_setttingDialog = nullptr;
     bool m_isNight;
     WeatherWorker *m_weatherWorker = nullptr;
 };

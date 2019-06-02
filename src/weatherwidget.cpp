@@ -22,6 +22,7 @@
 #include "weatherforecastwidget.h"
 #include "weathercategorywidget.h"
 #include "navigationwidget.h"
+#include "utils.h"
 
 #include <QDebug>
 #include <QHBoxLayout>
@@ -31,6 +32,7 @@ WeatherWidget::WeatherWidget(QWidget *parent)
 {
 //    this->setFixedSize(900, 600);
 //    this->setStyleSheet("QFrame {border-image: url(':/res/background/weather-snow.jpg');color:rgb(255, 255, 255);}");
+    this->setFixedSize(parent->width(), parent->height() - TITLE_HEIGHT);//高度上减去标题栏的高度
 
     m_layout = new QVBoxLayout(this);
     m_layout->setContentsMargins(0, 0, 0, 0);

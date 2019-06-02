@@ -22,6 +22,18 @@
 
 #include <QObject>
 
+struct LocationData {
+    QString id;
+    QString city_en;
+    QString city;
+    QString country_en;
+    QString country;
+    QString province_en;
+    QString province;
+    QString admin_district_en;
+    QString admin_district;
+};
+
 struct City
 {
     QString id;
@@ -191,10 +203,21 @@ inline bool operator ==(const CitySettingData &data, const CitySettingData &othe
     return data.id == other.id;
 }
 
+
+inline bool operator ==(const LocationData &data, const LocationData &that)
+{
+    return data.id == that.id || (data.admin_district == that.admin_district && data.city == that.city);
+}
+
+
+
+
+
 Q_DECLARE_METATYPE(City)
 Q_DECLARE_METATYPE(LifeStyle)
 Q_DECLARE_METATYPE(ObserveWeather)
 Q_DECLARE_METATYPE(ForecastWeather)
 Q_DECLARE_METATYPE(CitySettingData)
+Q_DECLARE_METATYPE(LocationData)
 
 #endif // DATA_H

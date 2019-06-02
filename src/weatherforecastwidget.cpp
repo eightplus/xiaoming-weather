@@ -19,7 +19,7 @@
 
 #include "weatherforecastwidget.h"
 #include "forecastitemwidget.h"
-
+#include "scroller.h"
 #include "preferences.h"
 #include "global.h"
 using namespace Global;
@@ -43,7 +43,9 @@ WeatherForecastWidget::WeatherForecastWidget(QWidget *parent)
 
     m_displayWidget = new QWidget();
     m_displayWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
+#if QT_VERSION >= 0x050000
+    Scroller::setScroller(m_displayWidget);
+#endif
 //    QGridLayout *grid_layout = new QGridLayout();
 //    for(int i=0; i<ITEM_COUNTS; i++) {
 //        ForecastItemWidget *item = new ForecastItemWidget;
@@ -82,6 +84,10 @@ WeatherForecastWidget::~WeatherForecastWidget()
 void WeatherForecastWidget::refreshForecastWeatherData()
 {
     // 清空原来的界面(为了动态适应api获取的天气预报的天数)
+//    while (QLayoutItem *item = grid_layout->takeAt(0)) {
+//        item->widget()->deleteLater();
+//        delete item;
+//    }
     for (int i=0; i<m_items.count(); i++) {
         ForecastItemWidget *item = m_items.at(i);
         delete item;

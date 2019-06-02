@@ -17,16 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef SEARCHINPUTEDIT_H
+#define SEARCHINPUTEDIT_H
 
-#include <QString>
+#include <QLineEdit>
 
-#define WIDGET_WIDTH 900
-#define WIDGET_HEIGHT 600
-#define TITLE_HEIGHT 39
+class SearchInputEdit : public QLineEdit
+{
+    Q_OBJECT
 
-const QString EIGHTPLUS_COMPANY_SETTING = "eightplus/xiaoming-weather";
-const QString EIGHTPLUS_SETTING_FILE_NAME_SETTING = "xiaoming-weather";
+public:
+    explicit SearchInputEdit(QWidget* parent = 0);
 
-#endif // UTILS_H
+protected:
+    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+
+private:
+    QString m_searchText;
+    QPixmap m_searchPixmap;
+};
+
+#endif // SEARCHINPUTEDIT_H
