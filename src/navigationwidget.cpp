@@ -23,12 +23,15 @@
 
 #include <QDebug>
 #include <QHBoxLayout>
+#include <QWheelEvent>
+#include <QTimer>
 
 NavigationWidget::NavigationWidget(QWidget *parent, int cityCount)
     : QWidget(parent)
     , m_cityNavigation(new CityNavigation)
     , m_prevCityBtn(new ImageButton)
     , m_nextCityBtn(new ImageButton)
+    , m_wheelTimer(new QTimer(this))
 {
     m_cityNavigation->setObjectName("MainNavigation");
     m_prevCityBtn->setObjectName("PrevCityBtn");
@@ -58,11 +61,20 @@ NavigationWidget::NavigationWidget(QWidget *parent, int cityCount)
         m_cityNavigation->activePrevNavigationDot();
         emit this->requestPrevCity();
     });
+
+    m_wheelTimer->setSingleShot(true);
+    m_wheelTimer->setInterval(240);
 }
 
 NavigationWidget::~NavigationWidget()
 {
 
+}
+
+void NavigationWidget::setCityCount(const int count)
+{
+    m_count = count;
+    m_cityNavigation->setCityCount(m_count);
 }
 
 void NavigationWidget::enterEvent(QEvent *event)
@@ -81,3 +93,21 @@ void NavigationWidget::leaveEvent(QEvent *event)
     m_nextCityBtn->setVisible(false);
 }
 
+void NavigationWidget::wheelEvent(QWheelEvent *event)
+{
+    QWidget::wheelEvent(event);
+
+    if (m_wheelTimer->isActive())
+        return;
+
+    m_wheelTimer->start();
+
+    if (event->delta() < 0) {
+        m_cityNavigation->activeNextNavigationDot();
+        emit this->requestNextCity();
+    }
+    else {
+        m_cityNavigation->activePrevNavigationDot();
+        emit this->requestPrevCity();
+    }
+}

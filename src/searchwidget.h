@@ -46,6 +46,7 @@ public:
 
 signals:
     void requestBackToCityWidget();
+    void requestUpdateCount();
 
 public slots:
     void onSearchTimerOut();

@@ -23,6 +23,9 @@
 #include "weathercategorywidget.h"
 #include "navigationwidget.h"
 #include "utils.h"
+#include "preferences.h"
+#include "global.h"
+using namespace Global;
 
 #include <QDebug>
 #include <QHBoxLayout>
@@ -44,7 +47,7 @@ WeatherWidget::WeatherWidget(QWidget *parent)
     m_forecastWidget->setFixedSize(600, 340);
     m_categoryWidget = new WeatherCategoryWidget(this);
     m_categoryWidget->setFixedSize(900, 160);
-    m_navigationWidget = new NavigationWidget(this, 5);//5是默认城市的个数
+    m_navigationWidget = new NavigationWidget(this, m_preferences->citiesCount());//至少应该为1，m_preferences->citiesCount()是默认城市的个数
     m_navigationWidget->setFixedWidth(900);
 
     QWidget *w = new QWidget;
@@ -92,4 +95,9 @@ void WeatherWidget::onUpdateWeather()
 void WeatherWidget::onUpdateAqi()
 {
 
+}
+
+void WeatherWidget::updateCityCounts(const int count)
+{
+    m_navigationWidget->setCityCount(count);
 }

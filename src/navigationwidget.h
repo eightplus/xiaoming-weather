@@ -24,6 +24,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 
+class QTimer;
 class CityNavigation;
 class ImageButton;
 
@@ -34,6 +35,9 @@ public:
     explicit NavigationWidget(QWidget *parent = 0, int cityCount = 0);
     ~ NavigationWidget();
 
+    void setCityCount(const int count);
+    int getCityCount() const { return m_count; }
+
 signals:
     void requestPrevCity();
     void requestNextCity();
@@ -41,11 +45,14 @@ signals:
 private:
     void enterEvent(QEvent *event) Q_DECL_OVERRIDE;
     void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
+    void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
 
 private:
     CityNavigation *m_cityNavigation = nullptr;
     ImageButton *m_prevCityBtn = nullptr;
     ImageButton *m_nextCityBtn = nullptr;
+    int m_count;
+    QTimer *m_wheelTimer;
 };
 
 #endif // NAVIGATION_WIDGET_H

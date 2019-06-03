@@ -104,6 +104,9 @@ SearchWidget::SearchWidget(QWidget *parent)
         QString selectCityId = data.value<QString>();
         qDebug() << "selectCityId:" << selectCityId;
 
+        //增加城市后，更新城市个数
+        emit this->requestUpdateCount();
+
         //test
         this->resetSearchInputEdit();
         emit this->requestBackToCityWidget();

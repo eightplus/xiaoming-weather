@@ -259,6 +259,8 @@ MainWindow::MainWindow(QWidget *parent)
     //m_stackedLayout->setCurrentWidget(m_weatherWidget);
     m_weatherWidget->show();
 
+    connect(m_locationWidget, &LocationWidget::requestUpdateCityCounts, m_weatherWidget, &WeatherWidget::updateCityCounts);
+
     this->createSettingDialog();
 
     this->moveCenter();

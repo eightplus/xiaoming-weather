@@ -40,6 +40,7 @@ public:
 
 signals:
     void backBtnClicked();
+    void requestUpdateCityCounts(const int count);
 
 private:
     QVBoxLayout *m_layout = nullptr;

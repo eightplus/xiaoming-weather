@@ -38,6 +38,7 @@ public:
 
 signals:
     void requestAddCity();
+    void requestUpdateCount();
 
 public slots:
     void onCityListDataChanged();

@@ -171,6 +171,20 @@ void LocationWidget::initWidgets()
         animationFromRightToLeft(m_searchWidget, m_cityWidget, 500);
     });
 
+    //增加城市后，更新城市个数
+    connect(m_searchWidget, &SearchWidget::requestUpdateCount, this, [=] () {
+        //TODO 计算当前的城市个数
+        int count = 2;
+        emit this->requestUpdateCityCounts(count);
+    });
+
+    //删除城市后，更新城市个数
+    connect(m_cityWidget, &CityWidget::requestUpdateCount, this, [=] () {
+        //TODO 计算当前的城市个数
+        int count = 2;
+        emit this->requestUpdateCityCounts(count);
+    });
+
     /*QStackedLayout *contentLayout = new QStackedLayout(this);
     contentLayout->addWidget(m_cityWidget);
     contentLayout->addWidget(m_searchWidget);

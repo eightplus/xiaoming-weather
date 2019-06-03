@@ -108,6 +108,9 @@ CityWidget::CityWidget(QWidget *parent)
         m_cityModel->updateCityListData(m_preferences->m_currentCityId);
         m_cityView->closePersistentEditor(index);
         m_cityModel->showRemoveAnimation(index, m_cityView->width());
+
+        //删除城市后，更新城市个数
+        emit this->requestUpdateCount();
     });
     connect(m_cityModel, &CityModel::removeAnimationFinished, this, [=] (const QModelIndex &index) {
         if (m_cityModel->rowCount(QModelIndex()) <= index.row()) {
