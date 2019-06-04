@@ -35,6 +35,9 @@ public:
     void save();
     void load();
 
+    void clearAirData();
+    void clearWeatherData();
+
     bool isCityContains(const QString &id);
     QList<QString> getCitiesList();
     QList<QString> getCityIdList();
@@ -48,6 +51,9 @@ public:
     bool isCityIdExist(const QString &id);
     bool isCitiesCountOverMax();
     void setDefaultCity();
+
+    QString getNextId();
+    QString getPrevId();
 
     QString m_currentCityId;
     QString m_currentCity;

@@ -25,6 +25,7 @@
 #include "data.h"
 
 class ForecastItemWidget;
+class QGridLayout;
 
 class WeatherForecastWidget : public QFrame
 {
@@ -38,6 +39,7 @@ public:
 
 private:
     QWidget *m_displayWidget = nullptr;
+    QGridLayout *m_gridLayout = nullptr;
     QList<ForecastItemWidget *> m_items;
     Forecast forecast[6];
 };

@@ -110,5 +110,5 @@ AutomaticLocation::AutomaticLocation(QObject *parent)
 void AutomaticLocation::run()
 {
     QString cityName = automaicCity();
-    emit do_finish(cityName);
+    emit autoFinished(cityName);
 }

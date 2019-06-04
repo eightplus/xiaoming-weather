@@ -21,6 +21,9 @@
 #include "citywidget.h"
 #include "searchwidget.h"
 #include "utils.h"
+#include "preferences.h"
+#include "global.h"
+using namespace Global;
 
 #include <QDebug>
 #include <QVBoxLayout>
@@ -172,17 +175,23 @@ void LocationWidget::initWidgets()
     });
 
     //增加城市后，更新城市个数
-    connect(m_searchWidget, &SearchWidget::requestUpdateCount, this, [=] () {
-        //TODO 计算当前的城市个数
-        int count = 2;
-        emit this->requestUpdateCityCounts(count);
+    connect(m_searchWidget, &SearchWidget::requestAddCityInfo, this, [=] (const CitySettingData &data) {
+        City city;
+        city.id = data.id;
+        city.name = data.name;
+
+        m_preferences->addCityInfoToPref(city);
+        //m_preferences->setCurrentCityNameById(city.id);
+        m_preferences->save();
+
+        m_cityWidget->addCityItem(data);
+        emit this->requestUpdateCityCounts(m_preferences->citiesCount());
     });
+
 
     //删除城市后，更新城市个数
     connect(m_cityWidget, &CityWidget::requestUpdateCount, this, [=] () {
-        //TODO 计算当前的城市个数
-        int count = 2;
-        emit this->requestUpdateCityCounts(count);
+        emit this->requestUpdateCityCounts(m_preferences->citiesCount());
     });
 
     /*QStackedLayout *contentLayout = new QStackedLayout(this);

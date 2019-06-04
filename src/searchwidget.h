@@ -43,13 +43,15 @@ public:
 
     void resetSearchInputEdit() const;
     void setSearchResult(const QList<LocationData> data);
+    void displayTip(const QString &msg, int delay);
 
 signals:
     void requestBackToCityWidget();
-    void requestUpdateCount();
+    void requestAddCityInfo(const CitySettingData &data);
 
 public slots:
     void onSearchTimerOut();
+    void slotCloseTipMessage();
 
 private:
 //    QFrame *m_searchFrame = nullptr;
@@ -60,7 +62,9 @@ private:
     SearchDelegate *m_searchDelegate = nullptr;
 
     SearchInputEdit *m_searchInputEdit = nullptr;
+    QLabel *m_tipLabel = nullptr;
     QTimer *m_searchTimer = nullptr;
+    QTimer *delayTimer = nullptr;
     LocationWorker *m_locationWorker = nullptr;
 };
 

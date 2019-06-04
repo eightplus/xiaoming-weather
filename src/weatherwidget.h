@@ -43,6 +43,7 @@ public slots:
 
 signals:
     void locationBtnClicked();
+    void requestRefreshWeatherById(const QString &id);
 
 private:
     QVBoxLayout *m_layout = nullptr;

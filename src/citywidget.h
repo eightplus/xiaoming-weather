@@ -36,6 +36,8 @@ public:
     explicit CityWidget(QWidget *parent = 0);
     ~CityWidget();
 
+    void addCityItem(const CitySettingData &data);
+
 signals:
     void requestAddCity();
     void requestUpdateCount();

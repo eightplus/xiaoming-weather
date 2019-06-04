@@ -229,6 +229,7 @@ void WeatherNowWidget::paintEvent(QPaintEvent *event)
     painter.drawText(aqiRect, Qt::AlignCenter, QString("%1 (%2)").arg(m_preferences->m_air.aqi).arg(m_preferences->m_air.qlty));
 
     if (!m_locationBtn->isVisible()) {
+        //绘制城市名
         fm = QFontMetrics(font);
         QString currentCity = m_preferences->m_currentCity;
         QRect cityRect(width() - fm.width(currentCity) - 10, dateRect.y(), fm.width(currentCity), dateLineHeight);

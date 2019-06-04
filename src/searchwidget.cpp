@@ -43,6 +43,9 @@ SearchWidget::SearchWidget(QWidget *parent)
     m_searchTimer->setSingleShot(true);
     m_searchTimer->setInterval(500);
 
+    delayTimer = new QTimer(this);
+    connect(delayTimer, SIGNAL(timeout()), this, SLOT(slotCloseTipMessage()));
+
     m_locationWorker = new LocationWorker;
 
     QVBoxLayout *main_layout = new QVBoxLayout(this);
@@ -62,6 +65,11 @@ SearchWidget::SearchWidget(QWidget *parent)
         this->resetSearchInputEdit();
         emit this->requestBackToCityWidget();
     });
+
+    m_tipLabel = new QLabel;
+    m_tipLabel->setObjectName("tipLabel");
+    m_tipLabel->setAlignment(Qt::AlignCenter);
+    m_tipLabel->hide();
 
     m_searchModel = new SearchModel;
     m_searchView = new SearchView;
@@ -94,6 +102,7 @@ SearchWidget::SearchWidget(QWidget *parent)
 
 
     main_layout->addWidget(backBtn, 0, Qt::AlignHCenter | Qt::AlignTop);
+    main_layout->addWidget(m_tipLabel, 0, Qt::AlignHCenter);
     main_layout->addWidget(m_searchInputEdit, 0, Qt::AlignHCenter);
     main_layout->addLayout(contentLayout);
     main_layout->addStretch();
@@ -104,46 +113,45 @@ SearchWidget::SearchWidget(QWidget *parent)
         QString selectCityId = data.value<QString>();
         qDebug() << "selectCityId:" << selectCityId;
 
-        //增加城市后，更新城市个数
-        emit this->requestUpdateCount();
-
-        //test
-        this->resetSearchInputEdit();
-        emit this->requestBackToCityWidget();
-
         for (const LocationData &line : m_searchModel->locationList()) {//it must exits.
-//            qDebug() << "line.id:" << line.id;
-//            qDebug() << "line.city:" << line.city;
-            //            if (line.id == selectCityId) {
-//                //emit this->requestAddCityToMenu(line);
-//                if (m_preferences->isCitiesCountOverMax()) {
-//                    m_settingTitleBar->showWarnInfo(tr("Only 10 cities can be added at most!"));//最多只能添加10个城市
-//                    break;
-//                }
-//                if (m_preferences->isCityIdExist(line.id)) {
-//                    m_settingTitleBar->showWarnInfo(tr("The city already exists!"));//该城市已存在
-//                    break;
-//                }
+            qDebug() << "line.id:" << line.id;
+            qDebug() << "line.city:" << line.city;
+            if (line.id == selectCityId) {
+                if (m_preferences->isCitiesCountOverMax()) {
+                    this->displayTip(tr("Only 10 cities can be added at most!"), 3000);//最多只能添加10个城市
+                    break;
+                }
+                if (m_preferences->isCityIdExist(line.id)) {
+                    this->displayTip(tr("The city already exists!"), 3000);//该城市已存在
+                    break;
+                }
 
-//                CitySettingData info;
-//                info.active = false;
-//                info.id = line.id;
-//                info.name = line.city;
-//                info.icon = ":/res/weather_icons/darkgrey/100.png";
-//                m_cityWidget->addCityItem(info);
+                CitySettingData info;
+                info.active = false;
+                info.id = line.id;
+                info.name = line.city;
+                info.icon = ":/res/weather_icons/darkgrey/100.png";
+                //m_cityWidget->addCityItem(info);
 
 //                City city;
 //                city.id = line.id;
 //                city.name = line.city;
 
-////                m_preferences->addCityInfoToPref(city);
+                //增加城市后，更新城市个数
+                emit this->requestAddCityInfo(info);
 
-//                emit this->requestRefreshCityMenu(info.active);
+//                m_preferences->addCityInfoToPref(city);
+//                //m_preferences->setCurrentCityNameById(id);
+//                m_preferences->save();
+////                emit this->requestRefreshCityMenu(info.active);
 
-////                this->setWindowTitle(tr("Xiaoming Weather - Setting"));
-////                animationFromTopToBottom(m_searchFrame, m_settingFrame);
-//                break;
-//            }
+
+
+
+                this->resetSearchInputEdit();
+                emit this->requestBackToCityWidget();
+                break;
+            }
         }
     });
 
@@ -174,6 +182,17 @@ SearchWidget::~SearchWidget()
         m_searchTimer = nullptr;
     }
 
+    if (delayTimer != NULL) {
+        disconnect(delayTimer, SIGNAL(timeout()), this, SLOT(slotCloseTipMessage()));
+        if(delayTimer->isActive()) {
+            delayTimer->stop();
+        }
+        delete delayTimer;
+        delayTimer = NULL;
+    }
+
+    delete m_searchInputEdit;
+    delete m_tipLabel;
     delete m_noResultLabel;
     delete m_searchModel;
     delete m_searchView;
@@ -214,4 +233,18 @@ void SearchWidget::resetSearchInputEdit() const
 {
     m_searchInputEdit->setText("");
     m_searchInputEdit->clearFocus();
+}
+
+void SearchWidget::slotCloseTipMessage()
+{
+    m_tipLabel->hide();
+}
+
+void SearchWidget::displayTip(const QString &msg, int delay)
+{
+    m_tipLabel->setText(msg);
+    m_tipLabel->show();
+    if(this->delayTimer->isActive())
+        this->delayTimer->stop();
+    this->delayTimer->start(delay);
 }

@@ -62,12 +62,16 @@ WeatherWidget::WeatherWidget(QWidget *parent)
     m_layout->addWidget(m_navigationWidget/*, 0, Qt::AlignBottom*/);
 
     connect(m_navigationWidget, &NavigationWidget::requestNextCity, this, [=] {
-        //TODO:刷新城市天气信息 & 设置所有页面模块的数据
-        this->onUpdateWeather();
+        QString id = m_preferences->getNextId();
+        if (!id.isEmpty()) {
+            emit this->requestRefreshWeatherById(id);
+        }
     });
     connect(m_navigationWidget, &NavigationWidget::requestPrevCity, this, [=] {
-        //TODO:刷新城市天气信息 & 设置所有页面模块的数据
-        this->onUpdateWeather();
+        QString id = m_preferences->getPrevId();
+        if (!id.isEmpty()) {
+            emit this->requestRefreshWeatherById(id);
+        }
     });
 
     connect(m_nowWidget, &WeatherNowWidget::locationBtnClicked, this, &WeatherWidget::locationBtnClicked);

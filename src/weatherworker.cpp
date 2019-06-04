@@ -60,7 +60,7 @@ WeatherWorker::WeatherWorker(QObject *parent) :
 //    this->setCity("Langli");
 
     m_automatic = new AutomaticLocation(this);
-    connect(m_automatic, &AutomaticLocation::do_finish, this, &WeatherWorker::setAutoCity);
+    connect(m_automatic, &AutomaticLocation::autoFinished, this, &WeatherWorker::setAutoCity);
     m_automatic->start();
 
     //this->requestAccessGeoNameIDByLongitudeAndLatitude(28.1792, 113.114);//QString::arg: Argument missing: 无法解析res_nclose中的符号“res_nclose”：libresolv.so.2, (/lib/x86_64-linux-gnu/libresolv.so.2: undefined symbol: res_nclose)
@@ -231,6 +231,8 @@ void WeatherWorker::onWeatherDataReply()
         return;
     }
 
+    //clear old data
+    m_preferences->clearWeatherData();
 
 //    m_weatherType = W_Air_Type;
 //    m_weatherMap[m_weatherType]->parseJson(mainDataJsonObject);
@@ -471,6 +473,9 @@ void WeatherWorker::onApiDataReply()
         qDebug() << "Json null or empty!";
         return;
     }
+
+    //clear old data
+    m_preferences->clearAirData();
 
     QJsonArray mainDataJsonArray;
     QJsonObject jsonObject = jsonDocument.object();

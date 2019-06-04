@@ -189,6 +189,7 @@
         <file>res/weather_icons/white/900.png</file>
         <file>res/weather_icons/white/901.png</file>
         <file>res/weather_icons/white/999.png</file>
+        <file>res/search.png</file>
     </qresource>
     <qresource prefix="/qss">
         <file>res/weather.qss</file>

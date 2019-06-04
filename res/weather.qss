@@ -28,3 +28,12 @@ ImageButton#LocationBtn
     qproperty-hoverPic: url(:/res/location_hover_press.png);
     qproperty-pressPic: url(:/res/location_hover_press.png);
 }
+
+QLabel#tipLabel{
+    background-color:#777777;
+    color:red;
+    border: none;
+    font-family: "方正黑体_GBK";
+    font-size: 14px;
+    text-align: center;
+}

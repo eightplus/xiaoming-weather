@@ -236,7 +236,7 @@ void Preferences::removeCityInfoFromPref(const QString &id, bool isActive)
         QMap<QString, QString>::iterator iter;
         for (iter = m_cityMap.begin(); iter != m_cityMap.end();) {
             if (id == iter.key()) {
-                m_cityMap.erase(iter++);//删除节点并指向下一个结点
+                m_cityMap.erase(iter++);//删除节点并指向下一个结点  iter = m_cityMap.erase(iter);
                 break;
             }
             else {
@@ -269,4 +269,148 @@ bool Preferences::isCitiesCountOverMax()
     }
 
     return b;
+}
+
+QString Preferences::getNextId()
+{
+    if (m_cityMap.size() <= 1) {
+        return QString();
+    }
+
+    QString nextId;
+    int index = 0;
+    QMap<QString, QString>::iterator it = m_cityMap.begin();
+    for(; it != m_cityMap.end(); ++it) {
+        if(it.key() == this->m_currentCityId) {
+            break;
+        }
+        index++;
+    }
+    if (index == m_cityMap.size()-1) {
+        nextId = m_cityMap.firstKey();
+    }
+    else {
+        nextId = m_cityMap.keys().at(index+1);
+    }
+
+
+    /*for (auto it(m_cityMap.begin()); it != m_cityMap.end();) {
+        if (this->m_currentCityId == it.key()) {
+            it++;//指向下一个结点
+            nextId = it.key();
+            break;
+        }
+        else {
+            it++;//指向下一个结点
+        }
+    }*/
+
+    qDebug() << "org m_currentCityId:" << this->m_currentCityId;
+    qDebug() << "nextId:" << nextId;
+    this->m_currentCityId = nextId;
+    this->m_currentCity = this->getCityNameById(this->m_currentCityId);
+    qDebug() << "new m_currentCityId:" << this->m_currentCityId;
+//    QList<QString> idList = m_cityMap.keys();
+//    foreach (QString id, idList) {
+
+//    }
+
+    return this->m_currentCityId;
+}
+
+QString Preferences::getPrevId()
+{
+    if (m_cityMap.size() <= 1) {
+        return QString();
+    }
+
+    QString prevId;
+    int index = 0;
+    QMap<QString, QString>::iterator it = m_cityMap.begin();
+    for(; it != m_cityMap.end(); ++it) {
+        if(it.key() == this->m_currentCityId) {
+            break;
+        }
+        index++;
+    }
+    if (index == 0) {
+        prevId = m_cityMap.lastKey();
+    }
+    else {
+        prevId = m_cityMap.keys().at(index-1);
+    }
+
+//    for (auto it(m_cityMap.begin()); it != m_cityMap.end();) {
+//        if (this->m_currentCityId == it.key()) {
+//            break;
+//        }
+//        it++;//指向上一个结点
+//        index++;
+//    }
+
+    qDebug() << "org m_currentCityId:" << this->m_currentCityId;
+    qDebug() << "prevId:" << prevId;
+    this->m_currentCityId = prevId;
+    this->m_currentCity = this->getCityNameById(this->m_currentCityId);
+    qDebug() << "new m_currentCityId:" << this->m_currentCityId;
+    return this->m_currentCityId;
+}
+
+void Preferences::clearAirData()
+{
+    m_air.lat.clear();
+    m_air.lon.clear();
+    m_air.tz.clear();
+    m_air.updateTime.clear();
+    m_air.pubTime.clear();
+    m_air.aqi.clear();
+    m_air.qlty.clear();
+    m_air.main.clear();
+    m_air.pm25.clear();
+    m_air.pm10.clear();
+    m_air.no2.clear();
+    m_air.so2.clear();
+    m_air.co.clear();
+    m_air.o3.clear();
+    m_air.districtAirs.clear();
+}
+
+void Preferences::clearWeatherData()
+{
+    m_observeWeather.cloud.clear();
+    m_observeWeather.cond_code.clear();
+    m_observeWeather.cond_txt.clear();
+    m_observeWeather.fl.clear();
+    m_observeWeather.hum.clear();
+    m_observeWeather.pcpn.clear();
+    m_observeWeather.pres.clear();
+    m_observeWeather.tmp.clear();
+    m_observeWeather.vis.clear();
+    m_observeWeather.wind_deg.clear();
+    m_observeWeather.wind_dir.clear();
+    m_observeWeather.wind_sc.clear();
+    m_observeWeather.wind_spd.clear();
+
+
+    m_forecasts.clear();
+    m_hourlyWeather.clear();
+
+
+    m_lifestyle.air_brf.clear();
+    m_lifestyle.air_txt.clear();
+
+    m_lifestyle.comf_brf.clear();
+    m_lifestyle.comf_txt.clear();
+    m_lifestyle.cw_brf.clear();
+    m_lifestyle.cw_txt.clear();
+    m_lifestyle.drsg_brf.clear();
+    m_lifestyle.drsg_txt.clear();
+    m_lifestyle.flu_brf.clear();
+    m_lifestyle.flu_txt.clear();
+    m_lifestyle.sport_brf.clear();
+    m_lifestyle.sport_txt.clear();
+    m_lifestyle.trav_brf.clear();
+    m_lifestyle.trav_txt.clear();
+    m_lifestyle.uv_brf.clear();
+    m_lifestyle.uv_txt.clear();
 }

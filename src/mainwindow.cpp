@@ -272,8 +272,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_titleBar, &TitleBar::requestDisplayAboutDialog, this, [=] {
         this->showSettingDialog();
     });
+
+    //进入城市设置页面
     connect(m_weatherWidget, &WeatherWidget::locationBtnClicked, this, [this, m_stackedLayout] {
-        //TODO:弹出设置城市界面，城市设置完毕后，刷新城市天气信息 & 设置所有页面模块的数据
 //        m_stackedLayout->setCurrentWidget(m_locationWidget);
         animationFromTopToBottom(m_weatherWidget, m_locationWidget, 500);
         this->update();
@@ -281,6 +282,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_locationWidget, &LocationWidget::backBtnClicked, this, [this, m_stackedLayout] {
 //        m_stackedLayout->setCurrentWidget(m_weatherWidget);
         animationFromBottomToTop(m_locationWidget, m_weatherWidget, 500);
+    });
+
+    connect(m_weatherWidget, &WeatherWidget::requestRefreshWeatherById, this, [=] (const QString &id) {
+        m_weatherWorker->requestWeatherAndApiDataById(id);
     });
 
 //    system("xterm -e '"

@@ -104,6 +104,7 @@ CityWidget::CityWidget(QWidget *parent)
         const QString id = index.data(CityModel::IdRole).toString();
         //qDebug() << "remove===" << index.data(CityModel::IdRole).toString() << index.data(CityModel::NameRole).toString();
         m_preferences->removeCityInfoFromPref(id, index.data(CityModel::ActiveRole).toBool());
+        m_preferences->save();
         m_cityModel->removeItem(id);
         m_cityModel->updateCityListData(m_preferences->m_currentCityId);
         m_cityView->closePersistentEditor(index);
@@ -157,4 +158,10 @@ void CityWidget::onCityListDataChanged()
     }
 
     this->m_cityModel->resetCityListData(cityDataList);
+}
+
+void CityWidget::addCityItem(const CitySettingData &data)
+{
+    m_cityModel->addItem(data);
+    //m_cityModel->updateCityListData(m_preferences->m_currentCityId);
 }
