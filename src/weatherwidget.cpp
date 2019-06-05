@@ -64,12 +64,18 @@ WeatherWidget::WeatherWidget(QWidget *parent)
     connect(m_navigationWidget, &NavigationWidget::requestNextCity, this, [=] {
         QString id = m_preferences->getNextId();
         if (!id.isEmpty()) {
+            /*城市列表界面上更新选中的默认城市
+              提交更新天气数据的请求
+            */
             emit this->requestRefreshWeatherById(id);
         }
     });
     connect(m_navigationWidget, &NavigationWidget::requestPrevCity, this, [=] {
         QString id = m_preferences->getPrevId();
         if (!id.isEmpty()) {
+            /*城市列表界面上更新选中的默认城市
+              提交更新天气数据的请求
+            */
             emit this->requestRefreshWeatherById(id);
         }
     });
@@ -101,7 +107,7 @@ void WeatherWidget::onUpdateAqi()
 
 }
 
-void WeatherWidget::updateCityCounts(const int count)
+void WeatherWidget::updateCityCounts(const int count, const int curIndex)
 {
-    m_navigationWidget->setCityCount(count);
+    m_navigationWidget->setCityCount(count, curIndex);
 }

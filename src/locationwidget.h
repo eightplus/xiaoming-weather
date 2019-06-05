@@ -37,10 +37,12 @@ public:
     ~ LocationWidget();
 
     void initWidgets();
+    void updateCityListActive(const QString &id);
 
 signals:
     void backBtnClicked();
-    void requestUpdateCityCounts(const int count);
+    void requestUpdateCityCounts(const int count, const int curIndex);
+    void requestRefreshWeatherById(const QString &id);
 
 private:
     QVBoxLayout *m_layout = nullptr;

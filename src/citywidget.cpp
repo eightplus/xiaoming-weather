@@ -88,14 +88,28 @@ CityWidget::CityWidget(QWidget *parent)
 
 
     connect(m_cityDelegate, &CityDelegate::defaultCityButtonClicked, this, [=] {
+        /* 设置为默认城市后，更新配置文件中的默认城市id和城市名字；
+          城市列表界面上更新选中的默认城市
+          让滑动导航条的第一个圆点处于选中状态；
+          提交更新天气数据的请求
+        */
         const QModelIndex &index = m_cityView->currentHoverIndex();
         const QString id = index.data(CityModel::IdRole).toString();
         //qDebug() << "default===" << id << index.data(CityModel::NameRole).toString();
-        m_preferences->m_currentCityId = id;
-        m_preferences->m_currentCity = index.data(CityModel::NameRole).toString();
-        m_cityModel->updateCityListData(id);
+        m_preferences->m_defaultId = id;
+        m_preferences->m_currentId = id;
+        m_preferences->m_defaultCity = index.data(CityModel::NameRole).toString();
+        qDebug() << "m_preferences->m_defaultCity: " << m_preferences->m_defaultCity;
+        m_cityModel->updateCityListActive(id);
+
+        emit this->requestUpdateCountsAndWeather(m_preferences->m_defaultId);
     });
     connect(m_cityDelegate, &CityDelegate::removeCityButtonClicked, this, [=] {
+        /*删除城市后，将该城市的信息从配置信息中删除，如果该城市为默认城市，则将城市列表的第一个城市设置为新的默认城市；
+          城市列表界面上删除该城市那一行，如果该城市为默认城市，则将城市列表的第一个城市对应的那行设置为默认选中
+          更新滑动导航条圆点的个数，让选中的的圆点为新的默认城市的序号；
+          提交更新天气数据的请求
+        */
         if (m_preferences->citiesCount() == 1) {
             qDebug() << "At least there must be a city!!!";
             return;
@@ -105,13 +119,13 @@ CityWidget::CityWidget(QWidget *parent)
         //qDebug() << "remove===" << index.data(CityModel::IdRole).toString() << index.data(CityModel::NameRole).toString();
         m_preferences->removeCityInfoFromPref(id, index.data(CityModel::ActiveRole).toBool());
         m_preferences->save();
+
         m_cityModel->removeItem(id);
-        m_cityModel->updateCityListData(m_preferences->m_currentCityId);
+        m_cityModel->updateCityListActive(m_preferences->m_defaultId);
         m_cityView->closePersistentEditor(index);
         m_cityModel->showRemoveAnimation(index, m_cityView->width());
 
-        //删除城市后，更新城市个数
-        emit this->requestUpdateCount();
+        emit this->requestUpdateCountsAndWeather(m_preferences->m_defaultId);
     });
     connect(m_cityModel, &CityModel::removeAnimationFinished, this, [=] (const QModelIndex &index) {
         if (m_cityModel->rowCount(QModelIndex()) <= index.row()) {
@@ -149,7 +163,7 @@ void CityWidget::onCityListDataChanged()
     QList<QString> cityIdList = m_preferences->getCityIdList();
     for (int i=0; i<cityIdList.size(); i++) {
         CitySettingData data;
-        data.active = (m_preferences->m_currentCityId == cityIdList.at(i)) ? true : false;
+        data.active = (m_preferences->m_defaultId == cityIdList.at(i)) ? true : false;
         data.id = cityIdList.at(i);
         data.name = m_preferences->getCitiesList().at(i);
         data.temperature = "33";
@@ -163,5 +177,10 @@ void CityWidget::onCityListDataChanged()
 void CityWidget::addCityItem(const CitySettingData &data)
 {
     m_cityModel->addItem(data);
-    //m_cityModel->updateCityListData(m_preferences->m_currentCityId);
+    this->updateCityListActive(m_preferences->m_defaultId);
+}
+
+void CityWidget::updateCityListActive(const QString &id)
+{
+    m_cityModel->updateCityListActive(id);
 }

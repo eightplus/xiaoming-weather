@@ -176,26 +176,41 @@ void LocationWidget::initWidgets()
 
     //增加城市后，更新城市个数
     connect(m_searchWidget, &SearchWidget::requestAddCityInfo, this, [=] (const CitySettingData &data) {
+        /*增加新城市后，将新城市信息加入配置信息中，并设置为默认城市；
+          城市列表界面上增加新的一行，并将该行设置为默认选中
+          更新滑动导航条圆点的个数，让选择的圆点为第一个，并让新城市显示为第一个圆点对应的页面；
+          提交更新天气数据的请求
+        */
+
         City city;
         city.id = data.id;
         city.name = data.name;
 
         m_preferences->addCityInfoToPref(city);
-        //m_preferences->setCurrentCityNameById(city.id);
+        m_preferences->setCurrentCityNameById(city.id);
         m_preferences->save();
 
         m_cityWidget->addCityItem(data);
-        emit this->requestUpdateCityCounts(m_preferences->citiesCount());
+
+        emit this->requestUpdateCityCounts(m_preferences->citiesCount(), 0);
+
+        emit this->requestRefreshWeatherById(city.id);
     });
 
 
     //删除城市后，更新城市个数
-    connect(m_cityWidget, &CityWidget::requestUpdateCount, this, [=] () {
-        emit this->requestUpdateCityCounts(m_preferences->citiesCount());
+    connect(m_cityWidget, &CityWidget::requestUpdateCountsAndWeather, this, [=] (const QString &id) {
+        emit this->requestUpdateCityCounts(m_preferences->citiesCount(), 0);
+        emit this->requestRefreshWeatherById(id);
     });
 
     /*QStackedLayout *contentLayout = new QStackedLayout(this);
     contentLayout->addWidget(m_cityWidget);
     contentLayout->addWidget(m_searchWidget);
     m_cityWidget->setVisible(true);*/
+}
+
+void LocationWidget::updateCityListActive(const QString &id)
+{
+    m_cityWidget->updateCityListActive(id);
 }

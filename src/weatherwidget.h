@@ -39,7 +39,7 @@ public:
 public slots:
     void onUpdateWeather();
     void onUpdateAqi();
-    void updateCityCounts(const int count);
+    void updateCityCounts(const int count, const int curIndex);
 
 signals:
     void locationBtnClicked();

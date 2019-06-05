@@ -273,6 +273,13 @@ MainWindow::MainWindow(QWidget *parent)
         this->showSettingDialog();
     });
 
+    connect(m_titleBar, &TitleBar::requestMinSize, this, [=] {
+        /*if( windowState() != Qt::WindowMinimized ){
+            setWindowState( Qt::WindowMinimized );
+        }*/
+        this->showMinimized();
+    });
+
     //进入城市设置页面
     connect(m_weatherWidget, &WeatherWidget::locationBtnClicked, this, [this, m_stackedLayout] {
 //        m_stackedLayout->setCurrentWidget(m_locationWidget);
@@ -284,7 +291,15 @@ MainWindow::MainWindow(QWidget *parent)
         animationFromBottomToTop(m_locationWidget, m_weatherWidget, 500);
     });
 
+    connect(m_locationWidget, &LocationWidget::requestRefreshWeatherById, this, [=] (const QString &id) {
+        m_weatherWorker->requestWeatherAndApiDataById(id);
+    });
+
     connect(m_weatherWidget, &WeatherWidget::requestRefreshWeatherById, this, [=] (const QString &id) {
+        /*城市列表界面上更新选中的默认城市
+          提交更新天气数据的请求
+        */
+        m_locationWidget->updateCityListActive(id);
         m_weatherWorker->requestWeatherAndApiDataById(id);
     });
 

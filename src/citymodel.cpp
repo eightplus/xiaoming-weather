@@ -55,7 +55,7 @@ CityModel::~CityModel()
     endResetModel();
 }
 
-void CityModel::updateCityListData(const QString &currentId)
+void CityModel::updateCityListActive(const QString &currentId)
 {
     QList<CitySettingData>::iterator iter = m_cityDataList.begin();
     for (; iter != m_cityDataList.end(); iter++) {
@@ -95,7 +95,7 @@ void CityModel::addItem(const CitySettingData &data)
         }
     }
 
-    if (isExist) {
+    if (!isExist) {
         m_cityDataList.append(data);
         const QModelIndex mindex = index(0);
         emit dataChanged(mindex, mindex);

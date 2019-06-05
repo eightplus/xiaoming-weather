@@ -64,7 +64,7 @@ void WorkerThread::run()
             }
 
             LocationData data;
-            data.id = id.remove(0, 2);//remove "CN"
+            data.id = id;//id.remove(0, 2);//remove "CN"
             data.city_en = resultList.at(1);
             data.city = resultList.at(2);
             data.country_en = resultList.at(4);

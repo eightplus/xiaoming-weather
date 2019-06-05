@@ -41,12 +41,13 @@ Preferences::~Preferences()
 
 void Preferences::setDefaultValue()
 {
-    m_currentCityId = "CN101250101";
-    m_currentCity = "长沙";
+    m_defaultId = "CN101250101";
+    m_currentId = m_defaultId;
+    m_defaultCity = "长沙";
 
     City city;
-    city.id = m_currentCityId;
-    city.name = m_currentCity;
+    city.id = m_defaultId;
+    city.name = m_defaultCity;
     m_cityMap.insert(city.id, city.name);
 
     City city1;
@@ -65,8 +66,8 @@ void Preferences::save()
     QSettings *set = m_settings;
 
     set->beginGroup("City");
-    set->setValue("current_city_id", m_currentCityId);
-    set->setValue("current_city", m_currentCity);
+    set->setValue("default_city_id", m_defaultId);
+    set->setValue("default_city", m_defaultCity);
 
     set->remove("city_list");
     bool save_city_list = true;
@@ -95,13 +96,15 @@ void Preferences::load()
     QSettings *set = m_settings;
 
     set->beginGroup("City");
-    m_currentCityId = set->value("current_city_id", m_currentCityId).toString();
-    if (m_currentCityId.isEmpty()) {
+    m_defaultId = set->value("default_city_id", m_defaultId).toString();
+    if (m_defaultId.isEmpty()) {
+        qDebug() << "AAAAAAAAAAAAAAAA";
         this->setDefaultValue();
     }
     else {
+        m_currentId = m_defaultId;
         //TODO: 可能会出现id和cityname不匹配的情况
-        m_currentCity = set->value("current_city", m_currentCity).toString();
+        m_defaultCity = set->value("default_city", m_defaultCity).toString();
 
         m_cityMap.clear();
         int cityCount = set->beginReadArray("city_list");
@@ -115,7 +118,7 @@ void Preferences::load()
         }
         else {
             set->setArrayIndex(0);
-            m_cityMap.insert(m_currentCityId, m_currentCity);
+            m_cityMap.insert(m_defaultId, m_defaultCity);
         }
         set->endArray();
     }
@@ -154,41 +157,44 @@ int Preferences::citiesCount()
 void Preferences::setDefaultCity()
 {
     if (m_cityMap.size() > 0) {
-        this->m_currentCityId = m_cityMap.firstKey();
-        this->m_currentCity = this->getCityNameById(this->m_currentCityId);
+        this->m_defaultId = m_cityMap.firstKey();
+        this->m_currentId = this->m_defaultId;
+        this->m_defaultCity = this->getCityNameById(this->m_defaultId);
     }
 }
 
 void Preferences::setCurrentCityIdByName(const QString &name)
 {
-    this->m_currentCity = name;
+    this->m_defaultCity = name;
 
     bool idOk = false;
     QMap<QString,QString>::iterator iter;
     for (iter = m_cityMap.begin(); iter != m_cityMap.end(); ++iter) {
         if (iter.value() == name) {
-            this->m_currentCityId = iter.key();
+            this->m_defaultId = iter.key();
+            this->m_currentId = this->m_defaultId;
             idOk = true;
             break;
         }
     }
 
     if (idOk) {
-        qDebug() << "Set current city id success! id=" << this->m_currentCityId << ",city=" << this->m_currentCity;
+        qDebug() << "Set current city id success! id=" << this->m_defaultId << ",city=" << this->m_defaultCity;
     }
     else {
-        qDebug() << "Set current city id success!, city=" << this->m_currentCity;
+        qDebug() << "Set current city id success!, city=" << this->m_defaultCity;
     }
 }
 
 void Preferences::setCurrentCityNameById(const QString &id)
 {
-    this->m_currentCityId = id;
+    this->m_defaultId = id;
+    this->m_currentId = this->m_defaultId;
 
     QMap<QString,QString>::iterator iter;
     for (iter = m_cityMap.begin(); iter != m_cityMap.end(); ++iter) {
         if (iter.key() == id) {
-            this->m_currentCity = iter.key();
+            this->m_defaultCity = iter.value();
             break;
         }
     }
@@ -281,7 +287,7 @@ QString Preferences::getNextId()
     int index = 0;
     QMap<QString, QString>::iterator it = m_cityMap.begin();
     for(; it != m_cityMap.end(); ++it) {
-        if(it.key() == this->m_currentCityId) {
+        if(it.key() == this->m_currentId) {
             break;
         }
         index++;
@@ -295,7 +301,7 @@ QString Preferences::getNextId()
 
 
     /*for (auto it(m_cityMap.begin()); it != m_cityMap.end();) {
-        if (this->m_currentCityId == it.key()) {
+        if (this->m_currentId == it.key()) {
             it++;//指向下一个结点
             nextId = it.key();
             break;
@@ -305,17 +311,16 @@ QString Preferences::getNextId()
         }
     }*/
 
-    qDebug() << "org m_currentCityId:" << this->m_currentCityId;
+    qDebug() << "org m_currentId:" << this->m_currentId;
     qDebug() << "nextId:" << nextId;
-    this->m_currentCityId = nextId;
-    this->m_currentCity = this->getCityNameById(this->m_currentCityId);
-    qDebug() << "new m_currentCityId:" << this->m_currentCityId;
+    this->m_currentId = nextId;
+    qDebug() << "new m_currentId:" << this->m_currentId;
 //    QList<QString> idList = m_cityMap.keys();
 //    foreach (QString id, idList) {
 
 //    }
 
-    return this->m_currentCityId;
+    return nextId;
 }
 
 QString Preferences::getPrevId()
@@ -328,7 +333,7 @@ QString Preferences::getPrevId()
     int index = 0;
     QMap<QString, QString>::iterator it = m_cityMap.begin();
     for(; it != m_cityMap.end(); ++it) {
-        if(it.key() == this->m_currentCityId) {
+        if(it.key() == this->m_currentId) {
             break;
         }
         index++;
@@ -341,19 +346,18 @@ QString Preferences::getPrevId()
     }
 
 //    for (auto it(m_cityMap.begin()); it != m_cityMap.end();) {
-//        if (this->m_currentCityId == it.key()) {
+//        if (this->m_currentId == it.key()) {
 //            break;
 //        }
 //        it++;//指向上一个结点
 //        index++;
 //    }
 
-    qDebug() << "org m_currentCityId:" << this->m_currentCityId;
+    qDebug() << "org m_currentId:" << this->m_currentId;
     qDebug() << "prevId:" << prevId;
-    this->m_currentCityId = prevId;
-    this->m_currentCity = this->getCityNameById(this->m_currentCityId);
-    qDebug() << "new m_currentCityId:" << this->m_currentCityId;
-    return this->m_currentCityId;
+    this->m_currentId = prevId;
+    qDebug() << "new m_currentId:" << this->m_currentId;
+    return prevId;
 }
 
 void Preferences::clearAirData()

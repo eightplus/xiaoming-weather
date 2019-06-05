@@ -73,7 +73,6 @@ void TranslucentLabel::setLabelText(const QString &text)
     const QFontMetrics fm(font);
     QString elided_text = fm.elidedText(text, Qt::ElideRight, this->width() - m_icon->width() - 10);
     m_text->setText(elided_text);
-
 }
 
 bool TranslucentLabel::eventFilter(QObject *obj, QEvent *event)

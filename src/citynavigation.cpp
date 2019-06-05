@@ -47,9 +47,10 @@ void CityNavigation::activePrevNavigationDot()
     update();
 }
 
-void CityNavigation::setCityCount(const int count)
+void CityNavigation::setCityCount(const int count, const int curIndex)
 {
     this->m_cityCount = count;
+    this->m_currentCityIndex = curIndex;
 
     update();
 }

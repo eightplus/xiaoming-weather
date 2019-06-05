@@ -85,8 +85,7 @@ QList<ForecastWeather> WeatherWorker::getForecastList()
 
 void WeatherWorker::setAutoCity(const QString &cityName)
 {
-    if (cityName.isEmpty()) {//TODO
-        //this->requestWeatherAndApiDataById(m_preferences->m_currentCityId);
+    if (cityName.isEmpty()) {
         return;
     }
     //CN101250101,changsha,长沙,CN,China,中国,hunan,湖南,changsha,长沙,28.19409,112.98228,"430101,430100,430000",
@@ -127,7 +126,7 @@ void WeatherWorker::setAutoCity(const QString &cityName)
         file.close();
     }
 
-    this->requestWeatherAndApiDataById(m_preferences->m_currentCityId);
+    this->requestWeatherAndApiDataById(m_preferences->m_defaultId);
 }
 
 void WeatherWorker::setCity(const QString &city)
@@ -250,8 +249,9 @@ void WeatherWorker::onWeatherDataReply()
             // basic
             if (mainDataJsonObject.contains("basic")) {
                 QJsonObject basicJsonObject = mainDataJsonObject.value("basic").toObject();
-                m_preferences->m_currentCityId = basicJsonObject.value("cid").toString();
-                m_preferences->m_currentCity = basicJsonObject.value("location").toString();
+                m_preferences->m_defaultId = basicJsonObject.value("cid").toString();
+                m_preferences->m_currentId = m_preferences->m_defaultId;
+                m_preferences->m_defaultCity = basicJsonObject.value("location").toString();
 //                qDebug() << "cid=" << basicJsonObject.value("cid").toString();
 //                qDebug() << "location=" << basicJsonObject.value("location").toString();
 //                qDebug() << "parent_city=" << basicJsonObject.value("parent_city").toString();

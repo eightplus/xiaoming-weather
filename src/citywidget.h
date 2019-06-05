@@ -37,10 +37,11 @@ public:
     ~CityWidget();
 
     void addCityItem(const CitySettingData &data);
+    void updateCityListActive(const QString &id);
 
 signals:
     void requestAddCity();
-    void requestUpdateCount();
+    void requestUpdateCountsAndWeather(const QString &id);
 
 public slots:
     void onCityListDataChanged();

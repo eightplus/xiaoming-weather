@@ -47,6 +47,7 @@ public slots:
 signals:
     void switchDayOrNight();
     void requestDisplayAboutDialog();
+    void requestMinSize();
 
 private:
     QHBoxLayout *m_layout = nullptr;

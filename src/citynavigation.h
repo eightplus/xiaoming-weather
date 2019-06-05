@@ -32,7 +32,7 @@ class CityNavigation : public QWidget
 public:
     explicit CityNavigation(QWidget *parent = 0);
 
-    void setCityCount(const int count);
+    void setCityCount(const int count, const int curIndex);
 
     void activeNextNavigationDot();
     void activePrevNavigationDot();

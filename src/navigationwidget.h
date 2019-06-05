@@ -35,7 +35,7 @@ public:
     explicit NavigationWidget(QWidget *parent = 0, int cityCount = 0);
     ~ NavigationWidget();
 
-    void setCityCount(const int count);
+    void setCityCount(const int count, const int curIndex);
     int getCityCount() const { return m_count; }
 
 signals:

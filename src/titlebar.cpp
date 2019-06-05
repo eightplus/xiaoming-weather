@@ -97,9 +97,10 @@ void TitleBar::initRightContent()
     });
 
     connect(min_button, &ToolButton::clicked, this, [=] {
-        if (parentWidget() && parentWidget()->parentWidget()) {
-            parentWidget()->parentWidget()->showMinimized();
-        }
+        emit this->requestMinSize();
+//        if (parentWidget() && parentWidget()->parentWidget()) {
+//            parentWidget()->parentWidget()->showMinimized();
+//        }
     });
 
     connect(close_button, &ToolButton::clicked, this, [=] {

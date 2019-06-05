@@ -55,8 +55,10 @@ public:
     QString getNextId();
     QString getPrevId();
 
-    QString m_currentCityId;
-    QString m_currentCity;
+    QString m_defaultId;
+    QString m_defaultCity;
+    QString m_currentId;
+
     QString m_updateTime;
     int m_maxCityItems;
     QMap<QString, QString> m_cityMap;

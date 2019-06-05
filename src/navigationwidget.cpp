@@ -49,7 +49,7 @@ NavigationWidget::NavigationWidget(QWidget *parent, int cityCount)
     m_layout->addStretch();
 
     m_cityNavigation->setFixedHeight(24);
-    m_cityNavigation->setCityCount(cityCount);
+    m_cityNavigation->setCityCount(cityCount, 0);
     m_cityNavigation->setCurrentCityIndex(0);
     m_cityNavigation->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
@@ -71,10 +71,10 @@ NavigationWidget::~NavigationWidget()
 
 }
 
-void NavigationWidget::setCityCount(const int count)
+void NavigationWidget::setCityCount(const int count, const int curIndex)
 {
     m_count = count;
-    m_cityNavigation->setCityCount(m_count);
+    m_cityNavigation->setCityCount(m_count, curIndex);
 }
 
 void NavigationWidget::enterEvent(QEvent *event)

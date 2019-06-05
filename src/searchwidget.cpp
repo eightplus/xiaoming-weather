@@ -111,11 +111,10 @@ SearchWidget::SearchWidget(QWidget *parent)
     connect(m_searchView, &SearchView::clicked, this, [this](const QModelIndex &index) {
         QVariant data = index.data(Qt::UserRole);//SearchModel::data Qt::UserRole
         QString selectCityId = data.value<QString>();
-        qDebug() << "selectCityId:" << selectCityId;
-
+//        qDebug() << "selectCityId:" << selectCityId;
         for (const LocationData &line : m_searchModel->locationList()) {//it must exits.
-            qDebug() << "line.id:" << line.id;
-            qDebug() << "line.city:" << line.city;
+//            qDebug() << "line.id:" << line.id;
+//            qDebug() << "line.city:" << line.city;
             if (line.id == selectCityId) {
                 if (m_preferences->isCitiesCountOverMax()) {
                     this->displayTip(tr("Only 10 cities can be added at most!"), 3000);//最多只能添加10个城市
@@ -131,7 +130,6 @@ SearchWidget::SearchWidget(QWidget *parent)
                 info.id = line.id;
                 info.name = line.city;
                 info.icon = ":/res/weather_icons/darkgrey/100.png";
-                //m_cityWidget->addCityItem(info);
 
 //                City city;
 //                city.id = line.id;
@@ -139,17 +137,8 @@ SearchWidget::SearchWidget(QWidget *parent)
 
                 //增加城市后，更新城市个数
                 emit this->requestAddCityInfo(info);
-
-//                m_preferences->addCityInfoToPref(city);
-//                //m_preferences->setCurrentCityNameById(id);
-//                m_preferences->save();
-////                emit this->requestRefreshCityMenu(info.active);
-
-
-
-
-                this->resetSearchInputEdit();
                 emit this->requestBackToCityWidget();
+                this->resetSearchInputEdit();
                 break;
             }
         }
