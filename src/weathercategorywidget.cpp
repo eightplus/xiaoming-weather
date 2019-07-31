@@ -33,23 +33,8 @@ using namespace Global;
 #include <QStackedLayout>
 #include <QPainter>
 #include <QGridLayout>
-
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
-
-/*
-QPoint QMouseEvent::globalPos();//窗口坐标，这个是返回鼠标的全局坐标
-QPoint QCursor::pos()[static];//返回相对显示器的全局坐标
-QPoint QMouseEvent::pos();//返回相对这个widget的位置
-QPoint QWidget::pos();//这个属性获得的是当前目前控件在父窗口中的位置
-const QPointF &QMouseEvent::screenPos()const;//和QPoint QMouseEvent::globalPos() 值相同，但是类型更高精度的QPointF
-QPoint QWidget::mapToGlobal(const QPoint& pos)const;//将窗口坐标转换成显示器坐标
-QPoint QWidget::mapFromGlobal(const QPoint& pos)const;//将显示器坐标转换成窗口坐标
-QPoint QWidget::mapToParent(const QPoint& pos)const;//将窗口坐标获得的pos转换成父类widget的坐标
-QPoint QWidget::mapFromParent(const QPoint& pos)const;//将父类窗口坐标转换成当前窗口坐标
-QPoint QWidget::mapTo(const QWidget* parent,const QPoint& pos)const;//将当前窗口坐标转换成指定parent坐标
-Qpoint pt=cursor().pos();//获取当前鼠标位置
-*/
 
 namespace {
 
@@ -629,15 +614,12 @@ void WeatherCategoryWidget::paintTemperatureCurve()
             minValue = temperatureArray[i];
         }
     }
-    //qDebug() << "temperatureArray=" << temperatureArray[0] << temperatureArray[1] << temperatureArray[2] << temperatureArray[3] << temperatureArray[4] << temperatureArray[5] << temperatureArray[6] << temperatureArray[7];
-//    int tempAverage = (int)(tempTotal / 8); //当天各小时段温度的平均值
+
     int tempAverage = (int)(tempTotal / count); //当天各小时段温度的平均值
     int tempDiffMaxMin = abs(maxValue - minValue);//最高温和最低温的差
     int tempMiddle = maxValue - (int)(tempDiffMaxMin / 2);//最高温和最低温的中间值
     int basePosY = m_temperatureCurveLabel->height()/2 - TimeTextHeight/2;
     int unitHeight = (m_temperatureCurveLabel->height() - AlignMent*2 - TimeTextHeight)/tempDiffMaxMin;//每一摄氏度占据的高度,让显示曲线顶部和底部均空出AlignMent个像素
-    //qDebug() << "tempMiddle=" << tempMiddle << ",tempDiffMaxMin=" << tempDiffMaxMin << ",unitHeight=" << unitHeight << m_temperatureCurveLabel->height();
-    //qDebug() << "tempAverage=" << tempAverage << ", maxPos=" << maxPos << temperature[maxPos];
 
     int pointHY[count] = {0};
     for (int i = 0; i < count; i++) {
@@ -648,8 +630,6 @@ void WeatherCategoryWidget::paintTemperatureCurve()
             pointHY[i] = basePosY + abs(tempMiddle - temperatureArray[i]) * unitHeight;
         }
     }
-
-    //qDebug() << "pointHY=" << pointHY[0] << pointHY[1] << pointHY[2] << pointHY[3] << pointHY[4] << pointHY[5] << pointHY[6] << pointHY[7];
 
     QPen pen = painter.pen();
     pen.setWidth(1);
@@ -712,14 +692,23 @@ void WeatherCategoryWidget::paintTemperatureCurve()
             painter.drawText(valueRect, Qt::AlignCenter, tempStr);
         }
 
-//        QString timeStr = "14点";
         QString timeStr = m_preferences->m_hourlyWeather.at(i).time_hour;
-        QRect timeRect(m_tempX->at(i) - fm.width(timeStr)/2, height()- AlignMent - TimeTextHeight, fm.width(timeStr), TimeTextHeight);
-        painter.drawText(timeRect, Qt::AlignCenter, timeStr);
+        if (timeStr.contains(" ")) {
+            QStringList timeList = timeStr.split(" ");
+            QRect dateRect(m_tempX->at(i) - fm.width(timeList.at(0))/2, height()- AlignMent - TimeTextHeight, fm.width(timeList.at(0)), TimeTextHeight/2);
+            painter.drawText(dateRect, Qt::AlignCenter, timeList.at(0));
+
+            QRect timeRect(m_tempX->at(i) - fm.width(timeList.at(1))/2, height()- AlignMent - TimeTextHeight + 20, fm.width(timeList.at(1)), TimeTextHeight/2);
+            painter.drawText(timeRect, Qt::AlignCenter, timeList.at(1));
+        }
+        else {
+            QRect timeRect(m_tempX->at(i) - fm.width(timeStr)/2, height()- AlignMent - TimeTextHeight, fm.width(timeStr), TimeTextHeight);
+            painter.drawText(timeRect, Qt::AlignCenter, timeStr);
+        }
     }
 
     //平均温度线
-    QPen penAve;
+    /*QPen penAve;
     penAve.setColor(Qt::red);
     penAve.setWidth(2);
     penAve.setStyle(Qt::DotLine);
@@ -739,7 +728,7 @@ void WeatherCategoryWidget::paintTemperatureCurve()
     painter.setPen(QPen(QColor("#808080")));
     QString aveStr = QString::number(tempAverage) + "°C";
     QRect aveRect(750 + 20, aveY - TextHeight/2, fmAve.width(aveStr), TextHeight);
-    painter.drawText(aveRect, Qt::AlignCenter, aveStr);
+    painter.drawText(aveRect, Qt::AlignCenter, aveStr);*/
 
     painter.restore();
 }
@@ -767,16 +756,6 @@ void WeatherCategoryWidget::paintWindCurve()
         m_windX->append(m_firstWindX + i*m_windXSpace);
         windList.append(m_preferences->m_hourlyWeather.at(i).wind_sc);
     }
-
-//    QStringList windList;
-//    windList.append("4-5");
-//    windList.append("1-2");
-//    windList.append("6-7");
-//    windList.append("9-10");
-//    windList.append("4-5");
-//    windList.append("10-11");
-//    windList.append("8-9");
-//    windList.append("4-5");
 
     const int levelCount = 11;
     int unitHeight = (m_temperatureCurveLabel->height() - AlignMent*2 - TimeTextHeight)/levelCount;//每个风级占据的高度,让显示曲线顶部和底部均空出AlignMent个像素
@@ -855,10 +834,19 @@ void WeatherCategoryWidget::paintWindCurve()
         painter.setFont(font);
         painter.setPen(QPen(QColor("#808080")));
 
-        //QString timeStr = "14点";
         QString timeStr = m_preferences->m_hourlyWeather.at(i).time_hour;
-        QRect timeRect(m_windX->at(i) - fm.width(timeStr)/2, height()- AlignMent - TimeTextHeight, fm.width(timeStr), TimeTextHeight);
-        painter.drawText(timeRect, Qt::AlignCenter, timeStr);
+        if (timeStr.contains(" ")) {
+            QStringList timeList = timeStr.split(" ");
+            QRect dateRect(m_windX->at(i) - fm.width(timeList.at(0))/2, height()- AlignMent - TimeTextHeight, fm.width(timeList.at(0)), TimeTextHeight/2);
+            painter.drawText(dateRect, Qt::AlignCenter, timeList.at(0));
+
+            QRect timeRect(m_windX->at(i) - fm.width(timeList.at(1))/2, height()- AlignMent - TimeTextHeight + 20, fm.width(timeList.at(1)), TimeTextHeight/2);
+            painter.drawText(timeRect, Qt::AlignCenter, timeList.at(1));
+        }
+        else {
+            QRect timeRect(m_windX->at(i) - fm.width(timeStr)/2, height()- AlignMent - TimeTextHeight, fm.width(timeStr), TimeTextHeight);
+            painter.drawText(timeRect, Qt::AlignCenter, timeStr);
+        }
     }
 
     painter.restore();
@@ -919,16 +907,27 @@ void WeatherCategoryWidget::paintPopWidget()
         painter.setPen(QPen(QColor("#000000")));
         painter.save();
 
-        QString text = m_preferences->m_hourlyWeather.at(i).time_hour;//"08点"
         QFontMetrics fm(curFont);
-        QRect textRect(center.x()- fm.width(text)/2, AlignMent, fm.width(text), 28);
-        painter.drawText(textRect, Qt::AlignCenter, text);
-        painter.restore();
+        QString text = m_preferences->m_hourlyWeather.at(i).time_hour;
+        if (text.contains(" ")) {
+            QStringList textList = text.split(" ");
+            QRect dateRect(center.x()- fm.width(text)/2, /*AlignMent*/5, fm.width(text), 28);
+            painter.drawText(dateRect, Qt::AlignCenter, textList.at(0));
+
+            QRect timeRect(center.x()- fm.width(text)/2, /*AlignMent*/5 + 20, fm.width(text), 28);
+            painter.drawText(timeRect, Qt::AlignCenter, textList.at(1));
+            painter.restore();
+        }
+        else {
+            QRect textRect(center.x()- fm.width(text)/2, AlignMent, fm.width(text), 28);
+            painter.drawText(textRect, Qt::AlignCenter, text);
+            painter.restore();
+        }
 
         painter.setRenderHint(QPainter::Antialiasing, true);
         QPixmap pixmap = QPixmap(":/res/101.png");
         pixmap = pixmap.scaled(48, 48, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        QRect iconRect(center.x()-pixmap.width()/ratio/2, textRect.bottom(), pixmap.width() / ratio, pixmap.height() / ratio);
+        QRect iconRect(center.x()-pixmap.width()/ratio/2, 50/*textRect.bottom()*/, pixmap.width() / ratio, pixmap.height() / ratio);
         painter.drawPixmap(iconRect, pixmap);
 
         painter.save();
@@ -945,9 +944,8 @@ void WeatherCategoryWidget::initTemperatureWidget()
 {
     m_temperatureCurveLabel = new QLabel;
     m_temperatureCurveLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    //m_temperatureCurveLabel->setFixedSize(413, 105);
     m_temperatureCurveLabel->installEventFilter(this);
-//    m_temperatureCurveLabel->setMouseTracking(true);
+    m_temperatureCurveLabel->setMouseTracking(true);
     m_temperatureCurveLabel->setAttribute(Qt::WA_Hover, true);
 
     //test background
@@ -965,7 +963,14 @@ void WeatherCategoryWidget::initWindWidget()
     m_windCurveLabel = new QLabel;
     m_windCurveLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     m_windCurveLabel->installEventFilter(this);
+    m_windCurveLabel->setMouseTracking(true);
     m_windCurveLabel->setAttribute(Qt::WA_Hover, true);
+
+    //test background
+    m_windCurveLabel->setAutoFillBackground(true);
+    QPalette palette;
+    palette.setBrush(QPalette::Window, QBrush(Qt::gray));
+    m_windCurveLabel->setPalette(palette);
 
     m_stackedLayout->addWidget(m_windCurveLabel);
 
@@ -981,7 +986,14 @@ void WeatherCategoryWidget::initPopWidget()
     m_popLabel = new QLabel;
     m_popLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     m_popLabel->installEventFilter(this);
+    m_popLabel->setMouseTracking(true);
     m_popLabel->setAttribute(Qt::WA_Hover, true);
+
+    //test background
+    m_popLabel->setAutoFillBackground(true);
+    QPalette palette;
+    palette.setBrush(QPalette::Window, QBrush(Qt::gray));
+    m_popLabel->setPalette(palette);
 
     m_stackedLayout->addWidget(m_popLabel);
 }
@@ -990,7 +1002,8 @@ void WeatherCategoryWidget::initLifeStyleWidget()
 {
     m_lifestyleWidget = new QWidget;
     m_lifestyleWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
+    m_lifestyleWidget->setMouseTracking(true);
+    m_lifestyleWidget->setAttribute(Qt::WA_Hover, true);
     //test background
     /*m_lifestyleWidget->setAutoFillBackground(true);
     QPalette palette;
@@ -998,6 +1011,11 @@ void WeatherCategoryWidget::initLifeStyleWidget()
     m_lifestyleWidget->setPalette(palette);
     //m_lifestyleWidget->setStyleSheet("QLabel{border-radius: 0px; color:rgb(250, 250, 250); background-color:rgba(0,0,0,0.2);}");
     */
+    //test background
+    m_lifestyleWidget->setAutoFillBackground(true);
+    QPalette palette;
+    palette.setBrush(QPalette::Window, QBrush(Qt::gray));
+    m_lifestyleWidget->setPalette(palette);
 
     m_indexGridLayout = new QGridLayout(m_lifestyleWidget);
     m_indexGridLayout->setSpacing(1);

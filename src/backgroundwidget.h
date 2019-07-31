@@ -27,7 +27,7 @@ class BackgroundWidget : public QWidget
     Q_OBJECT
 
     Q_PROPERTY(QColor color READ color WRITE setColor)
-    Q_PROPERTY(QString backPixmap READ backPixmap WRITE setBackPixmap DESIGNABLE true SCRIPTABLE true)
+    //Q_PROPERTY(QString backPixmap READ backPixmap WRITE setBackPixmap DESIGNABLE true SCRIPTABLE true)
 
 public:
     explicit BackgroundWidget(QWidget *parent = 0);
@@ -49,6 +49,10 @@ private:
 
     bool m_isNight;
     qreal m_opacity;
+
+    int m_radius;
+    QBrush m_background;
+    QColor m_borderColor;
     QPixmap m_weatherBgPixmap;
 };
 

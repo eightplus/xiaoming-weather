@@ -42,15 +42,21 @@ const QString WEATHER_STORM_BACKGROUND_IMG = ":/res/background/weather-storm.jpg
 BackgroundWidget::BackgroundWidget(QWidget *parent) :
     QWidget(parent)
     , m_isNight(false)
+    , m_radius(0)
+    , m_background(QBrush(QColor(255,255,255,230)))
+    , m_borderColor(QColor(224,224,224,130))
 {
-    this->setObjectName("WeatherBackground");
+    //this->setObjectName("WeatherBackground");
 
     m_color = QColor("#FFFAFA");
     m_opacity = 1.0;
 
+    //this->setStyleSheet("QWidget{border-image: url(:/res/background/weather-clear-night.jpg);}");//color:rgb(255, 255, 255);
+
     m_weatherBgPixmap = QPixmap(WEATHER_DEFAULT_IMG);
     if (!m_weatherBgPixmap.isNull())
         m_weatherBgPixmap = m_weatherBgPixmap.scaled(WIDGET_WIDTH, WIDGET_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);//Qt::KeepAspectRatio
+
 }
 
 void BackgroundWidget::setColor(const QColor &color)
@@ -78,7 +84,7 @@ void BackgroundWidget::setForNight(bool isNight)
         qDebug() << "key=" << key << ",value=" << value;
     }*/
 
-    if (this->m_isNight) {
+    /*if (this->m_isNight) {
         m_weatherBgPixmap = QPixmap(WEATHER_DEFAULT_IMG);
         if (!m_weatherBgPixmap.isNull())
             m_weatherBgPixmap = m_weatherBgPixmap.scaled(WIDGET_WIDTH, WIDGET_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -87,11 +93,12 @@ void BackgroundWidget::setForNight(bool isNight)
         m_weatherBgPixmap = QPixmap(WEATHER_CLEAR_NIGHT_BACKGROUND_IMG);
         if (!m_weatherBgPixmap.isNull())
             m_weatherBgPixmap = m_weatherBgPixmap.scaled(WIDGET_WIDTH, WIDGET_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    }
+    }*/
 }
 
 void BackgroundWidget::paintEvent(QPaintEvent *event)
 {
+    /*
     QPainter painter(this);
     painter.setPen(Qt::NoPen);
 
@@ -107,4 +114,29 @@ void BackgroundWidget::paintEvent(QPaintEvent *event)
     }
 
     update();
+    */
+
+    QPainter painter(this);
+    painter.setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
+
+    QBrush background =  this->m_background;
+    QColor borderColor = this->m_borderColor;
+
+    QMarginsF shadowMargins = QMarginsF(2.0, 2.0, 2.0, 2.0);
+    QRectF bgRect = QRectF(rect()).marginsRemoved(shadowMargins);
+    QPainterPath bgPath;
+    bgPath.addRoundedRect(bgRect, this->m_radius, this->m_radius);
+    painter.fillPath(bgPath, background);
+
+    QPainterPath borderPath;
+    QRectF borderRect = QRectF(rect());
+    int borderRadius = this->m_radius;
+    QMarginsF borderMargins(0.5, 0.5, 0.5, 0.5);
+    borderRadius += 0.5;
+    borderRect = borderRect.marginsAdded(borderMargins).marginsRemoved(shadowMargins);
+    borderPath.addRoundedRect(borderRect, borderRadius, borderRadius);
+
+    QPen borderPen(borderColor);
+    borderPen.setWidthF(1.0);
+    painter.strokePath(borderPath, borderPen);
 }

@@ -190,12 +190,14 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);//需要加上Qt::WindowMinimizeButtonHint，否则showMinimized无效
     this->setMouseTracking(true);
     this->setFocusPolicy(Qt::ClickFocus);
-    this->setAttribute(Qt::WA_TranslucentBackground);
+    //透明设置1
+    //this->setAttribute(Qt::WA_TranslucentBackground);//让主界面透明，如果使用该设置，m_backgroundWidget盖在上面则达到不是完全透明的效果
+    //透明设置2
+    this->setWindowOpacity(0.98);
     this->setAutoFillBackground(true);
     this->setWindowTitle(tr("Xiaoming Weather"));
     this->setWindowIcon(QIcon(":/res/xiaoming-weather.png"));
-//    this->setWindowOpacity(0.9);
-    this->setWindowOpacity(1.0);
+
 
 //    m_weatherWorker = new WeatherWorker(this);
 
@@ -207,7 +209,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_backgroundWidget->setForNight(m_isNight);
 
     //如果不使用BackgroundWidget类作为背景，则可用setStyleSheet来设置QMainWindow的背景图片
-//    this->setStyleSheet("QMainWindow {color:white; background-image:url(':/res/background/weather-clear.jpg'); background-repeat:no-repeat; background-color:rgba(255, 255, 255, 230);}");
+    //this->setStyleSheet("QMainWindow {color:white; background-image:url(':/res/background/weather-clear.jpg'); background-repeat:no-repeat; background-color:rgba(255, 255, 255, 230);}");
 
     /*m_centerWidget = new QWidget(this);
     m_layout = new QVBoxLayout(m_centerWidget);
