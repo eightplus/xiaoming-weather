@@ -38,11 +38,9 @@
 #include "global.h"
 using namespace Global;
 
-//TODO: m_networkManager->get cause the warning:     QString::arg: Argument missing: 无法解析res_nclose中的符号“res_nclose”：libresolv.so.2, (/lib/x86_64-linux-gnu/libresolv.so.2: undefined symbol: res_nclose)
-
 WeatherWorker::WeatherWorker(QObject *parent) :
     QObject(parent)
-//    , m_networkManager(new QNetworkAccessManager(this))
+    , m_networkManager(new QNetworkAccessManager(this))
 {
     m_forecastList.clear();
     m_weatherMap.clear();
@@ -51,31 +49,58 @@ WeatherWorker::WeatherWorker(QObject *parent) :
     m_weatherMap.insert(W_LifeStyle_Type, new WeatherLifestyleAnalysiser);
     m_weatherMap.insert(W_Air_Type, new WeatherAirAnalysiser);*/
 
-    m_networkManager = new QNetworkAccessManager(this);
-//    connect(m_networkManager, &QNetworkAccessManager::finished, this, [] (QNetworkReply *reply) {
-//        reply->deleteLater();
-//    });
+//    m_networkManager = new QNetworkAccessManager(this);
+    connect(m_networkManager, &QNetworkAccessManager::finished, this, [] (QNetworkReply *reply) {
+        reply->deleteLater();
+    });
 
     //TODO: test geo api
 //    this->setCity("Langli");
 
     m_automatic = new AutomaticLocation(this);
-    connect(m_automatic, &AutomaticLocation::autoFinished, this, &WeatherWorker::setAutoCity);
-    m_automatic->start();
-
+    connect(m_automatic, &AutomaticLocation::autoFinished, this, &WeatherWorker::setAutomaticCity);
     //this->requestAccessGeoNameIDByLongitudeAndLatitude(28.1792, 113.114);//QString::arg: Argument missing: 无法解析res_nclose中的符号“res_nclose”：libresolv.so.2, (/lib/x86_64-linux-gnu/libresolv.so.2: undefined symbol: res_nclose)
     //this->requestAccessGeoNameDataByGeonameId("1804526");
 }
 
-WeatherWorker *WeatherWorker::getInstance(void)
-{
-    static WeatherWorker instance;
-    return &instance;
-}
+//WeatherWorker *WeatherWorker::getInstance(void)
+//{
+//    static WeatherWorker instance;
+//    return &instance;
+//}
 
 WeatherWorker::~WeatherWorker()
 {
     m_networkManager->deleteLater();
+}
+
+void WeatherWorker::startAutoLocationTask()
+{
+    m_automatic->start();
+}
+
+bool WeatherWorker::isNetWorkSettingsGood()
+{
+    //判断网络是否有连接，不一定能上网
+    QNetworkConfigurationManager mgr;
+    return mgr.isOnline();
+}
+
+void WeatherWorker::netWorkOnlineOrNot()
+{
+    QHostInfo::lookupHost("www.baidu.com", this, SLOT(networkLookedUp(QHostInfo)));
+}
+
+void WeatherWorker::networkLookedUp(const QHostInfo &host)
+{
+    if(host.error() != QHostInfo::NoError) {
+        //qDebug() << "test network failed, errorCode:" << host.error();
+        emit this->nofityNetworkStatus(host.errorString());
+    }
+    else {
+        //qDebug() << "test network success, the server's ip:" << host.addresses().first().toString();
+        emit this->nofityNetworkStatus("OK");
+    }
 }
 
 QList<ForecastWeather> WeatherWorker::getForecastList()
@@ -83,9 +108,13 @@ QList<ForecastWeather> WeatherWorker::getForecastList()
     return m_forecastList;
 }
 
-void WeatherWorker::setAutoCity(const QString &cityName)
+void WeatherWorker::setAutomaticCity(const QString &cityName)
 {
+    bool autoSuccess = false;
+    CitySettingData info;
+
     if (cityName.isEmpty()) {
+        emit this->requestAutoLocationData(info, false);
         return;
     }
     //CN101250101,changsha,长沙,CN,China,中国,hunan,湖南,changsha,长沙,28.19409,112.98228,"430101,430100,430000",
@@ -109,14 +138,38 @@ void WeatherWorker::setAutoCity(const QString &cityName)
             }
 
             if (resultList.at(1).compare(cityName, Qt::CaseInsensitive) == 0) {
-                //qDebug() << "id=" << id;//id.remove(0, 2);//remove "CN"
-                //qDebug() << "city=" << resultList.at(2);
-                City city;
-                city.id = id;
-                city.name = resultList.at(2);
-                m_preferences->addCityInfoToPref(city);
-                m_preferences->setCurrentCityNameById(id);
-                m_preferences->save();
+                QString m_id = id;//id.remove(0, 2);//remove "CN"
+                QString name = resultList.at(2);
+
+                if (m_preferences->isCitiesCountOverMax()) {
+                    if (m_preferences->isCityIdExist(m_id)) {
+                        //从已有列表中将自动定位的城市设置为默认城市
+                        m_preferences->setCurrentCityIdByName(name);
+                    }
+                    else {
+                        break;
+                    }
+                }
+                else {
+                    if (m_preferences->isCityIdExist(m_id)) {
+                        m_preferences->setCurrentCityIdByName(name);
+                    }
+                    else {
+                        City city;
+                        city.id = m_id;
+                        city.name = name;
+                        m_preferences->setCurrentCityIdByName(name);
+                        m_preferences->addCityInfoToPref(city);
+                        m_preferences->save();
+                    }
+                }
+
+                info.active = false;
+                info.id = m_id;
+                info.name = name;
+                info.icon = ":/res/weather_icons/darkgrey/100.png";
+
+                autoSuccess = true;
                 break;
             }
 
@@ -126,7 +179,12 @@ void WeatherWorker::setAutoCity(const QString &cityName)
         file.close();
     }
 
-    this->requestWeatherAndApiDataById(m_preferences->m_defaultId);
+    if (autoSuccess) {
+        emit this->requestAutoLocationData(info, true);
+    }
+    else {
+        emit this->requestAutoLocationData(info, false);
+    }
 }
 
 void WeatherWorker::setCity(const QString &city)
@@ -161,7 +219,8 @@ void WeatherWorker::requestAccessGeoNameIDByLongitudeAndLatitude(double latitude
 {
     //examples: http://api.geonames.org/extendedFindNearby?lat=28.1792&lng=113.114&username=kobe
     QString url = QString("http://api.geonames.org/extendedFindNearby?lat=%1&lng=%2&username=kobe").arg(latitude).arg(longitude);
-//    QNetworkRequest request;
+    qDebug() << "url1:" << url;
+    //    QNetworkRequest request;
 //    request.setUrl(url);
 //    QNetworkReply *reply = m_networkManager->get(request);
     QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
@@ -171,6 +230,7 @@ void WeatherWorker::requestAccessGeoNameIDByLongitudeAndLatitude(double latitude
 void WeatherWorker::requestWeatherDataByLongitudeAndLatitude(double latitude, double longitude)
 {
     QString url = QString("https://free-api.heweather.com/v5/weather?city=%1,%2&key=4ff2e595e593439380e52d2519523d0a").arg(latitude).arg(longitude);
+    qDebug() << "url2:" << url;
     QNetworkRequest request;
     request.setUrl(url);
     QNetworkReply *reply = m_networkManager->get(request);
@@ -186,6 +246,7 @@ void WeatherWorker::requestWeatherAndApiDataById(const QString &cityId)
 
     // 获取实时天气 + 3天天气预报 + 生活指数
     QString url = QString("https://free-api.heweather.com/s6/weather?location=%1&key=4ff2e595e593439380e52d2519523d0a").arg(cityId);
+    qDebug() << "url3:" << url;
     QNetworkRequest request;
     request.setUrl(url);
     QNetworkReply *reply = m_networkManager->get(request);
@@ -221,7 +282,7 @@ void WeatherWorker::onWeatherDataReply()
     //QString reply_content = QString::fromUtf8(ba);
     reply->close();
     reply->deleteLater();
-    //qDebug() << "weather size: " << ba.size();
+//    qDebug() << "weather size: " << ba.size();
 
     QJsonParseError err;
     QJsonDocument jsonDocument = QJsonDocument::fromJson(ba, &err);
@@ -238,7 +299,7 @@ void WeatherWorker::onWeatherDataReply()
 
     QJsonArray mainDataJsonArray;
     QJsonObject jsonObject = jsonDocument.object();
-    //qDebug() << "jsonObject" << jsonObject;
+//    qDebug() << "jsonObject" << jsonObject;
     if (jsonObject.contains("HeWeather6")) {
         QJsonValue jsonValue = jsonObject.value("HeWeather6");
         if (jsonValue.isArray()) {
@@ -450,6 +511,7 @@ void WeatherWorker::onApiDataReply()
     if(reply->error() != QNetworkReply::NoError || statusCode != 200) {//200 is normal status
         //qDebug() << "weather request error:" << reply->error() << ", statusCode=" << statusCode;
         if (statusCode == 301 || statusCode == 302) {//redirect
+            emit responseFailure(statusCode);
             reply->close();
             reply->deleteLater();
         }

@@ -4,8 +4,8 @@ QWidget#WeatherBackground {
 }
 
 CityNavigation#MainNavigation {
-    qproperty-activePointColor: rgba(255,255,255,230);
-    qproperty-unactivePointColor: rgba(255,255,255,100);
+    qproperty-activePointColor: rgba(6,54,56,230);
+    qproperty-unactivePointColor: rgba(6,54,56,100);
 }
 
 ImageButton#PrevCityBtn

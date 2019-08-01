@@ -68,6 +68,8 @@ public:
     QList<HourlyWeather> m_hourlyWeather;
     LifeStyle m_lifestyle;
     Air m_air;
+
+    int m_updateFrequency;
 };
 
 #endif // PREFERENCES_H

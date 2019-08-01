@@ -28,6 +28,7 @@ using namespace Global;
 Preferences::Preferences()
 {
     m_maxCityItems = 10;
+    m_updateFrequency = 30;
 
     //TODO
     load();
@@ -59,6 +60,16 @@ void Preferences::setDefaultValue()
     city2.id = "CN101020100";
     city2.name = "上海";
     m_cityMap.insert(city2.id, city2.name);
+
+    City city3;
+    city3.id = "CN101280101";
+    city3.name = "广州";
+    m_cityMap.insert(city3.id, city3.name);
+
+    City city4;
+    city4.id = "CN101280601";
+    city4.name = "深圳";
+    m_cityMap.insert(city4.id, city4.name);
 }
 
 void Preferences::save()

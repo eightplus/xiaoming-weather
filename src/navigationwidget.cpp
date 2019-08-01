@@ -20,6 +20,8 @@
 #include "navigationwidget.h"
 #include "citynavigation.h"
 #include "imagebutton.h"
+#include "tipmodule.h"
+#include "lifestyletip.h"
 
 #include <QDebug>
 #include <QHBoxLayout>
@@ -32,6 +34,7 @@ NavigationWidget::NavigationWidget(QWidget *parent, int cityCount)
     , m_prevCityBtn(new ImageButton)
     , m_nextCityBtn(new ImageButton)
     , m_wheelTimer(new QTimer(this))
+    , m_tipModule(new TipModule)
 {
     m_cityNavigation->setObjectName("MainNavigation");
     m_prevCityBtn->setObjectName("PrevCityBtn");
@@ -64,11 +67,15 @@ NavigationWidget::NavigationWidget(QWidget *parent, int cityCount)
 
     m_wheelTimer->setSingleShot(true);
     m_wheelTimer->setInterval(240);
+
+    tip = new LifestyleTip(tr("Please click the left or right button to switch city!"), this);
+    this->setProperty("TextTipWidget", QVariant::fromValue<QWidget *>(tip));
+    this->installEventFilter(m_tipModule);
 }
 
 NavigationWidget::~NavigationWidget()
 {
-
+    delete tip;
 }
 
 void NavigationWidget::setCityCount(const int count, const int curIndex)

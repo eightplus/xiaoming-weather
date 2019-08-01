@@ -3,15 +3,19 @@ xiaoming-weather
 
 注意：xiaoming-weather使用的和风天气API key已升级为认证个人开发者，可以获取实时天气，7天天气预报，逐小时天气预报，空气质量和生活指数。该应用旨在为linux用户以及linux爱好者提供一个编写天气插件的模板，欢迎fork，但请注意key的使用，fork时请替换为自己申请的key，谢谢！
 
+Author's Home Page
+=======
+https://eightplus.github.io/
+
 Debian
 =======
 dh_make --native
 
 Internationalization
 =======
-lupdate xiaoming-weather.pro
-linguist xiaoming-weather_zh_CN.ts
-lrelease xiaoming-weather.pro
++ lupdate xiaoming-weather.pro
++ linguist xiaoming-weather_zh_CN.ts
++ lrelease xiaoming-weather.pro
 
 Depends
 =======

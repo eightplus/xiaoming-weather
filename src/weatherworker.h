@@ -35,7 +35,7 @@ class WeatherNowAnalysiser;
 class WeatherForecastAnalysiser;
 class WeatherLifestyleAnalysiser;
 
-#define g_weatherWorker WeatherWorker::getInstance()
+//#define g_weatherWorker WeatherWorker::getInstance()
 
 class WeatherWorker : public QObject
 {
@@ -53,7 +53,7 @@ public:
     explicit WeatherWorker(QObject *parent = 0);
     ~WeatherWorker();
 
-    static WeatherWorker *getInstance(void);
+//    static WeatherWorker *getInstance(void);
     QList<ForecastWeather> getForecastList();
     void requestSearchCityByInput(const QString &input);
     void requestWeatherDataByLongitudeAndLatitude(double latitude, double longitude);
@@ -67,11 +67,17 @@ public:
     QList<LifeStyle> getLifestyleData();
     Air getAirData();
 
+    bool isNetWorkSettingsGood();
+    void netWorkOnlineOrNot();
+
+    void startAutoLocationTask();
+
 public slots:
     void onWeatherDataReply();
     void onApiDataReply();
     void onSearchCityReply();
-    void setAutoCity(const QString& cityName);
+    void setAutomaticCity(const QString& cityName);
+    void networkLookedUp(const QHostInfo &host);
 
 private slots:
     void onGeoNameIdByLongitudeAndLatitudeReply();
@@ -80,6 +86,10 @@ private slots:
 signals:
     void readyUpdateWeather();
     void readyUpdateAqi();
+
+    void nofityNetworkStatus(const QString &status);
+    void responseFailure(int code);
+    void requestAutoLocationData(const CitySettingData & info, bool success);
 
 private:
     QNetworkAccessManager *m_networkManager = nullptr;

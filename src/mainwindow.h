@@ -58,6 +58,7 @@ private:
     BackgroundWidget *m_backgroundWidget = nullptr;
     bool m_isNight;
     WeatherWorker *m_weatherWorker = nullptr;
+    QTimer *m_autoRefreshTimer = nullptr;
 };
 
 #endif // MAINWINDOW_H

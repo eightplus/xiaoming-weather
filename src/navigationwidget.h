@@ -27,6 +27,8 @@
 class QTimer;
 class CityNavigation;
 class ImageButton;
+class LifestyleTip;
+class TipModule;
 
 class NavigationWidget : public QWidget
 {
@@ -53,6 +55,8 @@ private:
     ImageButton *m_nextCityBtn = nullptr;
     int m_count;
     QTimer *m_wheelTimer;
+    LifestyleTip *tip;
+    TipModule *m_tipModule = nullptr;
 };
 
 #endif // NAVIGATION_WIDGET_H

@@ -41,6 +41,7 @@ using namespace Global;
 #include <QDebug>
 #include <QPropertyAnimation>
 #include <QGraphicsOpacityEffect>
+#include <QTimer>
 
 inline void animationFromBottomToTop(QWidget *topWidget, QWidget *bottomWidget, int delay)
 {
@@ -184,20 +185,24 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , m_mousePressed(false)
     , m_isNight(false)
-    , m_weatherWorker(new WeatherWorker(this))//g_weatherWorker
+    , m_weatherWorker(new WeatherWorker(this))
+    , m_autoRefreshTimer(new QTimer(this))
 {
     this->setFixedSize(WIDGET_WIDTH, WIDGET_HEIGHT);
     this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);//需要加上Qt::WindowMinimizeButtonHint，否则showMinimized无效
     this->setMouseTracking(true);
     this->setFocusPolicy(Qt::ClickFocus);
     //透明设置1
-    //this->setAttribute(Qt::WA_TranslucentBackground);//让主界面透明，如果使用该设置，m_backgroundWidget盖在上面则达到不是完全透明的效果
+//    this->setAttribute(Qt::WA_TranslucentBackground);//让主界面透明，如果使用该设置，m_backgroundWidget盖在上面则达到不是完全透明的效果
     //透明设置2
-    this->setWindowOpacity(0.98);
+//    this->setWindowOpacity(0.98);
     this->setAutoFillBackground(true);
     this->setWindowTitle(tr("Xiaoming Weather"));
     this->setWindowIcon(QIcon(":/res/xiaoming-weather.png"));
-
+    //使用颜色值设置背景
+//    this->setStyleSheet("QMainWindow{border-radius:4px;background-color:rgba(0,0,0,0.2);color:rgb(255,255,255);}");
+    //使用图片设置背景
+//    this->setStyleSheet("QMainWindow{background:transparent;background-image:url(':/res/background/weather-clear.jpg');}");//border-image
 
 //    m_weatherWorker = new WeatherWorker(this);
 
@@ -209,7 +214,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_backgroundWidget->setForNight(m_isNight);
 
     //如果不使用BackgroundWidget类作为背景，则可用setStyleSheet来设置QMainWindow的背景图片
-    //this->setStyleSheet("QMainWindow {color:white; background-image:url(':/res/background/weather-clear.jpg'); background-repeat:no-repeat; background-color:rgba(255, 255, 255, 230);}");
+//    this->setStyleSheet("QMainWindow {color:white; background-image:url(':/res/background/weather-clear.jpg'); background-repeat:no-repeat; background-color:rgba(255, 255, 255, 230);}");
 
     /*m_centerWidget = new QWidget(this);
     m_layout = new QVBoxLayout(m_centerWidget);
@@ -305,6 +310,36 @@ MainWindow::MainWindow(QWidget *parent)
         m_weatherWorker->requestWeatherAndApiDataById(id);
     });
 
+    if (!m_weatherWorker->isNetWorkSettingsGood()) {//无网络连接
+        m_autoRefreshTimer->stop();
+    }
+    else {//有网络连接，开始检查互联网是否可以ping通
+        m_weatherWorker->netWorkOnlineOrNot();//ping www.baidu.com
+    }
+
+    connect(m_weatherWorker, &WeatherWorker::nofityNetworkStatus, this, [=] (const QString &status) {
+        if (status == "OK") {//互联网可以ping通
+            m_weatherWorker->startAutoLocationTask();//开始自动定位城市
+        }
+        else {//互联网无法ping通
+
+        }
+    });
+
+    connect(m_weatherWorker, &WeatherWorker::responseFailure, this, [=] (int code) {
+        m_autoRefreshTimer->stop();
+    });
+
+    //自动定位成功后，更新各个控件的默认城市数据，并开始获取天气数据
+    connect(m_weatherWorker, &WeatherWorker::requestAutoLocationData, this, [=] (const CitySettingData &info, bool success) {
+        if (success) {//自动定位城市成功后，更新各个ui，然后获取天气数据
+            m_weatherWorker->requestWeatherAndApiDataById(m_preferences->m_currentId);
+        }
+        else {//自动定位城市失败后，获取天气数据
+            m_weatherWorker->requestWeatherAndApiDataById(m_preferences->m_currentId);
+        }
+    });
+
 //    system("xterm -e '"
 //           "sudo service network-manager restart"
 //           " && "
@@ -314,10 +349,23 @@ MainWindow::MainWindow(QWidget *parent)
 //    xterm -e "cd /etc; bash"
 
     connect(m_weatherWorker, &WeatherWorker::readyUpdateWeather, this, [=] () {
+//        if (!m_autoRefreshTimer->isActive()) {
+//            m_autoRefreshTimer->start(m_preferences->m_updateFrequency * 1000 * 60);
+//        }
+        qDebug() << "start to onUpdateWeather";
         m_weatherWidget->onUpdateWeather();
     });
+
     connect(m_weatherWorker, &WeatherWorker::readyUpdateAqi, this, [=] () {
+//        if (!m_autoRefreshTimer->isActive()) {
+//            m_autoRefreshTimer->start(m_preferences->m_updateFrequency * 1000 * 60);
+//        }
+        qDebug() << "start to onUpdateAqi";
         m_weatherWidget->onUpdateAqi();
+    });
+
+    connect(m_autoRefreshTimer, &QTimer::timeout, this, [=] {
+        m_weatherWorker->requestWeatherAndApiDataById(m_preferences->m_currentId);
     });
 }
 
