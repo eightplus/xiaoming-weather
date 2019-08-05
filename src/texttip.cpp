@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 ~ 2019 kobe24_lixiang@126.com
+ * Copyright (C) 2018 ~ 2020 kobe24_lixiang@126.com
  *
  * Authors:
  *  lixiang    kobe24_lixiang@126.com
@@ -23,6 +23,7 @@
 #include <QLabel>
 #include <QPainter>
 #include <QDebug>
+#include <QGraphicsDropShadowEffect>
 
 TextTip::TextTip(const QString &txt, TrianglePostion pos, QWidget *parent) : QFrame(parent)
   , m_radius(1)
@@ -56,7 +57,6 @@ TextTip::TextTip(const QString &txt, TrianglePostion pos, QWidget *parent) : QFr
     main_layout->addWidget(m_frame, 0, Qt::AlignVCenter);
 
     this->adjustSize();
-
     hide();
 }
 
@@ -119,33 +119,6 @@ void TextTip::resetTipText(const QString &title, const QString &desc)
     m_descLabel->setText(desc);
 }
 
-/*void TopTextTip::paintEvent(QPaintEvent *event)
-{
-    QPainter painter(this);
-    painter.setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
-
-    QBrush background =  this->m_background;
-    QColor borderColor = this->m_borderColor;
-
-    QMarginsF shadowMargins = QMarginsF(2.0, 2.0, 2.0, 2.0);
-    QRectF bgRect = QRectF(rect()).marginsRemoved(shadowMargins);
-    QPainterPath bgPath;
-    bgPath.addRoundedRect(bgRect, this->m_radius, this->m_radius);
-    painter.fillPath(bgPath, background);
-
-    QPainterPath borderPath;
-    QRectF borderRect = QRectF(rect());
-    int borderRadius = this->m_radius;
-    QMarginsF borderMargins(0.5, 0.5, 0.5, 0.5);
-    borderRadius += 0.5;
-    borderRect = borderRect.marginsAdded(borderMargins).marginsRemoved(shadowMargins);
-    borderPath.addRoundedRect(borderRect, borderRadius, borderRadius);
-
-    QPen borderPen(borderColor);
-    borderPen.setWidthF(1.0);
-    painter.strokePath(borderPath, borderPen);
-}*/
-
 void TextTip::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
@@ -161,8 +134,6 @@ void TextTip::paintEvent(QPaintEvent *event)
     const qreal triangleWidth = 8;
     const qreal width = this->width();
     const qreal height = this->height() - triangleHeight;
-
-
 
     QPainterPath path;
     if (m_trianglePostion == TopLeft) {//箭头方向在tip框的左上方

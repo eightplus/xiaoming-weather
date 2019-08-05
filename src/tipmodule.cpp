@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 ~ 2019 kobe24_lixiang@126.com
+ * Copyright (C) 2018 ~ 2020 kobe24_lixiang@126.com
  *
  * Authors:
  *  lixiang    kobe24_lixiang@126.com
@@ -24,8 +24,9 @@
 #include <QEvent>
 #include <QDebug>
 
-TipModule::TipModule(QObject *parent)  : QObject(parent)
+TipModule::TipModule(TrianglePostion pos, QObject *parent)  : QObject(parent)
     , m_displayTimer(new QTimer)
+    , m_trianglePostion(pos)
 {
     m_displayTimer->setInterval(300);
     connect(m_displayTimer, SIGNAL(timeout()), this, SLOT(onDisplayTimeOut()));
@@ -64,9 +65,23 @@ void TipModule::onDisplayTimeOut()
             if (!m_parentWidget) {
                 return;
             }
-
-            QPoint point = m_parentWidget->mapToGlobal(m_parentWidget->rect().bottomLeft());//m_parentWidget->rect().center()
-            m_tipWidget->move(point);
+            if (m_trianglePostion == TrianglePostion::TopLeft) {
+                QPoint point = m_parentWidget->mapToGlobal(m_parentWidget->rect().bottomLeft());
+                m_tipWidget->move(point);
+            }
+            else if (m_trianglePostion == TrianglePostion::BottomMiddle) {
+                QPoint centerPos = m_parentWidget->mapToGlobal(m_parentWidget->rect().center());
+                QSize tipSize = m_tipWidget->size();
+                centerPos.setX(centerPos.x() - tipSize.width()/2);
+                centerPos.setY(centerPos.y() - tipSize.height() - 30);
+                centerPos = m_tipWidget->mapFromGlobal(centerPos);
+                centerPos = m_tipWidget->mapToParent(centerPos);
+                m_tipWidget->move(centerPos);
+            }
+            else {
+                QPoint point = m_parentWidget->mapToGlobal(m_parentWidget->rect().bottomLeft());//m_parentWidget->rect().center()
+                m_tipWidget->move(point);
+            }
         });
     }
     this->m_displayTimer->stop();

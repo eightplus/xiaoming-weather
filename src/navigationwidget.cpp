@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 ~ 2019 kobe24_lixiang@126.com
+ * Copyright (C) 2018 ~ 2020 kobe24_lixiang@126.com
  *
  * Authors:
  *  lixiang    kobe24_lixiang@126.com
@@ -34,7 +34,7 @@ NavigationWidget::NavigationWidget(QWidget *parent, int cityCount)
     , m_prevCityBtn(new ImageButton)
     , m_nextCityBtn(new ImageButton)
     , m_wheelTimer(new QTimer(this))
-    , m_tipModule(new TipModule)
+    , m_tipModule(new TipModule(TrianglePostion::BottomMiddle))
 {
     m_cityNavigation->setObjectName("MainNavigation");
     m_prevCityBtn->setObjectName("PrevCityBtn");
@@ -68,7 +68,7 @@ NavigationWidget::NavigationWidget(QWidget *parent, int cityCount)
     m_wheelTimer->setSingleShot(true);
     m_wheelTimer->setInterval(240);
 
-    tip = new TextTip(tr("Please click the left or right button to switch city!"), TrianglePostion::BottomMiddle,this);
+    tip = new TextTip(tr("Please click the left or right button to switch city!"), TrianglePostion::BottomMiddle, this);
     this->setProperty("TextTipWidget", QVariant::fromValue<QWidget *>(tip));
     this->installEventFilter(m_tipModule);
 }

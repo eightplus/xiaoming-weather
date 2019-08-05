@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 ~ 2019 kobe24_lixiang@126.com
+ * Copyright (C) 2018 ~ 2020 kobe24_lixiang@126.com
  *
  * Authors:
  *  lixiang    kobe24_lixiang@126.com
@@ -53,7 +53,7 @@ const QStringList LIFESTYLEICON = {":/res/lifestyle/comf_index.png", ":/res/life
 WeatherCategoryWidget::WeatherCategoryWidget(QWidget *parent)
     : QFrame(parent)
     , m_stackedLayout(new QStackedLayout)
-    , m_tipModule(new TipModule)
+    , m_tipModule(new TipModule(TrianglePostion::TopLeft))
     , m_tempMouseEnterPress(false)
     , m_windMouseEnterPress(false)
     , m_popMouseEnterPress(false)

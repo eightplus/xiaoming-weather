@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 ~ 2019 kobe24_lixiang@126.com
+ * Copyright (C) 2018 ~ 2020 kobe24_lixiang@126.com
  *
  * Authors:
  *  lixiang    kobe24_lixiang@126.com
@@ -22,13 +22,15 @@
 
 #include <QObject>
 
+#include "utils.h"
+
 class QTimer;
 
 class TipModule: public QObject
 {
     Q_OBJECT
 public:
-    TipModule(QObject *parent = 0);
+    TipModule(TrianglePostion pos, QObject *parent = 0);
     ~TipModule();
 
 public slots:
@@ -41,6 +43,7 @@ private:
     QWidget *m_parentWidget = nullptr;
     QWidget *m_tipWidget = nullptr;
     QTimer  *m_displayTimer = nullptr;
+    TrianglePostion m_trianglePostion;
 };
 
 #endif // TIPMODULE_H

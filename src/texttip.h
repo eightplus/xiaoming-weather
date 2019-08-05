@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 ~ 2019 kobe24_lixiang@126.com
+ * Copyright (C) 2018 ~ 2020 kobe24_lixiang@126.com
  *
  * Authors:
  *  lixiang    kobe24_lixiang@126.com
@@ -29,8 +29,6 @@ class QLabel;
 class TextTip : public QFrame
 {
     Q_OBJECT
-
-//    enum TrianglePostion {TopLeft, TopMiddle, TopRight, BottomLeft, BottomMiddle, BottomRight};
 
 public:
     explicit TextTip(const QString &txt, TrianglePostion pos, QWidget *parent = 0);
