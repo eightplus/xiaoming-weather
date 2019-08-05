@@ -29,7 +29,7 @@ class CategoryButton;
 class QLabel;
 class QGridLayout;
 class IndexItemWidget;
-class LifestyleTip;
+class TextTip;
 class TipModule;
 class WindTooltip;
 class QPropertyAnimation;
@@ -57,7 +57,7 @@ public:
     void setNightStyleSheets();
 
     void refreshLifestyleData();
-    LifestyleTip *setTipWidget(QWidget *w, const QString &txt);
+    TextTip *setTipWidget(QWidget *w, const QString &txt);
 
     void calculateTemperatureHoverIndex(int hoverX);
     int calculateWindHoverIndex(int hoverX);
@@ -121,7 +121,7 @@ private:
     QList<IndexItemWidget *> m_lifeItems;
     QStringList m_lifeIndexList;
     QStringList m_lifeIndexIconList;
-    QList<LifestyleTip *> m_lifestyleTips;
+    QList<TextTip *> m_lifestyleTips;
     TipModule *m_tipModule = nullptr;
 
 };

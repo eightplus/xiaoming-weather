@@ -189,12 +189,12 @@ void Preferences::setCurrentCityIdByName(const QString &name)
         }
     }
 
-    if (idOk) {
-        qDebug() << "Set current city id success! id=" << this->m_defaultId << ",city=" << this->m_defaultCity;
-    }
-    else {
-        qDebug() << "Set current city id success!, city=" << this->m_defaultCity;
-    }
+//    if (idOk) {
+//        qDebug() << "Set current city id success! id=" << this->m_defaultId << ",city=" << this->m_defaultCity;
+//    }
+//    else {
+//        qDebug() << "Set current city id success!, city=" << this->m_defaultCity;
+//    }
 }
 
 void Preferences::setCurrentCityNameById(const QString &id)

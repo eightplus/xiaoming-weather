@@ -59,7 +59,6 @@ SOURCES += src/main.cpp \
     src/aqitooltip.cpp \
     src/categorybutton.cpp \
     src/indexitemwidget.cpp \
-    src/lifestyletip.cpp \
     src/tipmodule.cpp \
     src/windtooltip.cpp \
     src/cityview.cpp \
@@ -84,7 +83,9 @@ SOURCES += src/main.cpp \
     src/searchmodel.cpp \
     src/searchdelegate.cpp \
     src/searchinputedit.cpp \
-    src/locationworker.cpp
+    src/locationworker.cpp \
+    src/texttip.cpp \
+    src/dbusadaptor.cpp
 
 HEADERS  += src/mainwindow.h \
     src/titlebar.h \
@@ -106,7 +107,6 @@ HEADERS  += src/mainwindow.h \
     src/aqitooltip.h \
     src/categorybutton.h \
     src/indexitemwidget.h \
-    src/lifestyletip.h \
     src/tipmodule.h \
     src/windtooltip.h \
     src/cityview.h \
@@ -131,7 +131,9 @@ HEADERS  += src/mainwindow.h \
     src/searchmodel.h \
     src/searchdelegate.h \
     src/searchinputedit.h \
-    src/locationworker.h
+    src/locationworker.h \
+    src/texttip.h \
+    src/dbusadaptor.h
 
 TRANSLATIONS += \
     translation/xiaoming-weather_zh_CN.ts

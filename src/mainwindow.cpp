@@ -352,7 +352,6 @@ MainWindow::MainWindow(QWidget *parent)
 //        if (!m_autoRefreshTimer->isActive()) {
 //            m_autoRefreshTimer->start(m_preferences->m_updateFrequency * 1000 * 60);
 //        }
-        qDebug() << "start to onUpdateWeather";
         m_weatherWidget->onUpdateWeather();
     });
 
@@ -360,7 +359,6 @@ MainWindow::MainWindow(QWidget *parent)
 //        if (!m_autoRefreshTimer->isActive()) {
 //            m_autoRefreshTimer->start(m_preferences->m_updateFrequency * 1000 * 60);
 //        }
-        qDebug() << "start to onUpdateAqi";
         m_weatherWidget->onUpdateAqi();
     });
 

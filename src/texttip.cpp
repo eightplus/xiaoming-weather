@@ -17,18 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "lifestyletip.h"
+#include "texttip.h"
 
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPainter>
 #include <QDebug>
 
-LifestyleTip::LifestyleTip(const QString &txt, QWidget *parent) : QFrame(parent)
+TextTip::TextTip(const QString &txt, TrianglePostion pos, QWidget *parent) : QFrame(parent)
   , m_radius(1)
   , m_background(QBrush(QColor(255,255,255,255)))
   , m_borderColor(QColor(224,224,224,130))
-  , m_trianglePostion(TopLeft)
+  , m_trianglePostion(pos)
 {
     this->setWindowFlags(Qt::ToolTip | Qt::FramelessWindowHint);
     this->setAttribute(Qt::WA_TranslucentBackground);
@@ -60,11 +60,11 @@ LifestyleTip::LifestyleTip(const QString &txt, QWidget *parent) : QFrame(parent)
     hide();
 }
 
-LifestyleTip::LifestyleTip(const QString &title, const QString &desc, QWidget *parent) : QFrame(parent)
+TextTip::TextTip(const QString &title, const QString &desc, TrianglePostion pos, QWidget *parent) : QFrame(parent)
   , m_radius(1)
   , m_background(QBrush(QColor(255,255,255,255)))
   , m_borderColor(QColor(224,224,224,130))
-  , m_trianglePostion(TopMiddle)
+  , m_trianglePostion(pos)
 {
     this->setWindowFlags(Qt::ToolTip | Qt::FramelessWindowHint);
     this->setAttribute(Qt::WA_TranslucentBackground);
@@ -103,23 +103,23 @@ LifestyleTip::LifestyleTip(const QString &title, const QString &desc, QWidget *p
     hide();
 }
 
-LifestyleTip::~LifestyleTip()
+TextTip::~TextTip()
 {
 
 }
 
-void LifestyleTip::resetTipText(const QString &txt)
+void TextTip::resetTipText(const QString &txt)
 {
     m_textLabel->setText(txt);
 }
 
-void LifestyleTip::resetTipText(const QString &title, const QString &desc)
+void TextTip::resetTipText(const QString &title, const QString &desc)
 {
     m_textLabel->setText(title);
     m_descLabel->setText(desc);
 }
 
-/*void LifestyleTip::paintEvent(QPaintEvent *event)
+/*void TopTextTip::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
@@ -146,8 +146,10 @@ void LifestyleTip::resetTipText(const QString &title, const QString &desc)
     painter.strokePath(borderPath, borderPen);
 }*/
 
-void LifestyleTip::paintEvent(QPaintEvent *event)
+void TextTip::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event);
+
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
 
@@ -157,21 +159,13 @@ void LifestyleTip::paintEvent(QPaintEvent *event)
     const qreal radius = this->m_radius;
     const qreal triangleHeight = 6;
     const qreal triangleWidth = 8;
+    const qreal width = this->width();
     const qreal height = this->height() - triangleHeight;
 
-    QPainterPath path;
-//    QRect rect = this->rect();
-//    int arcR = radius/2;
-//    path.moveTo(rect.left() + arcR, rect.top());
-//    path.arcTo(rect.left(), rect.top(), radius, radius, 90.0f, 90.0f);
-//    path.moveTo(rect.left(), rect.bottom() - arcR);
-//    path.arcTo(rect.left(), rect.bottom() - radius, radius, radius, 180.0f, 90.0f);
-//    path.moveTo(rect.right() - arcR, rect.bottom());
-//    path.arcTo(rect.right() - radius, rect.bottom() - radius, radius, radius, 270.0f, 90.0f);
-//    path.moveTo(rect.right(), rect.top() + arcR);
-//    path.arcTo(rect.right() - radius, rect.top(), radius, radius, 0.0f, 90.0f);
 
-    if (m_trianglePostion == TopLeft) {
+
+    QPainterPath path;
+    if (m_trianglePostion == TopLeft) {//箭头方向在tip框的左上方
         int triangleVertexPosX = 30;//根据IndexItemWidget中图标的位置x
         path.moveTo(radius, triangleHeight);
 
@@ -191,7 +185,24 @@ void LifestyleTip::paintEvent(QPaintEvent *event)
         path.arcTo(QRectF(QPointF(0, triangleHeight), QPointF(2 * radius, 2 * radius + triangleHeight)), 180.0, -90.0);//以180度为起点，顺时针画90度
         path.lineTo(radius, triangleHeight);
     }
-    else {//TopMiddle
+    else if (m_trianglePostion == BottomMiddle) {//箭头方向在tip框的下方正中间
+        path.moveTo(radius, 0.0);
+        path.lineTo(width - radius, 0.0);
+        path.arcTo(QRectF(QPointF(width, 0), QPointF(width - 2 * radius, 2 * radius)), 90.0, 90.0);
+        path.lineTo(width, height - radius);
+        path.arcTo(QRectF(QPointF(width, height), QPointF(width - 2 * radius, height - 2 * radius)), 180.0, -90.0);
+        path.lineTo(width / 2 + triangleWidth / 2, height);
+        path.lineTo(width / 2, height + triangleHeight);
+        path.lineTo(width / 2 - triangleWidth / 2, height);
+        path.lineTo(radius, height);
+
+        path.arcTo(QRectF(QPointF(0, height - 2 * radius), QPointF(2 * radius, height)), 270.0, -90.0);
+        path.lineTo(0.0, radius);
+
+        path.arcTo(QRectF(QPointF(0, 0), QPointF(2 * radius, 2 * radius)), 180.0, -90.0);
+        path.lineTo(radius, 0.0);
+    }
+    else {//箭头方向在tip框的左上方，最左边
         path.moveTo(radius, triangleHeight);
 
         path.lineTo(radius, triangleHeight);

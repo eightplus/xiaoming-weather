@@ -219,7 +219,6 @@ void WeatherWorker::requestAccessGeoNameIDByLongitudeAndLatitude(double latitude
 {
     //examples: http://api.geonames.org/extendedFindNearby?lat=28.1792&lng=113.114&username=kobe
     QString url = QString("http://api.geonames.org/extendedFindNearby?lat=%1&lng=%2&username=kobe").arg(latitude).arg(longitude);
-    qDebug() << "url1:" << url;
     //    QNetworkRequest request;
 //    request.setUrl(url);
 //    QNetworkReply *reply = m_networkManager->get(request);
@@ -230,7 +229,6 @@ void WeatherWorker::requestAccessGeoNameIDByLongitudeAndLatitude(double latitude
 void WeatherWorker::requestWeatherDataByLongitudeAndLatitude(double latitude, double longitude)
 {
     QString url = QString("https://free-api.heweather.com/v5/weather?city=%1,%2&key=4ff2e595e593439380e52d2519523d0a").arg(latitude).arg(longitude);
-    qDebug() << "url2:" << url;
     QNetworkRequest request;
     request.setUrl(url);
     QNetworkReply *reply = m_networkManager->get(request);
@@ -246,7 +244,6 @@ void WeatherWorker::requestWeatherAndApiDataById(const QString &cityId)
 
     // 获取实时天气 + 3天天气预报 + 生活指数
     QString url = QString("https://free-api.heweather.com/s6/weather?location=%1&key=4ff2e595e593439380e52d2519523d0a").arg(cityId);
-    qDebug() << "url3:" << url;
     QNetworkRequest request;
     request.setUrl(url);
     QNetworkReply *reply = m_networkManager->get(request);

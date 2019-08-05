@@ -5,17 +5,25 @@ xiaoming-weather
 
 Author's Home Page
 =======
-https://eightplus.github.io/
+[Eight Plus](https://eightplus.github.io/)
 
 Debian
 =======
-dh_make --native
+* dh_make --native
 
 Internationalization
 =======
-+ lupdate xiaoming-weather.pro
-+ linguist xiaoming-weather_zh_CN.ts
-+ lrelease xiaoming-weather.pro
+1. lupdate xiaoming-weather.pro
+2. linguist xiaoming-weather_zh_CN.ts
+3. lrelease xiaoming-weather.pro
+
+RGBA
+=======
+http://www.yuangongju.com/color
+
+Icons
+=======
+https://www.easyicon.net/
 
 Depends
 =======
@@ -23,53 +31,23 @@ debhelper (>= 9),qtbase5-dev,qt5-qmake,qtscript5-dev,qttools5-dev-tools,pkg-conf
 
 GitHub
 =======
-https://github.com/eightplus/xiaoming-weather
+<https://github.com/eightplus/xiaoming-weather>
 
+Json API
+=======
+* **和风天气api文档** https://www.heweather.com/documents/api/
+* **sojson的十五天天气预报** http://t.weather.sojson.com/api/weather/city/101250101
+* **天气API的七天天气预报**
+	* https://www.tianqiapi.com/?action=v10
+	* https://www.tianqiapi.com/api/?version=v1 (https://www.tianqiapi.com/   https://blog.csdn.net/qq_38832501/article/details/88384395)
+	* https://www.tianqiapi.com/api/?version=v1&cityid=101250101
+* **逐小时天气预报** https://free-api.heweather.com/s6/weather/hourly?location=CN101250101&key=40cc3ec6bbbf4de6a04029e207c986fd
+* **空气质量实况** https://free-api.heweather.net/s6/air/now?location=CN101250101&key=4ff2e595e593439380e52d2519523d0a
+* **生活指数** https://free-api.heweather.net/s6/weather/lifestyle?location=CN101250101&key=4ff2e595e593439380e52d2519523d0a
+* **常规天气数据集合** https://free-api.heweather.net/s6/weather?location=CN101250101&key=4ff2e595e593439380e52d2519523d0a
+* **7天天气预报** https://free-api.heweather.net/s6/weather/forecast?location=CN101250101&key=4ff2e595e593439380e52d2519523d0a
+* **实况天气** https://free-api.heweather.net/s6/weather/now?location=CN101250101&key=4ff2e595e593439380e52d2519523d0a
 
-### Json API
-
-和风天气api文档
-https://www.heweather.com/documents/api/
-
-sojson的十五天天气预报
-http://t.weather.sojson.com/api/weather/city/101250101
-
-
-天气API的七天天气预报
-https://www.tianqiapi.com/?action=v10
-
-https://www.tianqiapi.com/api/?version=v1 (https://www.tianqiapi.com/   https://blog.csdn.net/qq_38832501/article/details/88384395)
-
-https://www.tianqiapi.com/api/?version=v1&cityid=101250101
-
-
-逐小时天气预报
-https://free-api.heweather.com/s6/weather/hourly?location=CN101250101&key=40cc3ec6bbbf4de6a04029e207c986fd
-
-
-空气质量实况
-https://free-api.heweather.net/s6/air/now?location=CN101250101&key=4ff2e595e593439380e52d2519523d0a
-
-
-生活指数
-https://free-api.heweather.net/s6/weather/lifestyle?location=CN101250101&key=4ff2e595e593439380e52d2519523d0a
-
-
-常规天气数据集合
-https://free-api.heweather.net/s6/weather?location=CN101250101&key=4ff2e595e593439380e52d2519523d0a
-
-
-7天天气预报
-https://free-api.heweather.net/s6/weather/forecast?location=CN101250101&key=4ff2e595e593439380e52d2519523d0a
-
-
-实况天气
-https://free-api.heweather.net/s6/weather/now?location=CN101250101&key=4ff2e595e593439380e52d2519523d0a
-
-
-
-### 
-
+qdbusxml2cpp
+=======
 qdbusxml2cpp com.xiaoming.weather.xml -a dbusadaptor -c DbusAdaptor -l MainWindow
-
-https://www.easyicon.net/

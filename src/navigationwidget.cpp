@@ -21,7 +21,7 @@
 #include "citynavigation.h"
 #include "imagebutton.h"
 #include "tipmodule.h"
-#include "lifestyletip.h"
+#include "texttip.h"
 
 #include <QDebug>
 #include <QHBoxLayout>
@@ -68,7 +68,7 @@ NavigationWidget::NavigationWidget(QWidget *parent, int cityCount)
     m_wheelTimer->setSingleShot(true);
     m_wheelTimer->setInterval(240);
 
-    tip = new LifestyleTip(tr("Please click the left or right button to switch city!"), this);
+    tip = new TextTip(tr("Please click the left or right button to switch city!"), TrianglePostion::BottomMiddle,this);
     this->setProperty("TextTipWidget", QVariant::fromValue<QWidget *>(tip));
     this->installEventFilter(m_tipModule);
 }

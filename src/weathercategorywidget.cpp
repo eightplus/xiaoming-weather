@@ -20,7 +20,7 @@
 #include "weathercategorywidget.h"
 #include "categorybutton.h"
 #include "indexitemwidget.h"
-#include "lifestyletip.h"
+#include "texttip.h"
 #include "tipmodule.h"
 #include "windtooltip.h"
 
@@ -107,7 +107,7 @@ WeatherCategoryWidget::WeatherCategoryWidget(QWidget *parent)
     for(int i = 0; i < m_btnTextLists.count(); i++) {
         CategoryButton *btn = new CategoryButton(this);
         btn->setFixedSize(QSize(120, m_btnsWidget->height()));
-        btn->setIconAndText(QPixmap(":/res/ip.png"), m_btnTextLists.at(i));
+        btn->setIconAndText(QPixmap(":/res/detail.png"), m_btnTextLists.at(i));
         btn_layout->addWidget(btn);
         connect(btn, SIGNAL(requestChangeButtonStatus(CategoryButton*)), this, SLOT(changeCurrentPage(CategoryButton*)));
         m_btnArray[i] = btn;
@@ -169,7 +169,7 @@ WeatherCategoryWidget::~WeatherCategoryWidget()
     m_lifeItems.clear();
 
     for(int i=0; i<m_lifestyleTips.count(); i++) {
-        LifestyleTip *tip = m_lifestyleTips.at(i);
+        TextTip *tip = m_lifestyleTips.at(i);
         delete tip;
         tip = NULL;
     }
@@ -1035,7 +1035,7 @@ void WeatherCategoryWidget::refershLifeIndexGridLayout()
     }
 
     for(int i=0; i<m_lifestyleTips.count(); i++) {
-        LifestyleTip *tip = m_lifestyleTips.at(i);
+        TextTip *tip = m_lifestyleTips.at(i);
         delete tip;
         tip = NULL;
     }
@@ -1047,7 +1047,7 @@ void WeatherCategoryWidget::refershLifeIndexGridLayout()
         IndexItemWidget *item = new IndexItemWidget(m_lifeIndexList[i], m_lifeIndexIconList[i]);
         connect(item, SIGNAL(requestShowMsg(QString)), this, SLOT(showLifeStyleIndex(QString)));
         m_indexGridLayout->addWidget(item, index / 3, index % 3);
-        LifestyleTip *tip = this->setTipWidget(item, "");
+        TextTip *tip = this->setTipWidget(item, "");
         m_lifestyleTips.append(tip);
         m_lifeItems.append(item);
     }
@@ -1096,9 +1096,9 @@ void WeatherCategoryWidget::refreshLifestyleData()
     }
 }
 
-LifestyleTip *WeatherCategoryWidget::setTipWidget(QWidget *w, const QString &txt)
+TextTip *WeatherCategoryWidget::setTipWidget(QWidget *w, const QString &txt)
 {
-    LifestyleTip *tip = new LifestyleTip(txt, this);
+    TextTip *tip = new TextTip(txt, TrianglePostion::TopLeft, this);
     w->setProperty("TextTipWidget", QVariant::fromValue<QWidget *>(tip));
     w->installEventFilter(m_tipModule);
 

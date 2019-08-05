@@ -18,6 +18,7 @@
  */
 
 #include "mainwindow.h"
+#include "dbusadaptor.h"
 
 #include <QApplication>
 #include <QTranslator>
@@ -32,6 +33,7 @@ int main(int argc, char *argv[])
     a.setOrganizationName("eightplus");
     a.setApplicationName("xiaoming-weather");
     a.setApplicationVersion("0.0.1");
+    a.setQuitOnLastWindowClosed(false);//Avoid that after hiding mainwindow, close the sub window would cause the program exit
 
     QString locale = QLocale::system().name();
     QTranslator translator;
@@ -42,17 +44,29 @@ int main(int argc, char *argv[])
             a.installTranslator(&translator);
     }
 
-    QTranslator qtTranslator;
-    qtTranslator.load("qt_" + locale, QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    a.installTranslator(&qtTranslator);
-
     QFile qss(":/qss/res/weather.qss");
-    qss.open(QFile::ReadOnly);
-    qApp->setStyleSheet(qss.readAll());
-    qss.close();
+    if (!qss.open(QFile::ReadOnly)) {
+        qWarning("Can't open the style sheet file: :/qss/res/weather.qss.");
+    }
+    else {
+        qApp->setStyleSheet(qss.readAll());
+        qss.close();
+    }
 
     MainWindow w;
-    w.show();
+    DbusAdaptor adaptor(&w);
+    Q_UNUSED(adaptor);
+    auto connection = QDBusConnection::sessionBus();
+    if (!connection.registerService("com.eightplus.weather") || !connection.registerObject("/com/eightplus/weather", &w/*, QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllSignals*/)) {
+        qCritical() << "QDbus register service failed reason:" << connection.lastError();
+        QDBusInterface iface("com.eightplus.weather",
+                                       "/com/eightplus/weather",
+                                       "com.eightplus.weather",
+                                       connection);
+        iface.call("showMainWindow");
+
+        return 0;
+    }//QDBusConnection::sessionBus().unregisterService("com.eightplus.weather");
 
     return a.exec();
 }

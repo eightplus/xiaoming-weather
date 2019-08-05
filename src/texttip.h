@@ -17,23 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TEXTTIP_H
-#define TEXTTIP_H
+#ifndef _TEXTTIP_H
+#define _TEXTTIP_H
 
 #include <QFrame>
 
+#include "utils.h"
+
 class QLabel;
 
-class LifestyleTip : public QFrame
+class TextTip : public QFrame
 {
     Q_OBJECT
 
-    enum TrianglePostion {TopLeft, TopMiddle, TopRight, BottomLeft, BottomMiddle, BottomRight};
+//    enum TrianglePostion {TopLeft, TopMiddle, TopRight, BottomLeft, BottomMiddle, BottomRight};
 
 public:
-    explicit LifestyleTip(const QString &txt, QWidget *parent = 0);
-    explicit LifestyleTip(const QString &title, const QString &desc, QWidget *parent = 0);
-    ~LifestyleTip();
+    explicit TextTip(const QString &txt, TrianglePostion pos, QWidget *parent = 0);
+    explicit TextTip(const QString &title, const QString &desc, TrianglePostion pos, QWidget *parent = 0);
+    ~TextTip();
 
     void resetTipText(const QString &txt);
     void resetTipText(const QString &title, const QString &desc);
@@ -49,7 +51,6 @@ private:
     QLabel *m_textLabel = nullptr;
     QLabel *m_descLabel = nullptr;
     QFrame *m_frame = nullptr;
-
 };
 
-#endif // TEXTTIP_H
+#endif // _TEXTTIP_H
