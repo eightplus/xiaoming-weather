@@ -93,12 +93,18 @@ WeatherWidget::~WeatherWidget()
     }
 }
 
+void WeatherWidget::onResponseUpdateTemperatureCurve()
+{
+    m_categoryWidget->updateTempCurveLabel();
+}
+
 //天气数据获取完毕后开始更新界面数据
 void WeatherWidget::onUpdateWeather()
 {
     m_nowWidget->refreshNowWeatherData();
     m_forecastWidget->refreshForecastWeatherData();
     m_categoryWidget->refreshLifestyleData();
+//    m_categoryWidget->paintTemperatureCurve();
 }
 
 //空气质量数据获取完毕后开始更新界面数据

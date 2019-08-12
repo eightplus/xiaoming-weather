@@ -40,6 +40,8 @@ WeatherForecastWidget::WeatherForecastWidget(QWidget *parent)
     : QFrame(parent)
 {
     this->setMouseTracking(true);
+    this->setFrameShape(QFrame::NoFrame);
+    this->setStyleSheet("QFrame{border-radius: 5px; color:rgb(250, 250, 250); background-color:rgba(63,63,63,20%); border: 0px;}");
 
     m_displayWidget = new QWidget();
     m_displayWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);

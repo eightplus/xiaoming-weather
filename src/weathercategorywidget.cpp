@@ -63,6 +63,9 @@ WeatherCategoryWidget::WeatherCategoryWidget(QWidget *parent)
 //    palette.setBrush(QPalette::Window, QBrush(Qt::red));
 //    this->setPalette(palette);
 
+//    this->setFrameShape(QFrame::NoFrame);
+//    this->setStyleSheet("QFrame{border-radius: 5px; color:rgb(250, 250, 250); background-color:rgba(63,63,63,20%); border: 0px;}");
+
     m_tempHoverIndex = -1;
     m_firstTempX = 51;
     m_tempXSpace = 100;
@@ -193,6 +196,11 @@ WeatherCategoryWidget::~WeatherCategoryWidget()
     for (int i = 0; i < 4; i++) {
         delete m_btnArray[i];
     }
+}
+
+void WeatherCategoryWidget::updateTempCurveLabel()
+{
+    m_temperatureCurveLabel->update();
 }
 
 void WeatherCategoryWidget::changeCurrentPage(CategoryButton *label)
@@ -557,9 +565,9 @@ bool WeatherCategoryWidget::eventFilter(QObject *obj, QEvent *event)
 void WeatherCategoryWidget::paintTemperatureCurve()
 {
     int count = m_preferences->m_hourlyWeather.size();
-    if (count == 0)
+    if (count == 0) {
         return;
-
+    }
 
     m_tempX->clear();
     int temp[count];
@@ -568,23 +576,6 @@ void WeatherCategoryWidget::paintTemperatureCurve()
         m_tempX->append(m_firstTempX + i*m_tempXSpace);
         temp[i] = m_preferences->m_hourlyWeather.at(i).tmp.toInt();
     }
-
-//    int i = 0;
-//    forecast[i].high = "33";
-//    i = 1;
-//    forecast[i].high = "32";
-//    i = 2;
-//    forecast[i].high = "37";
-//    i = 3;
-//    forecast[i].high = "36";
-//    i = 4;
-//    forecast[i].high = "38";
-//    i = 5;
-//    forecast[i].high = "35";
-//    i = 6;
-//    forecast[i].high = "25";
-//    i = 7;
-//    forecast[i].high = "30";
 
     QPainter painter(m_temperatureCurveLabel);
     painter.setRenderHint(QPainter::Antialiasing, true);
@@ -729,7 +720,6 @@ void WeatherCategoryWidget::paintTemperatureCurve()
     QString aveStr = QString::number(tempAverage) + "°C";
     QRect aveRect(750 + 20, aveY - TextHeight/2, fmAve.width(aveStr), TextHeight);
     painter.drawText(aveRect, Qt::AlignCenter, aveStr);*/
-
     painter.restore();
 }
 
@@ -947,12 +937,16 @@ void WeatherCategoryWidget::initTemperatureWidget()
     m_temperatureCurveLabel->installEventFilter(this);
     m_temperatureCurveLabel->setMouseTracking(true);
     m_temperatureCurveLabel->setAttribute(Qt::WA_Hover, true);
+//    m_temperatureCurveLabel->setStyleSheet("QLabel { background-color : transparent; color : #666666; }");
+    m_temperatureCurveLabel->setStyleSheet("QLabel {background-color:rgba(63,63,63,20%); border: 0px; color : #666666; }");
 
     //test background
-    m_temperatureCurveLabel->setAutoFillBackground(true);
-    QPalette palette;
-    palette.setBrush(QPalette::Window, QBrush(Qt::gray));
-    m_temperatureCurveLabel->setPalette(palette);
+//    m_temperatureCurveLabel->setAutoFillBackground(true);
+//    QPalette palette;
+//    palette.setBrush(QPalette::Window, QBrush(Qt::gray));
+//    m_temperatureCurveLabel->setPalette(palette);
+
+
     const int idx = m_stackedLayout->addWidget(m_temperatureCurveLabel);
     m_stackedLayout->setCurrentIndex(idx);
 }
@@ -965,12 +959,13 @@ void WeatherCategoryWidget::initWindWidget()
     m_windCurveLabel->installEventFilter(this);
     m_windCurveLabel->setMouseTracking(true);
     m_windCurveLabel->setAttribute(Qt::WA_Hover, true);
+    m_windCurveLabel->setStyleSheet("QLabel {background-color:rgba(63,63,63,20%); border: 0px; color : #666666; }");
 
     //test background
-    m_windCurveLabel->setAutoFillBackground(true);
-    QPalette palette;
-    palette.setBrush(QPalette::Window, QBrush(Qt::gray));
-    m_windCurveLabel->setPalette(palette);
+//    m_windCurveLabel->setAutoFillBackground(true);
+//    QPalette palette;
+//    palette.setBrush(QPalette::Window, QBrush(Qt::gray));
+//    m_windCurveLabel->setPalette(palette);
 
     m_stackedLayout->addWidget(m_windCurveLabel);
 
@@ -988,12 +983,13 @@ void WeatherCategoryWidget::initPopWidget()
     m_popLabel->installEventFilter(this);
     m_popLabel->setMouseTracking(true);
     m_popLabel->setAttribute(Qt::WA_Hover, true);
+    m_popLabel->setStyleSheet("QLabel {background-color:rgba(63,63,63,20%); border: 0px; color : #666666; }");
 
     //test background
-    m_popLabel->setAutoFillBackground(true);
-    QPalette palette;
-    palette.setBrush(QPalette::Window, QBrush(Qt::gray));
-    m_popLabel->setPalette(palette);
+//    m_popLabel->setAutoFillBackground(true);
+//    QPalette palette;
+//    palette.setBrush(QPalette::Window, QBrush(Qt::gray));
+//    m_popLabel->setPalette(palette);
 
     m_stackedLayout->addWidget(m_popLabel);
 }
@@ -1011,11 +1007,13 @@ void WeatherCategoryWidget::initLifeStyleWidget()
     m_lifestyleWidget->setPalette(palette);
     //m_lifestyleWidget->setStyleSheet("QLabel{border-radius: 0px; color:rgb(250, 250, 250); background-color:rgba(0,0,0,0.2);}");
     */
+    m_lifestyleWidget->setStyleSheet("QWidget{border-radius: 5px; color:rgb(250, 250, 250); background-color:rgba(63,63,63,20%); border: 0px;}");
+
     //test background
-    m_lifestyleWidget->setAutoFillBackground(true);
-    QPalette palette;
-    palette.setBrush(QPalette::Window, QBrush(Qt::gray));
-    m_lifestyleWidget->setPalette(palette);
+//    m_lifestyleWidget->setAutoFillBackground(true);
+//    QPalette palette;
+//    palette.setBrush(QPalette::Window, QBrush(Qt::gray));
+//    m_lifestyleWidget->setPalette(palette);
 
     m_indexGridLayout = new QGridLayout(m_lifestyleWidget);
     m_indexGridLayout->setSpacing(1);
@@ -1129,14 +1127,14 @@ void WeatherCategoryWidget::resizeEvent(QResizeEvent *event)
     m_btnsWidget->move(0, event->size().height() - m_btnsWidget->height());
 }
 
-/*void WeatherCategoryWidget::showEvent(QShowEvent *event)
+void WeatherCategoryWidget::showEvent(QShowEvent *event)
 {
     QFrame::showEvent(event);
-
+    m_tempMouseEnterPress = true;
     m_temperatureCurveLabel->update();
 }
 
-void WeatherCategoryWidget::enterEvent(QEvent *event)
+/*cvoid WeatherCategoryWidget::enterEvent(QEvent *event)
 {
     QPoint windowPos = mapFromGlobal(QCursor::pos());//将显示器坐标转换成窗口坐标
     int hoverX = windowPos.x();

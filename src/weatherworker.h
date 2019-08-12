@@ -91,6 +91,8 @@ signals:
     void responseFailure(int code);
     void requestAutoLocationData(const CitySettingData & info, bool success);
 
+    void requestUpdateTemperatureCurve();
+
 private:
     QNetworkAccessManager *m_networkManager = nullptr;
     QString m_city;

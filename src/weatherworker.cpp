@@ -445,6 +445,9 @@ void WeatherWorker::onWeatherDataReply()
                     hourly_weather.wind_spd = hourlyJsonObject.value("wind_spd").toString();
                     m_preferences->m_hourlyWeather.push_back(hourly_weather);
                 }
+
+                //当逐小时天气获取完毕后，请求更新逐小时天气界面，因为该界面为第一个tab页面
+                emit requestUpdateTemperatureCurve();
             }
 
             //lifestyle

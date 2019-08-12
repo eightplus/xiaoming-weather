@@ -63,6 +63,8 @@ public:
     int calculateWindHoverIndex(int hoverX);
     void calculatePopHoverIndex(int hoverX);
 
+    void updateTempCurveLabel();
+
 public slots:
     void changeCurrentPage(CategoryButton *btn);
     void showLifeStyleIndex(const QString &name);
@@ -70,7 +72,7 @@ public slots:
 protected:
     bool eventFilter(QObject *obj, QEvent *event) Q_DECL_OVERRIDE;
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
-//    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
+    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
 //    void enterEvent(QEvent *event) Q_DECL_OVERRIDE;
 //    void leaveEvent(QEvent *event) Q_DECL_OVERRIDE;
 //    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;

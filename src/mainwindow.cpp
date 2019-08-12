@@ -293,6 +293,7 @@ MainWindow::MainWindow(QWidget *parent)
         animationFromTopToBottom(m_weatherWidget, m_locationWidget, 500);
         this->update();
     });
+    connect(m_weatherWorker, &WeatherWorker::requestUpdateTemperatureCurve, m_weatherWidget, &WeatherWidget::onResponseUpdateTemperatureCurve);
     connect(m_locationWidget, &LocationWidget::backBtnClicked, this, [this, m_stackedLayout] {
 //        m_stackedLayout->setCurrentWidget(m_weatherWidget);
         animationFromBottomToTop(m_locationWidget, m_weatherWidget, 500);
