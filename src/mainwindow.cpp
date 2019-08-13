@@ -267,6 +267,9 @@ MainWindow::MainWindow(QWidget *parent)
     m_weatherWidget->show();
 
     connect(m_locationWidget, &LocationWidget::requestUpdateCityCounts, m_weatherWidget, &WeatherWidget::updateCityCounts);
+    connect(m_locationWidget, &LocationWidget::requestChangeBackBtnState, this, [=] (BackBtnState state) {
+        m_titleBar->setBackBtnState(state);
+    });
 
     this->createSettingDialog();
 
@@ -286,18 +289,31 @@ MainWindow::MainWindow(QWidget *parent)
         }*/
         this->showMinimized();
     });
+    connect(m_titleBar, &TitleBar::requestBackToMainWindow, this, [this, m_stackedLayout] {
+//        m_stackedLayout->setCurrentWidget(m_weatherWidget);
+        animationFromBottomToTop(m_locationWidget, m_weatherWidget, 500);
+    });
+    connect(m_titleBar, &TitleBar::requestResetSearchInputEdit, this, [=] () {
+        m_locationWidget->doResetSearchInputEdit();
+    });
+    connect(m_titleBar, &TitleBar::requestBackToLocationWidget, this, [=] () {
+        m_locationWidget->onResponseBackToCityWidget();
+    });
+
 
     //进入城市设置页面
     connect(m_weatherWidget, &WeatherWidget::locationBtnClicked, this, [this, m_stackedLayout] {
 //        m_stackedLayout->setCurrentWidget(m_locationWidget);
+        m_titleBar->setBackBtnState(BackBtnState::LocateState);
+        m_titleBar->setBackBtnVisible();
         animationFromTopToBottom(m_weatherWidget, m_locationWidget, 500);
         this->update();
     });
     connect(m_weatherWorker, &WeatherWorker::requestUpdateTemperatureCurve, m_weatherWidget, &WeatherWidget::onResponseUpdateTemperatureCurve);
-    connect(m_locationWidget, &LocationWidget::backBtnClicked, this, [this, m_stackedLayout] {
-//        m_stackedLayout->setCurrentWidget(m_weatherWidget);
-        animationFromBottomToTop(m_locationWidget, m_weatherWidget, 500);
-    });
+//    connect(m_locationWidget, &LocationWidget::backBtnClicked, this, [this, m_stackedLayout] {
+////        m_stackedLayout->setCurrentWidget(m_weatherWidget);
+//        animationFromBottomToTop(m_locationWidget, m_weatherWidget, 500);
+//    });
 
     connect(m_locationWidget, &LocationWidget::requestRefreshWeatherById, this, [=] (const QString &id) {
         m_weatherWorker->requestWeatherAndApiDataById(id);

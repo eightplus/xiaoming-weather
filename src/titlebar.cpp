@@ -29,6 +29,7 @@
 
 TitleBar::TitleBar(QWidget *parent)
     :QFrame(parent)
+    , m_backState(BackBtnState::InitState)
 {
     initWidgets();
     initMenu();
@@ -44,6 +45,17 @@ TitleBar::~TitleBar()
     }
 }
 
+void TitleBar::setBackBtnVisible()
+{
+    m_backBtn->setVisible(true);
+    m_titleLabel->setVisible(false);
+}
+
+void TitleBar::setBackBtnState(BackBtnState state)
+{
+    m_backState = state;
+}
+
 void TitleBar::initLeftContent()
 {
     QWidget *w = new QWidget;
@@ -52,11 +64,30 @@ void TitleBar::initLeftContent()
     m_lLayout->setSpacing(0);
     m_layout->addWidget(w, 1, Qt::AlignLeft);
 
-    QLabel *label = new QLabel;
-    label->setText(tr("Xiaoming Weather"));
-    label->setStyleSheet("QLabel{font-size:14px;font-style:italic;color: rgb(0, 0, 0);background-color:transparent;}");//font-weight:bold;
+    m_titleLabel = new QLabel;
+    m_titleLabel->setText(tr("Xiaoming Weather"));
+    m_titleLabel->setStyleSheet("QLabel{font-size:14px;font-style:italic;color: rgb(0, 0, 0);background-color:transparent;}");//font-weight:bold;
 
-    m_lLayout->addWidget(label);
+    m_backBtn = new QPushButton;
+    m_backBtn->setVisible(false);
+    m_backBtn->setFixedSize(120, this->height());
+    m_backBtn->setFocusPolicy(Qt::NoFocus);
+    m_backBtn->setStyleSheet("QPushButton{border:none;text-align:left;font-size:14px;background-color:rgba(0,0,0,0.2);color:rgb(255,255,255);}");
+    m_backBtn->setText(tr("Back"));
+    connect(m_backBtn, &QPushButton::clicked, this, [=] () {
+        if (m_backState == BackBtnState::LocateState) {
+            m_titleLabel->setVisible(true);
+            m_backBtn->setVisible(false);
+            emit this->requestBackToMainWindow();
+        }
+        else {
+            emit this->requestResetSearchInputEdit();
+            emit this->requestBackToLocationWidget();
+        }
+    });
+
+    m_lLayout->addWidget(m_titleLabel);
+    m_lLayout->addWidget(m_backBtn);
 }
 
 void TitleBar::initMiddleContent()

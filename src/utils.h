@@ -32,4 +32,7 @@ const QString EIGHTPLUS_SETTING_FILE_NAME_SETTING = "xiaoming-weather";
 //描述箭头的方位
 enum TrianglePostion {TopLeft, TopMiddle, TopRight, BottomLeft, BottomMiddle, BottomRight};
 
+enum BackBtnState {InitState, LocateState, SearchState};
+
+
 #endif // UTILS_H

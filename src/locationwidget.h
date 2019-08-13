@@ -24,6 +24,8 @@
 #include <QLabel>
 #include <QPushButton>
 
+#include "utils.h"
+
 class QVBoxLayout;
 class QStackedWidget;
 class CityWidget;
@@ -38,17 +40,22 @@ public:
 
     void initWidgets();
     void updateCityListActive(const QString &id);
+    void doResetSearchInputEdit();
+
+public slots:
+    void onResponseBackToCityWidget();
 
 signals:
     void backBtnClicked();
     void requestUpdateCityCounts(const int count, const int curIndex);
     void requestRefreshWeatherById(const QString &id);
+    void requestChangeBackBtnState(BackBtnState state);
 
 private:
     QVBoxLayout *m_layout = nullptr;
     CityWidget *m_cityWidget = nullptr;
     SearchWidget *m_searchWidget = nullptr;
-    QPushButton *m_backBtn = nullptr;
+//    QPushButton *m_backBtn = nullptr;
     QStackedWidget *m_stackedWidget = nullptr;
 };
 

@@ -109,7 +109,6 @@ void Preferences::load()
     set->beginGroup("City");
     m_defaultId = set->value("default_city_id", m_defaultId).toString();
     if (m_defaultId.isEmpty()) {
-        qDebug() << "AAAAAAAAAAAAAAAA";
         this->setDefaultValue();
     }
     else {

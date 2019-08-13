@@ -86,8 +86,13 @@ const QString getCityFromIPAddr(const QString &ip)
     if (gir) {
         const char *region = GeoIP_region_name_by_code(gir->country_code, gir->region);
         //qDebug() << "country_name=" << gir->country_name << ",region=" << region << ",gir->city=" << gir->city << ",gir->latitude=" << gir->latitude << ",gir->longitude=" << gir->longitude;
-        return QString(gir->city);
+	QString city = QString(gir->city);
+        GeoIPRecord_delete(gir);
+        GeoIP_delete(gi);
+        qDebug() << "gir->city=" << city;
+        return city;
     }
+    GeoIP_delete(gi);
 
     return QString();
 }

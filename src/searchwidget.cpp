@@ -58,13 +58,13 @@ SearchWidget::SearchWidget(QWidget *parent)
 //    m_bLayout->addWidget(m_searchInputEdit, 0, Qt::AlignCenter);
     m_searchInputEdit->setFocus();
 
-    QPushButton *backBtn = new QPushButton();
-    backBtn->setFixedSize(190, 36);
-    backBtn->setText("<----" + tr("Back"));
-    connect(backBtn, &QPushButton::clicked, this, [=] () {
-        this->resetSearchInputEdit();
-        emit this->requestBackToCityWidget();
-    });
+//    QPushButton *backBtn = new QPushButton();
+//    backBtn->setFixedSize(190, 36);
+//    backBtn->setText("<----" + tr("Back"));
+//    connect(backBtn, &QPushButton::clicked, this, [=] () {
+//        this->resetSearchInputEdit();
+//        emit this->requestBackToCityWidget();
+//    });
 
     m_tipLabel = new QLabel;
     m_tipLabel->setObjectName("tipLabel");
@@ -101,7 +101,7 @@ SearchWidget::SearchWidget(QWidget *parent)
     contentLayout->addWidget(m_noResultLabel, 1, Qt::AlignCenter);
 
 
-    main_layout->addWidget(backBtn, 0, Qt::AlignHCenter | Qt::AlignTop);
+//    main_layout->addWidget(backBtn, 0, Qt::AlignHCenter | Qt::AlignTop);
     main_layout->addWidget(m_tipLabel, 0, Qt::AlignHCenter);
     main_layout->addWidget(m_searchInputEdit, 0, Qt::AlignHCenter);
     main_layout->addLayout(contentLayout);

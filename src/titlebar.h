@@ -24,8 +24,12 @@
 #include <QWidget>
 #include <QMouseEvent>
 
+#include "utils.h"
+
 class QHBoxLayout;
 class QMenu;
+class QLabel;
+class QPushButton;
 
 class TitleBar : public QFrame
 {
@@ -40,6 +44,9 @@ public:
     void initWidgets();
     void initMenu();
 
+    void setBackBtnVisible();
+    void setBackBtnState(BackBtnState b);
+
 public slots:
     void onSwitch();
     void onAbout();
@@ -48,6 +55,9 @@ signals:
     void switchDayOrNight();
     void requestDisplayAboutDialog();
     void requestMinSize();
+    void requestBackToMainWindow();
+    void requestResetSearchInputEdit();
+    void requestBackToLocationWidget();
 
 private:
     QHBoxLayout *m_layout = nullptr;
@@ -55,6 +65,9 @@ private:
     QHBoxLayout *m_mLayout = nullptr;
     QHBoxLayout *m_rLayout = nullptr;
     QMenu *m_menu = nullptr;
+    QLabel *m_titleLabel = nullptr;
+    QPushButton *m_backBtn = nullptr;
+    BackBtnState m_backState;
 };
 
 #endif // TITLEBAR_H

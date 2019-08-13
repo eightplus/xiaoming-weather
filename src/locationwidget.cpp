@@ -140,40 +140,41 @@ void LocationWidget::initWidgets()
     m_stackedWidget = new QStackedWidget;
     m_cityWidget = new CityWidget;
     m_cityWidget->setContentsMargins(0, 0, 0, 0);
-    m_cityWidget->setFixedSize(this->width(), this->height() - BACK_BUTTON_HEIGHT);
+    m_cityWidget->setFixedSize(this->width(), this->height()/* - BACK_BUTTON_HEIGHT*/);
     m_cityWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     m_stackedWidget->addWidget(m_cityWidget);
     m_stackedWidget->setCurrentWidget(m_cityWidget);
 
     m_searchWidget = new SearchWidget;
     m_searchWidget->setContentsMargins(0, 0, 0, 0);
-    m_searchWidget->setFixedSize(this->width(), this->height() - BACK_BUTTON_HEIGHT);
+    m_searchWidget->setFixedSize(this->width(), this->height()/* - BACK_BUTTON_HEIGHT*/);
     m_searchWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     m_stackedWidget->addWidget(m_searchWidget);
 
+    /*
     m_backBtn = new QPushButton;
-    m_backBtn->setFixedHeight(BACK_BUTTON_HEIGHT);
+    m_backBtn->setFixedSize(120, BACK_BUTTON_HEIGHT);
+    //m_backBtn->setFixedHeight(BACK_BUTTON_HEIGHT);
     m_backBtn->setFocusPolicy(Qt::NoFocus);
-    m_backBtn->setStyleSheet("QPushButton{border:none;text-align:center;font-size:14px;color:#ffffff;background:transparent;}");
+//    m_backBtn->setStyleSheet("QPushButton{border:none;text-align:center;font-size:14px;color:#ffffff;background:transparent;}");
+    m_backBtn->setStyleSheet("QPushButton{border-radius:4px;background-color:rgba(0,0,0,0.2);color:rgb(255,255,255);}");
     m_backBtn->setText(tr("Back"));
-    QFont font = m_backBtn->font();
-    const QFontMetrics fm(font);
-    m_backBtn->setFixedWidth(fm.width(m_backBtn->text()) + 10);
+//    QFont font = m_backBtn->font();
+//    const QFontMetrics fm(font);
+    //m_backBtn->setFixedWidth(fm.width(m_backBtn->text()) + 10);
+*/
 
     m_layout->addWidget(m_stackedWidget, 0, Qt::AlignHCenter);
-    m_layout->addWidget(m_backBtn, 0, Qt::AlignHCenter);
+//    m_layout->addWidget(m_backBtn, 0, Qt::AlignHCenter);
     m_layout->addStretch(0);
 
-    connect(m_backBtn, &QPushButton::clicked, this, &LocationWidget::backBtnClicked);
+//    connect(m_backBtn, &QPushButton::clicked, this, &LocationWidget::backBtnClicked);
     connect(m_cityWidget, &CityWidget::requestAddCity, this, [=] () {
+        emit this->requestChangeBackBtnState(BackBtnState::SearchState);
         m_stackedWidget->setCurrentWidget(m_searchWidget);
         animationFromLeftToRight(m_cityWidget, m_searchWidget, 500);
     });
-    connect(m_searchWidget, &SearchWidget::requestBackToCityWidget, this, [=] () {
-        m_stackedWidget->setCurrentWidget(m_cityWidget);
-        animationFromRightToLeft(m_searchWidget, m_cityWidget, 500);
-    });
-
+    connect(m_searchWidget, &SearchWidget::requestBackToCityWidget, this, &LocationWidget::onResponseBackToCityWidget);
     //增加城市后，更新城市个数
     connect(m_searchWidget, &SearchWidget::requestAddCityInfo, this, [=] (const CitySettingData &data) {
         /*增加新城市后，将新城市信息加入配置信息中，并设置为默认城市；
@@ -213,4 +214,16 @@ void LocationWidget::initWidgets()
 void LocationWidget::updateCityListActive(const QString &id)
 {
     m_cityWidget->updateCityListActive(id);
+}
+
+void LocationWidget::doResetSearchInputEdit()
+{
+    m_searchWidget->resetSearchInputEdit();
+}
+
+void LocationWidget::onResponseBackToCityWidget()
+{
+    emit this->requestChangeBackBtnState(BackBtnState::LocateState);
+    m_stackedWidget->setCurrentWidget(m_cityWidget);
+    animationFromRightToLeft(m_searchWidget, m_cityWidget, 500);
 }
