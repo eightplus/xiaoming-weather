@@ -22,6 +22,10 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QEventLoop>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonValue>
 
 #include <GeoIP.h>
 #include <GeoIPCity.h>
@@ -74,7 +78,108 @@ const QString getPublicIpAddrByUrl(const QString &url)
     return QString("0.0.0.0");
 }
 
-const QString getCityFromIPAddr(const QString &ip)
+const QString getCityFromIpByAmap(const QString &ip)
+{
+    // https://lbs.amap.com/api/webservice/guide/api/ipconfig/
+
+    //amap json
+    //http://restapi.amap.com/v3/ip?key=44a80558982f0c3031fae15aa8711a92&ip=218.76.23.26
+
+    //amap xml
+    //https://restapi.amap.com/v3/ip?ip=218.76.23.26&output=xml&key=44a80558982f0c3031fae15aa8711a92
+
+    QString url = QString("http://restapi.amap.com/v3/ip?key=44a80558982f0c3031fae15aa8711a92&ip=%1").arg(ip);
+    QNetworkAccessManager *manager = new QNetworkAccessManager();
+    QNetworkReply *reply = manager->get(QNetworkRequest(QUrl(url)));
+    QEventLoop loop;
+    QObject::connect(manager, SIGNAL(finished(QNetworkReply *)), &loop, SLOT(quit()));
+    loop.exec();
+
+    int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    if(reply->error() != QNetworkReply::NoError || statusCode != 200) {//200 is normal status
+        reply->close();
+        reply->deleteLater();
+        manager->deleteLater();
+        return QString();
+    }
+
+    QByteArray ba = reply->readAll();
+    //QString reply_content = QString::fromUtf8(ba);
+    reply->close();
+    reply->deleteLater();
+    manager->deleteLater();
+
+    QJsonParseError err;
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(ba, &err);
+    if (err.error != QJsonParseError::NoError) {// Json type error
+        return QString();
+    }
+    if (jsonDocument.isNull() || jsonDocument.isEmpty()) {
+        return QString();
+    }
+
+    QJsonObject jsonObject = jsonDocument.object();
+    if (jsonObject.isEmpty() || jsonObject.size() == 0) {
+        return QString();
+    }
+
+    if (jsonObject.contains("city")) {
+        return jsonObject.value("city").toString();
+    }
+
+    return QString();
+}
+
+const QString getCityFromIpByTaobao(const QString &ip)
+{
+    QString url = QString("http://ip.taobao.com/service/getIpInfo.php?ip=%1").arg(ip);
+    QNetworkAccessManager *manager = new QNetworkAccessManager();
+    QNetworkReply *reply = manager->get(QNetworkRequest(QUrl(url)));
+    QEventLoop loop;
+    QObject::connect(manager, SIGNAL(finished(QNetworkReply *)), &loop, SLOT(quit()));
+    loop.exec();
+
+    int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    if(reply->error() != QNetworkReply::NoError || statusCode != 200) {//200 is normal status
+        reply->close();
+        reply->deleteLater();
+        manager->deleteLater();
+        return QString();
+    }
+
+    QByteArray ba = reply->readAll();
+    reply->close();
+    reply->deleteLater();
+    manager->deleteLater();
+
+    QJsonParseError err;
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(ba, &err);
+    if (err.error != QJsonParseError::NoError) {// Json type error
+        return QString();
+    }
+    if (jsonDocument.isNull() || jsonDocument.isEmpty()) {
+        return QString();
+    }
+
+    QJsonObject jsonObject = jsonDocument.object();
+    if (jsonObject.isEmpty() || jsonObject.size() == 0) {
+        return QString();
+    }
+
+    if (jsonObject.contains("data")) {
+        QJsonObject dataObj = jsonObject.value("data").toObject();
+        if (dataObj.isEmpty() || dataObj.size() == 0) {
+            return QString();
+        }
+        if (dataObj.contains("city")) {
+            return dataObj.value("city").toString();
+        }
+    }
+
+    return QString();
+}
+
+const QString getCityFromGeoip(const QString &ip)
 {
     GeoIP *gi = GeoIP_open_type(GEOIP_CITY_EDITION_REV1, GEOIP_STANDARD | GEOIP_SILENCE);
     if (NULL == gi) {
@@ -86,10 +191,9 @@ const QString getCityFromIPAddr(const QString &ip)
     if (gir) {
         const char *region = GeoIP_region_name_by_code(gir->country_code, gir->region);
         //qDebug() << "country_name=" << gir->country_name << ",region=" << region << ",gir->city=" << gir->city << ",gir->latitude=" << gir->latitude << ",gir->longitude=" << gir->longitude;
-	QString city = QString(gir->city);
+        QString city = QString(gir->city);
         GeoIPRecord_delete(gir);
         GeoIP_delete(gi);
-        qDebug() << "gir->city=" << city;
         return city;
     }
     GeoIP_delete(gi);
@@ -99,9 +203,18 @@ const QString getCityFromIPAddr(const QString &ip)
 
 const QString automaicCity()
 {
+    QString city;
     QString publicIP = getPublicIpAddrByUrl("http://whois.pconline.com.cn/");
-    //qDebug() << "publicIP=" << publicIP;
-    return getCityFromIPAddr(publicIP);
+    //qDebug() << "publicIP:" << publicIP;
+    city = getCityFromGeoip(publicIP);//根据ip从geoip库定位城市
+    if (city.isEmpty()) {
+        city = getCityFromIpByAmap(publicIP);//根据ip从高德API定位城市，该方式使用高德key，访问次数有限
+    }
+    if (city.isEmpty()) {
+        city = getCityFromIpByTaobao(publicIP);//根据ip从淘宝service定位城市，该方式访问速度慢，可能访问失败
+    }
+
+    return city;
 }
 
 }

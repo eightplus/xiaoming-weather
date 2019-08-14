@@ -190,9 +190,8 @@
 <context>
     <name>LocationWidget</name>
     <message>
-        <location filename="../src/locationwidget.cpp" line="158"/>
         <source>Back</source>
-        <translation>返回</translation>
+        <translation type="vanished">返回</translation>
     </message>
 </context>
 <context>
@@ -222,9 +221,8 @@
 <context>
     <name>SearchWidget</name>
     <message>
-        <location filename="../src/searchwidget.cpp" line="63"/>
         <source>Back</source>
-        <translation>返回</translation>
+        <translation type="vanished">返回</translation>
     </message>
     <message>
         <location filename="../src/searchwidget.cpp" line="91"/>
@@ -245,22 +243,27 @@
 <context>
     <name>TitleBar</name>
     <message>
-        <location filename="../src/titlebar.cpp" line="56"/>
+        <location filename="../src/titlebar.cpp" line="68"/>
         <source>Xiaoming Weather</source>
         <translation>小明天气</translation>
     </message>
     <message>
-        <location filename="../src/titlebar.cpp" line="131"/>
+        <location filename="../src/titlebar.cpp" line="76"/>
+        <source>Back</source>
+        <translation>返回</translation>
+    </message>
+    <message>
+        <location filename="../src/titlebar.cpp" line="162"/>
         <source>Switch</source>
         <translation>切换</translation>
     </message>
     <message>
-        <location filename="../src/titlebar.cpp" line="133"/>
+        <location filename="../src/titlebar.cpp" line="164"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="../src/titlebar.cpp" line="134"/>
+        <location filename="../src/titlebar.cpp" line="165"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
@@ -268,22 +271,22 @@
 <context>
     <name>WeatherCategoryWidget</name>
     <message>
-        <location filename="../src/weathercategorywidget.cpp" line="90"/>
+        <location filename="../src/weathercategorywidget.cpp" line="93"/>
         <source>Temperature</source>
         <translation>温度</translation>
     </message>
     <message>
-        <location filename="../src/weathercategorywidget.cpp" line="90"/>
+        <location filename="../src/weathercategorywidget.cpp" line="93"/>
         <source>Wind</source>
         <translation>风</translation>
     </message>
     <message>
-        <location filename="../src/weathercategorywidget.cpp" line="90"/>
+        <location filename="../src/weathercategorywidget.cpp" line="93"/>
         <source>Pop</source>
         <translation>降水量</translation>
     </message>
     <message>
-        <location filename="../src/weathercategorywidget.cpp" line="90"/>
+        <location filename="../src/weathercategorywidget.cpp" line="93"/>
         <source>Lifestyle</source>
         <translation>生活指数</translation>
     </message>
@@ -291,17 +294,17 @@
 <context>
     <name>WeatherNowWidget</name>
     <message>
-        <location filename="../src/weathernowwidget.cpp" line="58"/>
+        <location filename="../src/weathernowwidget.cpp" line="59"/>
         <source>City Setting</source>
         <translation>城市设置</translation>
     </message>
     <message>
-        <location filename="../src/weathernowwidget.cpp" line="241"/>
+        <location filename="../src/weathernowwidget.cpp" line="229"/>
         <source>Just updated</source>
         <translation>刚刚更新</translation>
     </message>
     <message>
-        <location filename="../src/weathernowwidget.cpp" line="241"/>
+        <location filename="../src/weathernowwidget.cpp" line="229"/>
         <source>%1 minutes ago</source>
         <translation>%1 分钟之前</translation>
     </message>

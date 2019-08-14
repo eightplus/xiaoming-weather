@@ -13,6 +13,10 @@ isEqual(QT_MAJOR_VERSION, 5) {
 TARGET = xiaoming-weather
 TEMPLATE = app
 
+!system($$PWD/translations/generate_translations_pm.sh): error("Failed to generate pm")
+qm_files.files = translations/*.qm
+qm_files.path = /usr/share/xiaoming-weather/translations/
+
 inst1.files += res/xiaoming-weather.png
 inst1.path = /usr/share/pixmaps
 inst2.files += xiaoming-weather.desktop
@@ -21,6 +25,7 @@ target.source += $$TARGET
 target.path = /usr/bin
 INSTALLS += inst1 \
     inst2 \
+    qm_files \
     target
 
 CONFIG += c++14
@@ -136,7 +141,7 @@ HEADERS  += src/mainwindow.h \
     src/dbusadaptor.h
 
 TRANSLATIONS += \
-    translation/xiaoming-weather_zh_CN.ts
+    translations/xiaoming-weather_zh_CN.ts
 
 RESOURCES += \
     res.qrc

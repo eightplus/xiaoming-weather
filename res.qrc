@@ -184,9 +184,6 @@
     <qresource prefix="/qss">
         <file>res/weather.qss</file>
     </qresource>
-    <qresource prefix="/qm">
-        <file>translation/xiaoming-weather_zh_CN.qm</file>
-    </qresource>
     <qresource prefix="/data">
         <file>data/china-city-list.csv</file>
     </qresource>

@@ -26,22 +26,44 @@
 #include <QFile>
 #include <QDebug>
 
+#include <signal.h>
+
 int main(int argc, char *argv[])
 {
+    signal(SIGINT, [](int) { QApplication::quit(); });// 设置退出信号
+
     QApplication a(argc, argv);
 
     a.setOrganizationName("eightplus");
     a.setApplicationName("xiaoming-weather");
     a.setApplicationVersion("0.0.1");
-    a.setQuitOnLastWindowClosed(false);//Avoid that after hiding mainwindow, close the sub window would cause the program exit
+    //a.setQuitOnLastWindowClosed(false);//Avoid that after hiding mainwindow, close the sub window would cause the program exit
 
+    QTranslator app_trans;
+    QTranslator qt_trans;
     QString locale = QLocale::system().name();
-    QTranslator translator;
-    if(locale == "zh_CN") {
-        if(!translator.load("xiaoming-weather_" + locale + ".qm", ":/qm/translation/"))
-            qDebug() << "Load translation file："<< "xiaoming-weather_" + locale + ".qm" << " failed!";
+
+    QString trans_path;
+    if (QDir("/usr/share/xiaoming-weather/translations").exists()) {
+        trans_path = "/usr/share/xiaoming-weather/translations";
+    }
+    else {
+        trans_path = qApp->applicationDirPath() + "/translations";
+    }
+
+    //QString qt_trans_path;
+    //qt_trans_path = QLibraryInfo::location(QLibraryInfo::TranslationsPath);// /usr/share/qt5/translations
+
+    if (locale == "zh_CN") {
+        if(!app_trans.load("xiaoming-weather_" + locale + ".qm", trans_path))
+            qDebug() << "Load translation file："<< "xiaoming-weather_" + locale + ".qm from" << trans_path << "failed!";
         else
-            a.installTranslator(&translator);
+            a.installTranslator(&app_trans);
+
+        /*if(!qt_trans.load("qt_" + locale + ".qm", qt_trans_path))
+            qDebug() << "Load translation file："<< "qt_" + locale + ".qm from" << qt_trans_path << "failed!";
+        else
+            a.installTranslator(&qt_trans);*/
     }
 
     QFile qss(":/qss/res/weather.qss");
