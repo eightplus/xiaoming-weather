@@ -17,38 +17,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _TEXTTIP_H
-#define _TEXTTIP_H
+#ifndef ANIMATION_BACKGROUND_H
+#define ANIMATION_BACKGROUND_H
 
-#include <QFrame>
+#include <QWidget>
+#include <QSequentialAnimationGroup>
 
 #include "utils.h"
 
 class QLabel;
 
-class TextTip : public QFrame
+class AnimationBackground : public QWidget
 {
     Q_OBJECT
+    Q_PROPERTY(double value READ value WRITE setValue)
 
 public:
-    explicit TextTip(const QString &txt, TrianglePostion pos, QWidget *parent = 0);
-    explicit TextTip(const QString &title, const QString &desc, TrianglePostion pos, QWidget *parent = 0);
-    ~TextTip();
+    AnimationBackground(QWidget *parent = 0);
 
-    void resetTipText(const QString &txt);
-    void resetTipText(const QString &title, const QString &desc);
+    void setWeatherCode(int code);
+    void setValue(int value);
+    int value() const {return m_value;}
 
 protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
 private:
-    TrianglePostion m_trianglePostion;
-    int m_radius;
-    QBrush m_background;
-    QColor m_borderColor;
-    QLabel *m_textLabel = nullptr;
-    QLabel *m_descLabel = nullptr;
-    QFrame *m_frame = nullptr;
+    void drawClearEllipse(QPainter* painter);
+    void drawCloudyEllipse(QPainter* painter);
+    void drawFogEllipse(QPainter* painter);
+
+private:
+    int m_value;
+    WeatherState m_weatherState;
+    QSequentialAnimationGroup *m_sequentialAnimationGroup = nullptr;
 };
 
-#endif // _TEXTTIP_H
+#endif // ANIMATION_BACKGROUND_H

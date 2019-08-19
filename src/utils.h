@@ -34,5 +34,6 @@ enum TrianglePostion {TopLeft, TopMiddle, TopRight, BottomLeft, BottomMiddle, Bo
 
 enum BackBtnState {InitState, LocateState, SearchState};
 
+enum WeatherState {DEFAULT = 0, CLEAR, OVERCAST, CLOUDY, RAIN, FOG, SNOW, SANDSTORM, HAZE};
 
 #endif // UTILS_H

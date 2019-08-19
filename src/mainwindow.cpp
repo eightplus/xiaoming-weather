@@ -22,6 +22,7 @@
 #include "weatherwidget.h"
 #include "locationwidget.h"
 #include "backgroundwidget.h"
+#include "animationbackground.h"
 #include "utils.h"
 #include "weatherworker.h"
 #include "preferences.h"
@@ -208,10 +209,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     global_init();
 
-    m_backgroundWidget = new BackgroundWidget(this);
+    /*m_backgroundWidget = new BackgroundWidget(this);
     m_backgroundWidget->setGeometry(rect());
     m_backgroundWidget->lower();
-    m_backgroundWidget->setForNight(m_isNight);
+    m_backgroundWidget->setForNight(m_isNight);*/
+
+
+    m_animationBackground = new AnimationBackground(this);
+    m_animationBackground->setFixedSize(this->size());
 
     //如果不使用BackgroundWidget类作为背景，则可用setStyleSheet来设置QMainWindow的背景图片
 //    this->setStyleSheet("QMainWindow {color:white; background-image:url(':/res/background/weather-clear.jpg'); background-repeat:no-repeat; background-color:rgba(255, 255, 255, 230);}");
@@ -277,7 +282,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_titleBar, &TitleBar::switchDayOrNight, this, [=] {
         m_isNight = !m_isNight;
-        m_backgroundWidget->setForNight(m_isNight);
+        //m_backgroundWidget->setForNight(m_isNight);
     });
     connect(m_titleBar, &TitleBar::requestDisplayAboutDialog, this, [=] {
         this->showSettingDialog();
@@ -369,6 +374,7 @@ MainWindow::MainWindow(QWidget *parent)
 //        if (!m_autoRefreshTimer->isActive()) {
 //            m_autoRefreshTimer->start(m_preferences->m_updateFrequency * 1000 * 60);
 //        }
+        m_animationBackground->setWeatherCode(m_preferences->m_observeWeather.cond_code.toInt());
         m_weatherWidget->onUpdateWeather();
     });
 

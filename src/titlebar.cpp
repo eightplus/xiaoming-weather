@@ -60,19 +60,21 @@ void TitleBar::initLeftContent()
 {
     QWidget *w = new QWidget;
     m_lLayout = new QHBoxLayout(w);
-    m_lLayout->setContentsMargins(5, 0, 0, 0);
+    m_lLayout->setContentsMargins(0, 0, 0, 0);
     m_lLayout->setSpacing(0);
     m_layout->addWidget(w, 1, Qt::AlignLeft);
 
     m_titleLabel = new QLabel;
     m_titleLabel->setText(tr("Xiaoming Weather"));
-    m_titleLabel->setStyleSheet("QLabel{font-size:14px;font-style:italic;color: rgb(0, 0, 0);background-color:transparent;}");//font-weight:bold;
+    m_titleLabel->setStyleSheet("QLabel{margin-left:5px;font-size:14px;font-style:italic;color: rgb(0, 0, 0);background-color:transparent;}");//font-weight:bold;
 
     m_backBtn = new QPushButton;
+//    m_backBtn->setLayoutDirection(Qt::LayoutDirection::RightToLeft);
+    m_backBtn->setCursor(Qt::PointingHandCursor);
     m_backBtn->setVisible(false);
-    m_backBtn->setFixedSize(120, this->height());
+    m_backBtn->setFixedSize(91, this->height());
     m_backBtn->setFocusPolicy(Qt::NoFocus);
-    m_backBtn->setStyleSheet("QPushButton{border:none;text-align:left;font-size:14px;background-color:rgba(0,0,0,0.2);color:rgb(255,255,255);}");
+    m_backBtn->setStyleSheet("QPushButton{border:none;text-align:center;font-size:14px;border-image:url(:/res/btn-ground.png);background:transparent;color:rgb(255,255,255);qproperty-icon:url(:/res/btn-back-default.png);qproperty-iconSize:15px 19px;}QPushButton:hover{color:#3f96e4;qproperty-icon:url(:/res/btn-back-hover.png);}QPushButton:pressed{color:#3f96e4;qproperty-icon:url(:/res/btn-back-pressed.png);}");//background-color:rgba(0,0,0,0.2);
     m_backBtn->setText(tr("Back"));
     connect(m_backBtn, &QPushButton::clicked, this, [=] () {
         if (m_backState == BackBtnState::LocateState) {

@@ -180,6 +180,10 @@
         <file>res/weather_icons/white/999.png</file>
         <file>res/search.png</file>
         <file>res/detail.png</file>
+        <file>res/btn-ground.png</file>
+        <file>res/btn-back-default.png</file>
+        <file>res/btn-back-hover.png</file>
+        <file>res/btn-back-pressed.png</file>
     </qresource>
     <qresource prefix="/qss">
         <file>res/weather.qss</file>

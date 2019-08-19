@@ -27,6 +27,7 @@ class WeatherWidget;
 class LocationWidget;
 class QVBoxLayout;
 class BackgroundWidget;
+class AnimationBackground;
 class WeatherWorker;
 
 class MainWindow : public QMainWindow
@@ -55,10 +56,11 @@ private:
     WeatherWidget *m_weatherWidget = nullptr;
     LocationWidget *m_locationWidget = nullptr;
     QVBoxLayout *m_layout = nullptr;
-    BackgroundWidget *m_backgroundWidget = nullptr;
+    //BackgroundWidget *m_backgroundWidget = nullptr;
     bool m_isNight;
     WeatherWorker *m_weatherWorker = nullptr;
     QTimer *m_autoRefreshTimer = nullptr;
+    AnimationBackground *m_animationBackground = nullptr;
 };
 
 #endif // MAINWINDOW_H

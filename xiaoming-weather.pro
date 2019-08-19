@@ -90,7 +90,8 @@ SOURCES += src/main.cpp \
     src/searchinputedit.cpp \
     src/locationworker.cpp \
     src/texttip.cpp \
-    src/dbusadaptor.cpp
+    src/dbusadaptor.cpp \
+    src/animationbackground.cpp
 
 HEADERS  += src/mainwindow.h \
     src/titlebar.h \
@@ -138,7 +139,8 @@ HEADERS  += src/mainwindow.h \
     src/searchinputedit.h \
     src/locationworker.h \
     src/texttip.h \
-    src/dbusadaptor.h
+    src/dbusadaptor.h \
+    src/animationbackground.h
 
 TRANSLATIONS += \
     translations/xiaoming-weather_zh_CN.ts
